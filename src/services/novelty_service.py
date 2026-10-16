@@ -273,7 +273,7 @@ class BehavioralNoveltyService:
         # 9. Strict Ethical Non-Offender Attribution Advisory
         ethical_advisory = (
             "Based on patterns learned from historical incidents. "
-            "CRIME DNA analyzes behavioral patterns in historical incident data. "
+            "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. "
             "Similarity or novelty does not establish offender identity, guilt, or causation. "
             "Novelty evaluation reflects the statistical rarity of this novel behavioral combination "
             "relative to the historical reference dataset. It does not evaluate individual criminality, "

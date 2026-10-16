@@ -180,6 +180,11 @@ export const CrimeDnaResultExperience: React.FC<CrimeDnaResultExperienceProps> =
     return true;
   });
 
+  const safePct = (val: any, fallback = 0, digits = 1): string => {
+    const n = typeof val === 'number' && !isNaN(val) ? val : fallback;
+    return n.toFixed(digits);
+  };
+
   // Calculate highest similarity score
   const topSimilarityPct = (
     analysisResult.similar_historical_incidents?.[0]?.similarity_score_pct ??
@@ -187,9 +192,30 @@ export const CrimeDnaResultExperience: React.FC<CrimeDnaResultExperienceProps> =
     88.5
   );
 
+  const isIncidentNight = formData.is_night !== undefined
+    ? formData.is_night
+    : (formData.incident_hour !== undefined ? (formData.incident_hour >= 20 || formData.incident_hour < 6) : true);
+
   // Behavioral Data Coverage across the 6 schema-supported domains (Part B)
-  const domainCoverage: DomainCoverageItem[] = analysisResult.data_coverage?.domains ||
-    analysisResult.behavioral_dna?.data_coverage?.domains || [
+  const domainCoverage: DomainCoverageItem[] = (() => {
+    const raw = analysisResult.data_coverage?.domains || analysisResult.behavioral_dna?.data_coverage?.domains;
+    if (raw) {
+      const list = Array.isArray(raw) ? raw : Object.values(raw);
+      if (list.length > 0) {
+        return list.map((d: any) => ({
+          domain_id: d.domain_id || d.domain_key || 'domain',
+          name: d.name || d.label || d.domain_key || 'Domain',
+          coverage_pct: typeof d.coverage_pct === 'number' ? d.coverage_pct : 0,
+          valid_fields_count: d.valid_fields_count ?? d.available_fields_count ?? 0,
+          total_applicable_fields: d.total_applicable_fields ?? d.total_supported_fields ?? 0,
+          unspecified_fields_count: d.unspecified_fields_count ?? 0,
+          description: d.description || '',
+          available_fields: Array.isArray(d.available_fields) ? d.available_fields : [],
+          unspecified_fields: Array.isArray(d.unspecified_fields) ? d.unspecified_fields : []
+        }));
+      }
+    }
+    return [
       {
         domain_id: 'temporal_dynamics',
         name: 'Temporal Dynamics',
@@ -257,14 +283,21 @@ export const CrimeDnaResultExperience: React.FC<CrimeDnaResultExperienceProps> =
         unspecified_fields: []
       }
     ];
-
-  const isIncidentNight = formData.is_night !== undefined
-    ? formData.is_night
-    : (formData.incident_hour !== undefined ? (formData.incident_hour >= 20 || formData.incident_hour < 6) : true);
+  })();
 
   // Compact Behavioral Fingerprint Traits (Part C)
-  const compactTraits: CompactTrait[] = analysisResult.behavioral_dna?.human_readable?.compact_traits ||
-    analysisResult.human_readable_dna?.compact_traits || [
+  const compactTraits: CompactTrait[] = (() => {
+    const raw = analysisResult.behavioral_dna?.human_readable?.compact_traits ||
+      analysisResult.human_readable_dna?.compact_traits;
+    if (Array.isArray(raw) && raw.length > 0) {
+      return raw.map((item: any) => ({
+        trait: item.trait || item.trait_name || item.id || 'Trait',
+        value: item.value || item.status_label || item.detail || 'Observed',
+        status: item.status || 'Yes',
+        domain: item.domain || item.category || 'General'
+      }));
+    }
+    return [
       {
         trait: 'Diurnal Timing',
         value: isIncidentNight ? 'Nighttime' : 'Daytime',
@@ -314,6 +347,7 @@ export const CrimeDnaResultExperience: React.FC<CrimeDnaResultExperienceProps> =
         domain: 'Context'
       }
     ];
+  })();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>

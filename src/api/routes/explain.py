@@ -78,7 +78,7 @@ def _run_explanation(inc1: str, inc2: str) -> SimilarityExplanationResponse:
         formatted_text_summary=raw_res["formatted_text_summary"],
         disclaimer=(
             "Based on patterns learned from historical incidents. "
-            "CRIME DNA analyzes behavioral patterns in historical incident data. "
+            "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. "
             "Similarity or novelty does not establish offender identity, guilt, or causation. "
             "Explanations represent mathematical feature-space attribution without establishing causal relationships."
         )

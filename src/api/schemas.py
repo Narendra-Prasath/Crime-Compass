@@ -190,7 +190,7 @@ class SimilarIncidentsResponse(BaseModel):
     grouped_by_category_relationship: Optional[Dict[str, List[SimilarIncidentMatch]]] = None
     ethical_advisory: str = (
         "Based on patterns learned from historical incidents. "
-        "CRIME DNA analyzes behavioral patterns in historical incident data. "
+        "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. "
         "Similarity or novelty does not establish offender identity, guilt, or causation. "
         "Behavioral similarity reflects shared modus operandi characteristics between incidents and does not identify offenders."
     )
@@ -205,7 +205,7 @@ class VectorSimilarIncidentsResponse(BaseModel):
     grouped_by_category_relationship: Optional[Dict[str, List[SimilarIncidentMatch]]] = None
     ethical_advisory: str = (
         "Based on patterns learned from historical incidents. "
-        "CRIME DNA analyzes behavioral patterns in historical incident data. "
+        "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. "
         "Similarity or novelty does not establish offender identity, guilt, or causation. "
         "Behavioral similarity reflects shared modus operandi characteristics between incidents and does not identify offenders."
     )
@@ -541,7 +541,7 @@ class SimilarityExplanationResponse(BaseModel):
     formatted_text_summary: str
     disclaimer: str = (
         "Based on patterns learned from historical incidents. "
-        "CRIME DNA analyzes behavioral patterns in historical incident data. "
+        "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. "
         "Similarity or novelty does not establish offender identity, guilt, or causation. "
         "Explanations represent mathematical feature-space attribution without establishing causal relationships."
     )

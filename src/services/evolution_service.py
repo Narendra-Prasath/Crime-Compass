@@ -348,7 +348,7 @@ class BehavioralEvolutionService:
 
         ethical_advisory = (
             "Based on patterns learned from historical incidents. "
-            "CRIME DNA analyzes behavioral patterns in historical incident data. "
+            "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. "
             "Similarity or novelty does not establish offender identity, guilt, or causation. "
             "Behavioral evolution reflects aggregate population-level shifts across historical incidents over the observed time period. "
             "It does not track individual persons and does not indicate sequential actions by an individual offender."

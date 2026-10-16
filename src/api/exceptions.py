@@ -23,7 +23,7 @@ class IncidentNotFoundError(CrimeDNAException):
     """Raised when an incident ID does not exist in the index or dataset."""
     def __init__(self, incident_id: str):
         super().__init__(
-            message=f"Incident '{incident_id}' not found in the CRIME DNA database.",
+            message=f"Incident '{incident_id}' not found in the Crime Compass database.",
             status_code=status.HTTP_404_NOT_FOUND
         )
 

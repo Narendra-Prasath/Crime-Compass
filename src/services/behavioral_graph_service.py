@@ -227,7 +227,7 @@ class BehavioralGraphService:
 
         ethical_advisory = (
             "Based on patterns learned from historical incidents. "
-            "CRIME DNA analyzes behavioral patterns in historical incident data. "
+            "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. "
             "Similarity or novelty does not establish offender identity, guilt, or causation. "
             "The Behavioral Connection Map represents shared behavioral characteristics (modus operandi) "
             "between crime categories and behavioral patterns discovered in historical data. "

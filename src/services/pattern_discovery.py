@@ -139,9 +139,9 @@ class HiddenBehavioralPatternService:
 
         ethical_advisory = (
             "Based on patterns learned from historical incidents. "
-            "CRIME DNA analyzes behavioral patterns in historical incident data. "
+            "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. "
             "Similarity or novelty does not establish offender identity, guilt, or causation. "
-            "CRIME DNA detects behavioral patterns across incidents. These patterns indicate shared "
+            "Crime Compass 🧭 detects behavioral patterns across incidents. These patterns indicate shared "
             "modus operandi and environmental factors, not that offenses were committed by the same individual."
         )
 

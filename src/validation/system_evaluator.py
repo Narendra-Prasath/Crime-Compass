@@ -410,12 +410,12 @@ def run_full_validation() -> Dict[str, Any]:
     )
 
     full_report = {
-        "system_name": "CRIME DNA",
+        "system_name": "Crime Compass 🧭",
         "validation_version": "1.0.0",
         "validation_timestamp": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
         "validation_runtime_seconds": elapsed,
         "overall_status": "PASSED" if all_passed else "FAILED",
-        "disclaimer": "CRIME DNA analyzes behavioral patterns in historical incident data. Similarity or novelty does not establish offender identity, guilt, or causation.",
+        "disclaimer": "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. Similarity or novelty does not establish offender identity, guilt, or causation.",
         "results": {
             "data_layer": data_res,
             "similarity_engine": sim_res,

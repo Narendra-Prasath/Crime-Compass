@@ -700,7 +700,7 @@ class BehavioralComparisonService:
         # 6. Ethical Non-Offender Boundary and Network Map Explanation
         ethical_advisory = (
             "Based on patterns learned from historical incidents. "
-            "CRIME DNA analyzes behavioral patterns in historical incident data. "
+            "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. "
             "Similarity or novelty does not establish offender identity, guilt, or causation. "
             "Behavioral similarity reflects shared modus operandi characteristics between incidents. "
             "It does NOT indicate the same offender or establish investigative linkage without physical forensic evidence. "
@@ -708,7 +708,7 @@ class BehavioralComparisonService:
         )
 
         return {
-            "comparison_title": "🧬 CRIME DNA COMPARISON",
+            "comparison_title": "🧭 BEHAVIORAL COMPARISON",
             "incident_a": {
                 "label": res_a["label"],
                 "incident_id": res_a["incident_id"],

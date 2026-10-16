@@ -8,6 +8,8 @@ import type {
 import { FeedbackWidget } from '../components/FeedbackWidget';
 import { CrimeDnaResultExperience } from '../components/CrimeDnaResultExperience';
 import { DatasetAnalysisExperience } from '../components/DatasetAnalysisExperience';
+import { ErrorBoundary } from '../components/ErrorBoundary';
+import { IndianLocationSelector } from '../components/IndianLocationSelector';
 import {
   Compass,
   Sparkles,
@@ -39,7 +41,6 @@ import {
 } from 'lucide-react';
 import {
   INDIAN_STATES_AND_UTS,
-  POPULAR_INDIAN_DISTRICTS,
   formatIndianNumber
 } from '../utils/indiaFormat';
 
@@ -162,7 +163,7 @@ export const InputAnalysisPage: React.FC<InputAnalysisPageProps> = ({
     
     // Friendly Input Validation
     if (!formData.scenario_title || !formData.scenario_title.trim()) {
-      setError('Please provide an Incident Case Title or Scenario description.');
+      setError('Please provide an Incident Case Title or Scenario description before analyzing.');
       return;
     }
     if ((formData.victim_count ?? 0) < 1) {
@@ -170,7 +171,7 @@ export const InputAnalysisPage: React.FC<InputAnalysisPageProps> = ({
       return;
     }
     if ((formData.offender_count ?? 0) < 1) {
-      setError('Involved individuals count must be at least 1.');
+      setError('Involved individuals / accused count must be at least 1.');
       return;
     }
     if ((formData.property_value ?? 0) < 0) {
@@ -190,7 +191,8 @@ export const InputAnalysisPage: React.FC<InputAnalysisPageProps> = ({
         resultsRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     } catch (err: any) {
-      setError(err.message || 'Failed to analyze behavioral input.');
+      setError(err.message || 'Unable to connect to the Crime Compass inference engine. Please check if the backend service is running.');
+      setAnalysisResult(null);
     } finally {
       setLoading(false);
     }
@@ -524,114 +526,21 @@ export const InputAnalysisPage: React.FC<InputAnalysisPageProps> = ({
                 </div>
               </div>
 
-              {/* Location Grid */}
-              <div style={{ background: 'var(--bg-subtle)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <MapPin size={15} style={{ color: 'var(--accent-emerald)' }} />
-                  <span>Geographic Location Details (India-Ready)</span>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-                  {/* Country */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-dim)', marginBottom: '4px' }}>Country</label>
-                    <select
-                      value={formData.country || 'India'}
-                      onChange={(e) => {
-                        const country = e.target.value;
-                        handleFieldChange('country', country);
-                        if (country === 'India') {
-                          handleFieldChange('currency', 'INR');
-                          handleFieldChange('timezone', 'Asia/Kolkata');
-                          handleFieldChange('state_ut', 'Karnataka');
-                          handleFieldChange('district', 'Bengaluru Urban');
-                        }
-                      }}
-                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: '4px', padding: '7px 10px', color: 'var(--text-main)', fontSize: '0.82rem' }}
-                    >
-                      <option value="India">India (IST / ₹ INR)</option>
-                      <option value="United States">United States</option>
-                      <option value="United Kingdom">United Kingdom</option>
-                    </select>
-                  </div>
-
-                  {/* State / UT */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-dim)', marginBottom: '4px' }}>State / UT</label>
-                    <input
-                      type="text"
-                      list="indian-states"
-                      value={formData.state_ut || ''}
-                      onChange={(e) => handleFieldChange('state_ut', e.target.value)}
-                      placeholder="e.g. Karnataka"
-                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: '4px', padding: '7px 10px', color: 'var(--text-main)', fontSize: '0.82rem' }}
-                    />
-                    <datalist id="indian-states">
-                      {INDIAN_STATES_AND_UTS.map((st) => (
-                        <option key={st} value={st} />
-                      ))}
-                    </datalist>
-                  </div>
-
-                  {/* District */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-dim)', marginBottom: '4px' }}>District</label>
-                    <input
-                      type="text"
-                      list="indian-districts"
-                      value={formData.district || ''}
-                      onChange={(e) => handleFieldChange('district', e.target.value)}
-                      placeholder="e.g. Bengaluru Urban"
-                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: '4px', padding: '7px 10px', color: 'var(--text-main)', fontSize: '0.82rem' }}
-                    />
-                    <datalist id="indian-districts">
-                      {(formData.state_ut && POPULAR_INDIAN_DISTRICTS[formData.state_ut]
-                        ? POPULAR_INDIAN_DISTRICTS[formData.state_ut]
-                        : Object.values(POPULAR_INDIAN_DISTRICTS).flat()
-                      ).map((d) => (
-                        <option key={d} value={d} />
-                      ))}
-                    </datalist>
-                  </div>
-
-                  {/* City */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-dim)', marginBottom: '4px' }}>City / Town</label>
-                    <input
-                      type="text"
-                      value={formData.city_town || ''}
-                      onChange={(e) => handleFieldChange('city_town', e.target.value)}
-                      placeholder="e.g. Bengaluru"
-                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: '4px', padding: '7px 10px', color: 'var(--text-main)', fontSize: '0.82rem' }}
-                    />
-                  </div>
-
-                  {/* Locality */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-dim)', marginBottom: '4px' }}>Locality / Police Station</label>
-                    <input
-                      type="text"
-                      value={formData.locality || ''}
-                      onChange={(e) => handleFieldChange('locality', e.target.value)}
-                      placeholder="e.g. Indiranagar"
-                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: '4px', padding: '7px 10px', color: 'var(--text-main)', fontSize: '0.82rem' }}
-                    />
-                  </div>
-
-                  {/* PIN */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-dim)', marginBottom: '4px' }}>PIN / Postal Code</label>
-                    <input
-                      type="text"
-                      maxLength={6}
-                      value={formData.pin_code || ''}
-                      onChange={(e) => handleFieldChange('pin_code', e.target.value)}
-                      placeholder="e.g. 560038"
-                      style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: '4px', padding: '7px 10px', color: 'var(--text-main)', fontSize: '0.82rem' }}
-                    />
-                  </div>
-                </div>
-              </div>
+              {/* Location Grid with Full Indian Hierarchy */}
+              <IndianLocationSelector
+                country={formData.country}
+                stateUt={formData.state_ut}
+                district={formData.district}
+                cityTown={formData.city_town}
+                locality={formData.locality}
+                pinCode={formData.pin_code}
+                onChange={(updates) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    ...updates
+                  }));
+                }}
+              />
             </div>
 
             {/* =========================================================================
@@ -966,15 +875,23 @@ export const InputAnalysisPage: React.FC<InputAnalysisPageProps> = ({
           ========================================================================= */}
       {analysisMode === 'single' && analysisResult && (
         <div ref={resultsRef} style={{ marginTop: '36px' }}>
-          <CrimeDnaResultExperience
-            analysisResult={analysisResult}
-            formData={formData}
-            onNavigate={onNavigate}
+          <ErrorBoundary
+            fallbackTitle="Crime Compass Result View Recovery"
             onReset={() => {
               setAnalysisResult(null);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-          />
+          >
+            <CrimeDnaResultExperience
+              analysisResult={analysisResult}
+              formData={formData}
+              onNavigate={onNavigate}
+              onReset={() => {
+                setAnalysisResult(null);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          </ErrorBoundary>
         </div>
       )}
     </div>

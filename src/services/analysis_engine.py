@@ -272,7 +272,7 @@ class CrimeDnaAnalysisEngine:
             ),
             "ethical_advisory": (
                 "Based on patterns learned from historical incidents. "
-                "CRIME DNA analyzes behavioral patterns in historical incident data. "
+                "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. "
                 "Similarity or novelty does not establish offender identity, guilt, or causation. "
                 "Behavioral similarity reflects shared modus operandi characteristics between incidents and does not identify offenders."
             )

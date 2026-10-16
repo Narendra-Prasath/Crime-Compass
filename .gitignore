@@ -10,7 +10,7 @@ venv/
 
 # Large data & model dumps
 *.csv
-data/
+/data/
 scratch/
 
 # Node
