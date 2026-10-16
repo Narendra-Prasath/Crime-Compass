@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Large data & model dumps
+*.csv
+data/
+scratch/
+
+# Node
+node_modules/
+dist/
+.DS_Store
