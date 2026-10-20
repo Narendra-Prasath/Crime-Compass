@@ -98,6 +98,9 @@ class ApplicationState:
         self.core_records: Optional[List[Dict[str, Any]]] = None
         self.clusters_records: Optional[List[Dict[str, Any]]] = None
         self.anomaly_records: Optional[List[Dict[str, Any]]] = None
+        self._core_cols: Optional[Dict[str, np.ndarray]] = None
+        self._cluster_cols: Optional[Dict[str, np.ndarray]] = None
+        self._anomaly_cols: Optional[Dict[str, np.ndarray]] = None
         self._profile_cache: Dict[str, Dict[str, Any]] = {}
 
     def load_all(self) -> None:
@@ -200,12 +203,83 @@ class ApplicationState:
             logger.error(f"Failed to load Anomaly artifacts: {e}", exc_info=True)
             self.components_status["anomaly_detection"] = f"error: {str(e)}"
 
-        # 6. Explainability Engine
+        # 6. Metadata & High-Speed Incident Registries (Memory-Optimized Direct Arrays)
         try:
-            logger.info("Loading Explainability Engine...")
+            logger.info("Loading Dataset Metadata & Incident Registries (compact dtypes)...")
+            if CLEANING_METADATA_PATH.exists():
+                with open(CLEANING_METADATA_PATH) as f:
+                    self.cleaning_metadata = json.load(f)
+            if DNA_METADATA_PATH.exists():
+                with open(DNA_METADATA_PATH) as f:
+                    self.dna_metadata = json.load(f)
+
+            # Fast Incident Core Columns using compact C-native dtypes (int8/int16/float32)
+            core_dtypes = {
+                "incident_hour": "int8",
+                "incident_month": "int8",
+                "incident_weekday": "int8",
+                "is_weekend": "int8",
+                "is_night": "int8",
+                "population": "float32",
+                "offense_count": "int16",
+                "victim_count": "int16",
+                "offender_count": "int16",
+                "property_value": "float32",
+                "has_weapon": "int8",
+                "has_injury": "int8",
+                "has_property": "int8",
+                "has_drug": "int8",
+                "has_arrest": "int8",
+                "has_relationship": "int8",
+                "crime_against_person": "int8",
+                "crime_against_property": "int8",
+                "crime_against_society": "int8",
+                "crime_against_person___property": "int8",
+                "crime_against_person___society": "int8",
+                "crime_against_property___society": "int8",
+                "crime_against_person___property___society": "int8"
+            }
+            core_cols = list(core_dtypes.keys())
+            if CLEANED_CSV_PATH.exists():
+                self.core_df = pd.read_csv(CLEANED_CSV_PATH, usecols=core_cols, dtype=core_dtypes)
+                self._core_cols = {col: self.core_df[col].values for col in core_cols}
+
+            cl_labels_path = CLUSTERS_DIR / "incident_cluster_labels.csv"
+            if cl_labels_path.exists():
+                cl_dtypes = {"cluster_id": "int8", "cluster_name": "category"}
+                self.clusters_df = pd.read_csv(cl_labels_path, usecols=["cluster_id", "cluster_name"], dtype=cl_dtypes)
+                self._cluster_cols = {
+                    "cluster_id": self.clusters_df["cluster_id"].values,
+                    "cluster_name": self.clusters_df["cluster_name"].values
+                }
+
+            an_scores_path = ANOMALY_DIR / "incident_anomaly_scores.csv"
+            if an_scores_path.exists():
+                an_dtypes = {
+                    "novelty_score": "float32",
+                    "novelty_tier": "category",
+                    "nearest_cluster_id": "int8",
+                    "nearest_cluster_name": "category",
+                    "distance_to_nearest_cluster": "float32"
+                }
+                self.anomaly_df = pd.read_csv(an_scores_path, usecols=list(an_dtypes.keys()), dtype=an_dtypes)
+                self._anomaly_cols = {col: self.anomaly_df[col].values for col in an_dtypes}
+
+            self.components_status["incident_registry"] = "online"
+        except Exception as e:
+            logger.error(f"Failed to load Incident Registries: {e}", exc_info=True)
+            self.components_status["incident_registry"] = f"error: {str(e)}"
+
+        # 7. Explainability Engine (re-using preloaded similarity matrix & shared core_df)
+        try:
+            logger.info("Loading Explainability Engine (shared memory)...")
             self.explainer = BehavioralSimilarityExplainer().load_data(
                 features_path=str(DNA_FEATURES_CSV_PATH),
-                cleaned_path=str(CLEANED_CSV_PATH)
+                cleaned_path=str(CLEANED_CSV_PATH),
+                normalized_matrix=self.normalized_matrix,
+                incident_ids=self.incident_ids,
+                feature_names=self.feature_names,
+                cleaned_df=self.core_df
             )
             exp_meta_path = EXPLAINABILITY_DIR / "explanation_metadata.json"
             sample_exp_path = EXPLAINABILITY_DIR / "sample_explanations.json"
@@ -219,45 +293,6 @@ class ApplicationState:
         except Exception as e:
             logger.error(f"Failed to load Explainability Engine: {e}", exc_info=True)
             self.components_status["explainability"] = f"error: {str(e)}"
-
-        # 7. Metadata & High-Speed Incident Registries
-        try:
-            logger.info("Loading Dataset Metadata & Incident Registries...")
-            if CLEANING_METADATA_PATH.exists():
-                with open(CLEANING_METADATA_PATH) as f:
-                    self.cleaning_metadata = json.load(f)
-            if DNA_METADATA_PATH.exists():
-                with open(DNA_METADATA_PATH) as f:
-                    self.dna_metadata = json.load(f)
-
-            # Fast Incident Core Columns
-            core_cols = [
-                "incident_id", "incident_hour", "incident_month", "incident_weekday",
-                "is_weekend", "is_night", "population", "offense_count",
-                "victim_count", "offender_count", "property_value",
-                "has_weapon", "has_injury", "has_property", "has_drug", "has_arrest", "has_relationship",
-                "crime_against_person", "crime_against_property", "crime_against_society",
-                "crime_against_person___property", "crime_against_person___society",
-                "crime_against_property___society", "crime_against_person___property___society"
-            ]
-            if CLEANED_CSV_PATH.exists():
-                self.core_df = pd.read_csv(CLEANED_CSV_PATH, usecols=core_cols)
-                self.core_records = self.core_df.to_dict(orient="records")
-
-            cl_labels_path = CLUSTERS_DIR / "incident_cluster_labels.csv"
-            if cl_labels_path.exists():
-                self.clusters_df = pd.read_csv(cl_labels_path)
-                self.clusters_records = self.clusters_df.to_dict(orient="records")
-
-            an_scores_path = ANOMALY_DIR / "incident_anomaly_scores.csv"
-            if an_scores_path.exists():
-                self.anomaly_df = pd.read_csv(an_scores_path)
-                self.anomaly_records = self.anomaly_df.to_dict(orient="records")
-
-            self.components_status["incident_registry"] = "online"
-        except Exception as e:
-            logger.error(f"Failed to load Incident Registries: {e}", exc_info=True)
-            self.components_status["incident_registry"] = f"error: {str(e)}"
 
         self.startup_timestamp = time.time()
         self.is_ready = True
@@ -282,14 +317,61 @@ class ApplicationState:
 
         # Core context
         core_data = {}
-        if self.core_records is not None and idx < len(self.core_records):
+        if self._core_cols is not None:
+            core_data = {
+                "incident_hour": int(self._core_cols["incident_hour"][idx]),
+                "incident_month": int(self._core_cols["incident_month"][idx]),
+                "incident_weekday": int(self._core_cols["incident_weekday"][idx]),
+                "is_weekend": bool(self._core_cols["is_weekend"][idx]),
+                "is_night": bool(self._core_cols["is_night"][idx]),
+                "population": float(self._core_cols["population"][idx]),
+                "offense_count": int(self._core_cols["offense_count"][idx]),
+                "victim_count": int(self._core_cols["victim_count"][idx]),
+                "offender_count": int(self._core_cols["offender_count"][idx]),
+                "property_value": float(self._core_cols["property_value"][idx]),
+                "has_weapon": bool(self._core_cols["has_weapon"][idx]),
+                "has_injury": bool(self._core_cols["has_injury"][idx]),
+                "has_property": bool(self._core_cols["has_property"][idx]),
+                "has_drug": bool(self._core_cols["has_drug"][idx]),
+                "has_arrest": bool(self._core_cols["has_arrest"][idx]),
+                "has_relationship": bool(self._core_cols["has_relationship"][idx]),
+                "crime_against_person": bool(self._core_cols["crime_against_person"][idx]),
+                "crime_against_property": bool(self._core_cols["crime_against_property"][idx]),
+                "crime_against_society": bool(self._core_cols["crime_against_society"][idx]),
+                "crime_against_person_property": bool(self._core_cols["crime_against_person___property"][idx]),
+                "crime_against_person_society": bool(self._core_cols["crime_against_person___society"][idx]),
+                "crime_against_property_society": bool(self._core_cols["crime_against_property___society"][idx]),
+                "crime_against_person_property_society": bool(self._core_cols["crime_against_person___property___society"][idx]),
+            }
+        elif self.core_records is not None and idx < len(self.core_records):
             core_row = self.core_records[idx]
+            core_data = {
+                "incident_hour": int(core_row.get("incident_hour", 0)),
+                "incident_month": int(core_row.get("incident_month", 1)),
+                "incident_weekday": int(core_row.get("incident_weekday", 1)),
+                "is_weekend": bool(core_row.get("is_weekend", 0)),
+                "is_night": bool(core_row.get("is_night", 0)),
+                "population": float(core_row.get("population", 0.0)),
+                "offense_count": int(core_row.get("offense_count", 1)),
+                "victim_count": int(core_row.get("victim_count", 0)),
+                "offender_count": int(core_row.get("offender_count", 0)),
+                "property_value": float(core_row.get("property_value", 0.0)),
+                "has_weapon": bool(core_row.get("has_weapon", 0)),
+                "has_injury": bool(core_row.get("has_injury", 0)),
+                "has_property": bool(core_row.get("has_property", 0)),
+                "has_drug": bool(core_row.get("has_drug", 0)),
+                "has_arrest": bool(core_row.get("has_arrest", 0)),
+                "has_relationship": bool(core_row.get("has_relationship", 0)),
+                "crime_against_person": bool(core_row.get("crime_against_person", 0)),
+                "crime_against_property": bool(core_row.get("crime_against_property", 0)),
+                "crime_against_society": bool(core_row.get("crime_against_society", 0)),
+                "crime_against_person_property": bool(core_row.get("crime_against_person___property", 0)),
+                "crime_against_person_society": bool(core_row.get("crime_against_person___society", 0)),
+                "crime_against_property_society": bool(core_row.get("crime_against_property___society", 0)),
+                "crime_against_person_property_society": bool(core_row.get("crime_against_person___property___society", 0)),
+            }
         elif self.core_df is not None:
             core_row = self.core_df.iloc[idx].to_dict()
-        else:
-            core_row = {}
-
-        if core_row:
             core_data = {
                 "incident_hour": int(core_row.get("incident_hour", 0)),
                 "incident_month": int(core_row.get("incident_month", 1)),
@@ -337,7 +419,12 @@ class ApplicationState:
 
         # Cluster assignment
         cluster_info = {}
-        if self.clusters_records is not None and idx < len(self.clusters_records):
+        if self._cluster_cols is not None:
+            cluster_info = {
+                "cluster_id": int(self._cluster_cols["cluster_id"][idx]),
+                "cluster_name": str(self._cluster_cols["cluster_name"][idx])
+            }
+        elif self.clusters_records is not None and idx < len(self.clusters_records):
             cl_row = self.clusters_records[idx]
             cluster_info = {
                 "cluster_id": int(cl_row.get("cluster_id", -1)),
@@ -352,7 +439,15 @@ class ApplicationState:
 
         # Novelty / Anomaly assignment
         novelty_info = {}
-        if self.anomaly_records is not None and idx < len(self.anomaly_records):
+        if self._anomaly_cols is not None:
+            novelty_info = {
+                "novelty_score": float(self._anomaly_cols["novelty_score"][idx]),
+                "novelty_tier": str(self._anomaly_cols["novelty_tier"][idx]),
+                "nearest_cluster_id": int(self._anomaly_cols["nearest_cluster_id"][idx]),
+                "nearest_cluster_name": str(self._anomaly_cols["nearest_cluster_name"][idx]),
+                "distance_to_nearest_cluster": float(self._anomaly_cols["distance_to_nearest_cluster"][idx])
+            }
+        elif self.anomaly_records is not None and idx < len(self.anomaly_records):
             an_row = self.anomaly_records[idx]
             novelty_info = {
                 "novelty_score": float(an_row.get("novelty_score", 0.0)),

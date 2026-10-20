@@ -19,9 +19,6 @@ if workspace_root not in sys.path:
 
 import numpy as np
 import pandas as pd
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 
 from src.features.config import FEATURE_GROUPS, FEATURE_DESCRIPTIONS
 from src.models.explainability.config import (
@@ -230,31 +227,83 @@ class BehavioralSimilarityExplainer:
     def load_data(
         self,
         features_path: str = BEHAVIORAL_FEATURES_PATH,
-        cleaned_path: str = CLEANED_DATA_PATH
+        cleaned_path: str = CLEANED_DATA_PATH,
+        normalized_matrix: Optional[np.ndarray] = None,
+        incident_ids: Optional[List[str]] = None,
+        feature_names: Optional[List[str]] = None,
+        cleaned_df: Optional[pd.DataFrame] = None
     ) -> "BehavioralSimilarityExplainer":
         """
         Loads and prepares feature representations and contextual metadata.
+        Uses memory-mapped precomputed matrix and compact dtypes to stay within 512 MB RAM.
         """
-        logger.info(f"Loading Behavioral DNA features from {features_path}...")
-        features_df = pd.read_csv(features_path)
-        self.incident_ids = features_df["incident_id"].tolist()
-        self.id_to_idx = {inc_id: idx for idx, inc_id in enumerate(self.incident_ids)}
-        self.feature_names = [c for c in features_df.columns if c != "incident_id"]
+        # 1. Normalized matrix & feature names
+        if normalized_matrix is not None and incident_ids is not None and feature_names is not None:
+            self.normalized_matrix = normalized_matrix
+            self.incident_ids = incident_ids
+            self.id_to_idx = {inc_id: idx for idx, inc_id in enumerate(self.incident_ids)}
+            self.feature_names = feature_names
+        else:
+            base_dir = os.path.dirname(features_path)
+            matrix_path = os.path.join(base_dir, "similarity_index", "normalized_dna_matrix.npy")
+            ids_path = os.path.join(base_dir, "similarity_index", "incident_ids.json")
+            meta_path = os.path.join(base_dir, "similarity_index", "similarity_engine_metadata.json")
 
-        raw_feat = features_df[self.feature_names].values.astype(np.float32)
-        norms = np.linalg.norm(raw_feat, axis=1, keepdims=True)
-        norms[norms == 0] = 1.0
-        self.normalized_matrix = raw_feat / norms
+            if os.path.exists(matrix_path) and os.path.exists(ids_path) and os.path.exists(meta_path):
+                logger.info(f"Loading Behavioral DNA features via memory-mapped matrix from {matrix_path}...")
+                self.normalized_matrix = np.load(matrix_path, mmap_mode="r")
+                with open(ids_path) as f:
+                    self.incident_ids = json.load(f)
+                self.id_to_idx = {inc_id: idx for idx, inc_id in enumerate(self.incident_ids)}
+                with open(meta_path) as f:
+                    meta = json.load(f)
+                self.feature_names = meta["feature_names"]
+            elif os.path.exists(features_path):
+                logger.info(f"Loading Behavioral DNA features from {features_path}...")
+                features_df = pd.read_csv(features_path)
+                self.incident_ids = features_df["incident_id"].tolist()
+                self.id_to_idx = {inc_id: idx for idx, inc_id in enumerate(self.incident_ids)}
+                self.feature_names = [c for c in features_df.columns if c != "incident_id"]
 
-        logger.info(f"Loading contextual incident attributes from {cleaned_path}...")
-        cols_to_load = [
-            "incident_id", "incident_hour", "incident_month", "incident_weekday",
-            "is_weekend", "is_night", "has_weapon", "has_injury", "has_property",
-            "has_drug", "has_arrest", "has_relationship", "population",
-            "crime_against_person", "crime_against_property", "crime_against_society",
-            "property_value"
-        ]
-        self.cleaned_df = pd.read_csv(cleaned_path, usecols=cols_to_load)
+                raw_feat = features_df[self.feature_names].values.astype(np.float32)
+                norms = np.linalg.norm(raw_feat, axis=1, keepdims=True)
+                norms[norms == 0] = 1.0
+                self.normalized_matrix = raw_feat / norms
+            else:
+                raise FileNotFoundError(f"Neither precomputed matrix nor {features_path} could be found.")
+
+        # 2. Contextual incident attributes
+        if cleaned_df is not None:
+            self.cleaned_df = cleaned_df
+        else:
+            logger.info(f"Loading contextual incident attributes from {cleaned_path} with compact dtypes...")
+            cols_to_load = [
+                "incident_id", "incident_hour", "incident_month", "incident_weekday",
+                "is_weekend", "is_night", "has_weapon", "has_injury", "has_property",
+                "has_drug", "has_arrest", "has_relationship", "population",
+                "crime_against_person", "crime_against_property", "crime_against_society",
+                "property_value"
+            ]
+            compact_dtypes = {
+                "incident_hour": "int8",
+                "incident_month": "int8",
+                "incident_weekday": "int8",
+                "is_weekend": "int8",
+                "is_night": "int8",
+                "has_weapon": "int8",
+                "has_injury": "int8",
+                "has_property": "int8",
+                "has_drug": "int8",
+                "has_arrest": "int8",
+                "has_relationship": "int8",
+                "population": "float32",
+                "crime_against_person": "int8",
+                "crime_against_property": "int8",
+                "crime_against_society": "int8",
+                "property_value": "float32"
+            }
+            self.cleaned_df = pd.read_csv(cleaned_path, usecols=cols_to_load, dtype=compact_dtypes)
+
         self._is_ready = True
         logger.info(f"Explainer loaded successfully across {len(self.incident_ids):,} incidents.")
         return self
@@ -340,8 +389,16 @@ class BehavioralSimilarityExplainer:
         top_diff_indices = np.argsort(-feature_differences)[:self.config["top_differing_features_count"]]
 
         # Contextual metadata lookup for high-level semantic contrast
-        row1 = cleaned_df[cleaned_df["incident_id"] == incident_id_1].iloc[0]
-        row2 = cleaned_df[cleaned_df["incident_id"] == incident_id_2].iloc[0]
+        if "incident_id" in cleaned_df.columns:
+            row1 = cleaned_df[cleaned_df["incident_id"] == incident_id_1].iloc[0]
+            row2 = cleaned_df[cleaned_df["incident_id"] == incident_id_2].iloc[0]
+        elif cleaned_df.index.name == "incident_id":
+            row1 = cleaned_df.loc[incident_id_1]
+            row2 = cleaned_df.loc[incident_id_2]
+        else:
+            # 1:1 row alignment with incident_ids
+            row1 = cleaned_df.iloc[idx1]
+            row2 = cleaned_df.iloc[idx2]
 
         differences_list = []
 
@@ -495,6 +552,10 @@ class BehavioralSimilarityExplainer:
 
         logger.info(f"Generating explainability visualization at {chart_path}...")
         exp = self.explain_pair("INC_136975", "INC_145291")
+
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
 
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 7))
 

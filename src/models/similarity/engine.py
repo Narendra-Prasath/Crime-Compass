@@ -237,9 +237,8 @@ class BehavioralSimilarityEngine:
             if not os.path.exists(p):
                 raise FileNotFoundError(f"Missing required artifact at {p}")
 
-        logger.info(f"Loading similarity index from {model_path}...")
-        self.model = joblib.load(model_path)
-        self.features_norm = np.load(matrix_path)
+        logger.info(f"Loading similarity matrix from {matrix_path} via memory-map...")
+        self.features_norm = np.load(matrix_path, mmap_mode="r")
 
         with open(ids_path) as f:
             self.incident_ids = json.load(f)
@@ -250,11 +249,24 @@ class BehavioralSimilarityEngine:
         self.feature_names = meta["feature_names"]
         self.feature_groups = meta["feature_groups"]
 
+        # Re-link NearestNeighbors directly to mmap matrix for zero-overhead exact compatibility
+        self.model = NearestNeighbors(
+            metric=meta.get("metric", self.config.get("metric", "cosine")),
+            algorithm=meta.get("algorithm", self.config.get("algorithm", "brute")),
+            n_jobs=self.config.get("n_jobs", -1)
+        )
+        self.model._fit_X = self.features_norm
+        self.model.n_features_in_ = len(self.feature_names)
+        self.model.n_samples_fit_ = len(self.features_norm)
+        self.model._fit_method = meta.get("algorithm", "brute")
+        self.model.effective_metric_ = meta.get("metric", "cosine")
+        self.model.effective_metric_params_ = {}
+
         self.group_indices = {
             grp_name: [self.feature_names.index(col) for col in cols if col in self.feature_names]
             for grp_name, cols in self.feature_groups.items()
         }
-        logger.info(f"Similarity engine loaded: {len(self.incident_ids):,} incidents, {len(self.feature_names)} features.")
+        logger.info(f"Similarity engine loaded: {len(self.incident_ids):,} incidents, {len(self.feature_names)} features (mmap).")
         return self
 
     def _compute_subprofile_similarity(
@@ -394,7 +406,7 @@ class BehavioralSimilarityEngine:
         query_norm = query_vector / (norm if norm > 0 else 1.0)
 
         n_query = min(top_k, len(self.incident_ids))
-        distances, indices = self.model.kneighbors(query_norm, n_neighbors=n_query)
+        distances, indices = self.kneighbors_fast(query_norm, n_neighbors=n_query)
 
         matches = []
         for rank, (dist, idx) in enumerate(zip(distances[0], indices[0]), 1):
