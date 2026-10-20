@@ -1,0 +1,481 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "total_incidents": 220663,
+    "periods_tracked": 12,
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "quarters": [
+      "Q1 (Winter)",
+      "Q2 (Spring)",
+      "Q3 (Summer)",
+      "Q4 (Fall / Holiday)"
+    ]
+  },
+  "cluster_timeline": {
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "series": [
+      {
+        "cluster_id": 0,
+        "cluster_name": "Small-City Property & Structure Theft",
+        "percentages": [
+          9.1,
+          8.0,
+          8.25,
+          8.4,
+          8.03,
+          8.52,
+          7.68,
+          7.01,
+          7.62,
+          7.99,
+          7.93,
+          8.06
+        ],
+        "counts": [
+          1544,
+          1370,
+          1488,
+          1531,
+          1576,
+          1632,
+          1523,
+          1392,
+          1446,
+          1502,
+          1360,
+          1361
+        ]
+      },
+      {
+        "cluster_id": 1,
+        "cluster_name": "Violent Armed Interpersonal & Domestic Assaults",
+        "percentages": [
+          31.87,
+          33.11,
+          33.65,
+          33.6,
+          35.35,
+          33.92,
+          33.4,
+          34.59,
+          34.86,
+          33.68,
+          33.74,
+          32.5
+        ],
+        "counts": [
+          5409,
+          5670,
+          6066,
+          6125,
+          6940,
+          6499,
+          6621,
+          6872,
+          6612,
+          6336,
+          5787,
+          5492
+        ]
+      },
+      {
+        "cluster_id": 2,
+        "cluster_name": "Suburban & Mid-Sized Town Daytime Property Theft",
+        "percentages": [
+          17.39,
+          17.58,
+          16.12,
+          17.15,
+          17.77,
+          15.02,
+          15.7,
+          15.0,
+          14.13,
+          15.58,
+          14.78,
+          15.35
+        ],
+        "counts": [
+          2951,
+          3010,
+          2906,
+          3127,
+          3488,
+          2878,
+          3113,
+          2980,
+          2680,
+          2930,
+          2536,
+          2594
+        ]
+      },
+      {
+        "cluster_id": 3,
+        "cluster_name": "Nocturnal & Weekend Residential/Commercial Burglary",
+        "percentages": [
+          14.56,
+          13.79,
+          15.3,
+          13.28,
+          12.85,
+          17.53,
+          14.9,
+          15.7,
+          16.64,
+          14.71,
+          16.42,
+          15.55
+        ],
+        "counts": [
+          2471,
+          2362,
+          2758,
+          2421,
+          2523,
+          3359,
+          2954,
+          3120,
+          3156,
+          2767,
+          2816,
+          2628
+        ]
+      },
+      {
+        "cluster_id": 4,
+        "cluster_name": "Weekend Nightlife Vice & Public Order Enforcement",
+        "percentages": [
+          3.82,
+          3.76,
+          4.97,
+          3.96,
+          3.69,
+          4.26,
+          3.26,
+          4.06,
+          3.8,
+          3.21,
+          4.11,
+          4.27
+        ],
+        "counts": [
+          648,
+          644,
+          896,
+          722,
+          725,
+          816,
+          647,
+          806,
+          721,
+          604,
+          705,
+          722
+        ]
+      },
+      {
+        "cluster_id": 5,
+        "cluster_name": "Regulatory & Non-Drug Societal Enterprise Offenses",
+        "percentages": [
+          3.72,
+          3.89,
+          4.03,
+          4.29,
+          3.63,
+          3.19,
+          3.68,
+          3.78,
+          3.39,
+          3.57,
+          3.28,
+          3.6
+        ],
+        "counts": [
+          631,
+          666,
+          727,
+          782,
+          713,
+          612,
+          730,
+          750,
+          643,
+          671,
+          563,
+          608
+        ]
+      },
+      {
+        "cluster_id": 6,
+        "cluster_name": "Metropolitan Core High-Density Larceny & Shoplifting",
+        "percentages": [
+          11.86,
+          10.87,
+          9.7,
+          10.6,
+          10.62,
+          10.52,
+          13.45,
+          11.49,
+          11.99,
+          13.06,
+          12.12,
+          12.6
+        ],
+        "counts": [
+          2013,
+          1861,
+          1748,
+          1932,
+          2085,
+          2016,
+          2667,
+          2283,
+          2273,
+          2456,
+          2079,
+          2129
+        ]
+      },
+      {
+        "cluster_id": 7,
+        "cluster_name": "Narcotics Trafficking & Contraband Vice Operations",
+        "percentages": [
+          7.68,
+          9.01,
+          7.98,
+          8.72,
+          8.07,
+          7.04,
+          7.91,
+          8.38,
+          7.56,
+          8.21,
+          7.63,
+          8.06
+        ],
+        "counts": [
+          1303,
+          1543,
+          1439,
+          1590,
+          1584,
+          1349,
+          1567,
+          1664,
+          1434,
+          1544,
+          1308,
+          1362
+        ]
+      }
+    ]
+  },
+  "feature_timeline": {
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "series": {
+      "is_night": {
+        "name": "is_night",
+        "values": [
+          25.04,
+          24.24,
+          25.27,
+          25.63,
+          26.11,
+          27.71,
+          28.16,
+          27.14,
+          26.41,
+          25.26,
+          25.86,
+          25.75
+        ],
+        "is_percentage": true
+      },
+      "has_weapon": {
+        "name": "has_weapon",
+        "values": [
+          29.25,
+          29.92,
+          30.14,
+          29.99,
+          31.9,
+          30.9,
+          30.33,
+          30.85,
+          30.63,
+          29.82,
+          30.44,
+          30.2
+        ],
+        "is_percentage": true
+      },
+      "has_injury": {
+        "name": "has_injury",
+        "values": [
+          28.06,
+          28.82,
+          29.02,
+          28.74,
+          30.85,
+          29.83,
+          29.31,
+          29.78,
+          29.62,
+          28.85,
+          29.4,
+          29.03
+        ],
+        "is_percentage": true
+      },
+      "has_arrest": {
+        "name": "has_arrest",
+        "values": [
+          23.75,
+          24.28,
+          24.38,
+          24.57,
+          23.81,
+          22.0,
+          22.15,
+          22.41,
+          21.5,
+          21.18,
+          22.09,
+          22.25
+        ],
+        "is_percentage": true
+      },
+      "has_drug": {
+        "name": "has_drug",
+        "values": [
+          10.38,
+          11.63,
+          11.48,
+          11.5,
+          10.79,
+          10.1,
+          10.18,
+          11.29,
+          10.21,
+          10.47,
+          10.62,
+          11.13
+        ],
+        "is_percentage": true
+      },
+      "crime_against_person": {
+        "name": "crime_against_person",
+        "values": [
+          29.09,
+          30.62,
+          31.2,
+          31.33,
+          32.69,
+          31.08,
+          30.59,
+          31.94,
+          32.44,
+          31.33,
+          30.98,
+          29.52
+        ],
+        "is_percentage": true
+      }
+    }
+  },
+  "significant_shifts": [
+    {
+      "shift_id": "SHIFT_01",
+      "domain": "Temporal Dynamics",
+      "title": "Summer Nocturnal Behavioral Surge",
+      "baseline_period": "February (24.24%)",
+      "peak_period": "July (28.16%)",
+      "delta_magnitude": "+3.92%",
+      "statistical_test": "ANOVA F-Test across 12 months",
+      "test_statistic": "F=12.64",
+      "p_value": 2.543000961800038e-24,
+      "statistical_significance": "Extremely Significant (p < 0.001)",
+      "behavioral_explanation": "Nocturnal crime activity increases by nearly 4 percentage points during peak summer months (July/August), driven by elevated outdoor evening activity, longer daylight socializing, and nightlife concentration."
+    },
+    {
+      "shift_id": "SHIFT_02",
+      "domain": "Crime & Aggression",
+      "title": "Warm-Weather Surge in Armed Interpersonal Violence (Cluster 1)",
+      "baseline_period": "Q1 Winter (32.89%)",
+      "peak_period": "Q2 Spring (34.31%) & Q3 Summer (34.28%)",
+      "delta_magnitude": "+1.42% (Over 1,000 additional violent encounters)",
+      "statistical_test": "Chi-Square Test of Cluster Prevalence",
+      "test_statistic": "Chi2=403.96 (dof=21)",
+      "p_value": 1.4070104129186157e-72,
+      "statistical_significance": "Extremely Significant (p < 0.001)",
+      "behavioral_explanation": "Cluster 1 (Violent Armed Interpersonal & Domestic Assaults) expands significantly during warm months, rising from 32.89% in winter to 34.31% in spring/summer, corroborating routine activity and temperature-aggression behavioral hypotheses."
+    },
+    {
+      "shift_id": "SHIFT_03",
+      "domain": "Property & Commercial Context",
+      "title": "Year-End Metropolitan Core Retail Theft Surge (Cluster 6)",
+      "baseline_period": "Q2 Spring (10.58%)",
+      "peak_period": "Q4 Fall/Holiday (12.61%)",
+      "delta_magnitude": "+2.03% (Surge to 13.06% in October)",
+      "statistical_test": "Linear Trend Regression & Chi-Square",
+      "test_statistic": "Slope=+0.194%/mo, r=+0.612, p=0.0345",
+      "p_value": 0.034534157427508726,
+      "statistical_significance": "Statistically Significant (p = 0.0345)",
+      "behavioral_explanation": "Metropolitan Core Retail Larceny (Cluster 6) expands systematically in the second half of the year, peaking in October through December. This reflects increased retail foot traffic, holiday merchandise exposure, and commercial shoplifting opportunities."
+    },
+    {
+      "shift_id": "SHIFT_04",
+      "domain": "Enforcement Dynamics",
+      "title": "Systematic Decline in On-Scene Arrest Proportion",
+      "baseline_period": "April (24.57%)",
+      "peak_period": "October (21.18%)",
+      "delta_magnitude": "-3.39%",
+      "statistical_test": "Linear Trend Regression & ANOVA",
+      "test_statistic": "Slope=-0.273%/mo, r=-0.814, F=15.17",
+      "p_value": 5.276755671202116e-30,
+      "statistical_significance": "Extremely Significant (p < 0.001)",
+      "behavioral_explanation": "The proportion of incidents culminating in immediate on-scene arrest trends downward steadily from spring (24.57%) into autumn (21.18%), likely indicating shifting police resource allocations, differing incident reporting backlogs, or changes in proactive field interdictions."
+    }
+  ]
+}

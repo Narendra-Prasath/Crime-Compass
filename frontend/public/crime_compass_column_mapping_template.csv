@@ -1,0 +1,3 @@
+# Crime Compass Column Mapping Template — Use these recommended header names for automatic 100% mapping.
+incident_id,incident_date,incident_time,country,state_ut,district,city_town,locality,pin_code,location_type,crime_category,offense_description,method_activity,has_weapon,weapon_type,weapon_count,has_property,has_stolen_property,property_value,currency,victim_count,offender_count,has_injury,has_drug,has_arrest
+FIR_EXAMPLE_001,2024-05-15,21:30,India,Karnataka,Bengaluru Urban,Bengaluru,Indiranagar,560038,commercial_store,person_property,Cash counter robbery,intimidation,1,edged_weapon,1,1,1,45000,INR,2,2,0,0,0

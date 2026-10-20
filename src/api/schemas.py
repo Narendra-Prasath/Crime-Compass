@@ -128,6 +128,11 @@ class IncidentProfileResponse(BaseModel):
 class FeatureTrait(BaseModel):
     feature: str = Field(..., examples=["time_hour_sin"])
     value: float = Field(..., examples=[0.3812])
+    label: Optional[str] = None
+    domain: Optional[str] = None
+    domain_label: Optional[str] = None
+    energy_share_pct: Optional[float] = None
+    description: Optional[str] = None
 
 
 class BehavioralDNAResponse(BaseModel):
@@ -706,6 +711,7 @@ class InputAnalysisResponse(BaseModel):
     # Canonical Engine Keys
     incident_summary: Optional[Dict[str, Any]] = None
     behavioral_dna: Dict[str, Any]
+    data_coverage: Optional[Dict[str, Any]] = None
     dna_similarity: Optional[Dict[str, Any]] = None
     similar_historical_incidents: List[Dict[str, Any]]
     similar_behavioral_incidents: Optional[Dict[str, Any]] = None
@@ -771,12 +777,18 @@ class WhatChangedDetail(BaseModel):
     narrative: str
     match_count: int
     differ_count: int
+    unknown_count: int = 0
     total_dimensions_compared: int
     summary_match_line: str = ""
     summary_differ_line: str = ""
+    summary_unknown_line: str = ""
     summary_text: str = ""
     match_items: List[str] = Field(default_factory=list)
     differ_items: List[str] = Field(default_factory=list)
+    unknown_items: List[str] = Field(default_factory=list)
+    matched_statements: List[str] = Field(default_factory=list)
+    differing_statements: List[str] = Field(default_factory=list)
+    unknown_statements: List[str] = Field(default_factory=list)
     same_crime_category: bool = False
     crime_category_status: str = "Different Crime Category"
     crime_category_detail: str = ""
@@ -792,8 +804,10 @@ class DnaComparisonResponse(BaseModel):
     dna_comparison_table: List[DnaComparisonTableRow]
     matching_characteristics: List[str]
     differing_characteristics: List[str]
+    unknown_characteristics: List[str] = Field(default_factory=list)
     what_changed: WhatChangedDetail
     subprofile_comparison: List[Dict[str, Any]]
+    technical_details: Optional[Dict[str, Any]] = None
     ethical_advisory: str
 
 
@@ -1022,6 +1036,7 @@ class DatasetSimilarIncident(BaseModel):
     target_cluster: str
     matching_characteristics: List[str]
     differing_characteristics: List[str]
+    data_coverage_percentage: Optional[float] = 100.0
 
 
 class CrossCrimePatternItem(BaseModel):
@@ -1058,7 +1073,8 @@ class TemporalPeriodSummary(BaseModel):
 class TemporalEvolutionResponse(BaseModel):
     is_available: bool
     period_breakdown: List[TemporalPeriodSummary]
-    hourly_distribution: Dict[str, int]
+    hourly_distribution: Dict[str, int] = Field(default_factory=dict)
+    day_of_week_distribution: Dict[str, int] = Field(default_factory=dict)
     disclaimer: str
 
 
@@ -1096,6 +1112,7 @@ class DatasetAnalysisResultResponse(BaseModel):
     temporal_evolution: TemporalEvolutionResponse
     unusual_combinations: List[UnusualCombinationItem]
     reference_comparison: Optional[Dict[str, Any]] = None
+    domain_energies: Optional[List[Dict[str, Any]]] = None
     why_these_results: Dict[str, List[str]]
     technical_details: Dict[str, Any]
 

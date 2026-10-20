@@ -8,10 +8,16 @@ venv/
 *.egg-info/
 .pytest_cache/
 
-# Large data & model dumps
-*.csv
-/data/
+# Raw data dumps and user uploads
+crime_dna_ml.csv
+data/raw/
+data/dataset_analyses/
+data/feedback/
 scratch/
+
+# Retain pre-trained ML models and processed historical datasets for production deployment
+!data/processed/
+!data/processed/**
 
 # Node
 node_modules/

@@ -1,0 +1,81 @@
+{
+  "system_name": "CRIME DNA",
+  "validation_version": "1.0.0",
+  "validation_timestamp": "2026-10-03 19:21:35 UTC",
+  "validation_runtime_seconds": 6.08,
+  "overall_status": "PASSED",
+  "disclaimer": "CRIME DNA analyzes behavioral similarity between incidents. It DOES NOT identify offenders, track suspects, or determine guilt.",
+  "results": {
+    "data_layer": {
+      "cleaned_dataset_rows": 220663,
+      "duplicate_incident_ids": 0,
+      "missing_critical_values": 0,
+      "invalid_hours_count": 0,
+      "invalid_months_count": 0,
+      "invalid_weekdays_count": 0,
+      "negative_population_count": 0,
+      "negative_property_value_count": 0,
+      "behavioral_feature_rows": 220663,
+      "behavioral_feature_dimensions": 70,
+      "feature_min_bound": 0.0,
+      "feature_max_bound": 1.0,
+      "nan_count": 0,
+      "inf_count": 0,
+      "normalized_matrix_rows": 220663,
+      "normalized_matrix_cols": 70,
+      "mean_l2_norm": 1.0,
+      "max_l2_deviation_from_unity": 3e-07,
+      "encoder_reproducibility_identical": true,
+      "status": "PASSED"
+    },
+    "similarity_engine": {
+      "controlled_test_cases": 100,
+      "rank_1_accuracy_under_perturbation_pct": 99.0,
+      "top_5_mean_reciprocal_rank": 0.995,
+      "average_query_latency_ms": 19.778,
+      "inverted_query_cosine_similarity": -0.1665,
+      "inverted_discrimination_valid": true,
+      "status": "PASSED"
+    },
+    "clustering_engine": {
+      "evaluated_sample_size": 10000,
+      "silhouette_score_cosine": 0.256,
+      "davies_bouldin_index": 2.5379,
+      "calinski_harabasz_score": 1057.34,
+      "total_clusters": 8,
+      "min_cluster_size": 8096,
+      "max_cluster_size": 74429,
+      "min_cluster_percentage": 3.67,
+      "max_cluster_percentage": 33.73,
+      "no_degenerate_clusters": true,
+      "bootstrap_ari_stability_mean": 0.6697,
+      "status": "PASSED"
+    },
+    "cross_crime_patterns": {
+      "total_cross_crime_patterns": 8,
+      "categories_per_pattern_min": 2,
+      "categories_per_pattern_max": 7,
+      "all_patterns_span_multiple_categories": true,
+      "mean_inter_category_similarity_pct": 76.46,
+      "status": "PASSED"
+    },
+    "anomaly_detection": {
+      "empirical_median_score": 0.1862,
+      "empirical_p95_threshold": 0.4363,
+      "empirical_p99_threshold": 0.5985,
+      "empirical_p999_threshold": 0.7383,
+      "quantiles_strictly_monotonic": true,
+      "synthetic_test_cases_injected": 100,
+      "synthetic_outlier_detection_recall_pct": 100.0,
+      "synthetic_validation_note": "Synthetic validation isolates multi-attribute discordance detection; distinct from empirical real-world prevalence.",
+      "status": "PASSED"
+    },
+    "explainability_attribution": {
+      "pairs_evaluated": 100,
+      "max_absolute_conservation_error": 0.0002,
+      "max_percentage_sum_deviation": 0.1,
+      "mathematical_attribution_strictly_conserved": true,
+      "status": "PASSED"
+    }
+  }
+}

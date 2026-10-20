@@ -119,7 +119,7 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
 
     // Network / Connection Error
     throw new ApiError(
-      `Unable to connect to Crime Compass 🧭 backend API at '${url}'. Please verify that the FastAPI backend server is running (e.g. uvicorn src.api.main:app --port 8000).`,
+      `Unable to connect to Crime Compass 🧭 backend API at '${url}'. Please verify your network connection or check if the backend service is operational.`,
       0,
       'NetworkError'
     );
@@ -341,6 +341,10 @@ export const api = {
 
   getDatasetExportUrl: (analysisId: string, format: 'json' | 'csv' = 'json') =>
     `${API_BASE}/datasets/analyses/${encodeURIComponent(analysisId)}/export?format=${format}`,
+
+  getSampleDatasetUrl: () => `${API_BASE}/datasets/sample`,
+
+  getMappingTemplateUrl: () => `${API_BASE}/datasets/template`,
 };
 
 

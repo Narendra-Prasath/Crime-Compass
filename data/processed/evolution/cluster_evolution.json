@@ -1,0 +1,692 @@
+{
+  "quarterly": {
+    "chi2_statistic": 403.96,
+    "p_value": 1.4070104129186157e-72,
+    "degrees_of_freedom": 21,
+    "statistically_significant": true,
+    "distribution_by_quarter": {
+      "Q1 (Winter)": {
+        "0": {
+          "count": 4402,
+          "percentage": 8.45
+        },
+        "1": {
+          "count": 17145,
+          "percentage": 32.89
+        },
+        "2": {
+          "count": 8867,
+          "percentage": 17.01
+        },
+        "3": {
+          "count": 7591,
+          "percentage": 14.56
+        },
+        "4": {
+          "count": 2188,
+          "percentage": 4.2
+        },
+        "5": {
+          "count": 2024,
+          "percentage": 3.88
+        },
+        "6": {
+          "count": 5622,
+          "percentage": 10.79
+        },
+        "7": {
+          "count": 4285,
+          "percentage": 8.22
+        }
+      },
+      "Q2 (Spring)": {
+        "0": {
+          "count": 4739,
+          "percentage": 8.31
+        },
+        "1": {
+          "count": 19564,
+          "percentage": 34.31
+        },
+        "2": {
+          "count": 9493,
+          "percentage": 16.65
+        },
+        "3": {
+          "count": 8303,
+          "percentage": 14.56
+        },
+        "4": {
+          "count": 2263,
+          "percentage": 3.97
+        },
+        "5": {
+          "count": 2107,
+          "percentage": 3.69
+        },
+        "6": {
+          "count": 6033,
+          "percentage": 10.58
+        },
+        "7": {
+          "count": 4523,
+          "percentage": 7.93
+        }
+      },
+      "Q3 (Summer)": {
+        "0": {
+          "count": 4361,
+          "percentage": 7.44
+        },
+        "1": {
+          "count": 20105,
+          "percentage": 34.28
+        },
+        "2": {
+          "count": 8773,
+          "percentage": 14.96
+        },
+        "3": {
+          "count": 9230,
+          "percentage": 15.74
+        },
+        "4": {
+          "count": 2174,
+          "percentage": 3.71
+        },
+        "5": {
+          "count": 2123,
+          "percentage": 3.62
+        },
+        "6": {
+          "count": 7223,
+          "percentage": 12.31
+        },
+        "7": {
+          "count": 4665,
+          "percentage": 7.95
+        }
+      },
+      "Q4 (Fall / Holiday)": {
+        "0": {
+          "count": 4223,
+          "percentage": 7.99
+        },
+        "1": {
+          "count": 17615,
+          "percentage": 33.32
+        },
+        "2": {
+          "count": 8060,
+          "percentage": 15.25
+        },
+        "3": {
+          "count": 8211,
+          "percentage": 15.53
+        },
+        "4": {
+          "count": 2031,
+          "percentage": 3.84
+        },
+        "5": {
+          "count": 1842,
+          "percentage": 3.48
+        },
+        "6": {
+          "count": 6664,
+          "percentage": 12.61
+        },
+        "7": {
+          "count": 4214,
+          "percentage": 7.97
+        }
+      }
+    }
+  },
+  "monthly": {
+    "chi2_statistic": 1042.83,
+    "p_value": 3.559343307331885e-169,
+    "degrees_of_freedom": 77,
+    "statistically_significant": true,
+    "distribution_by_month": {
+      "January": {
+        "0": {
+          "count": 1544,
+          "percentage": 9.1
+        },
+        "1": {
+          "count": 5409,
+          "percentage": 31.87
+        },
+        "2": {
+          "count": 2951,
+          "percentage": 17.39
+        },
+        "3": {
+          "count": 2471,
+          "percentage": 14.56
+        },
+        "4": {
+          "count": 648,
+          "percentage": 3.82
+        },
+        "5": {
+          "count": 631,
+          "percentage": 3.72
+        },
+        "6": {
+          "count": 2013,
+          "percentage": 11.86
+        },
+        "7": {
+          "count": 1303,
+          "percentage": 7.68
+        }
+      },
+      "February": {
+        "0": {
+          "count": 1370,
+          "percentage": 8.0
+        },
+        "1": {
+          "count": 5670,
+          "percentage": 33.11
+        },
+        "2": {
+          "count": 3010,
+          "percentage": 17.58
+        },
+        "3": {
+          "count": 2362,
+          "percentage": 13.79
+        },
+        "4": {
+          "count": 644,
+          "percentage": 3.76
+        },
+        "5": {
+          "count": 666,
+          "percentage": 3.89
+        },
+        "6": {
+          "count": 1861,
+          "percentage": 10.87
+        },
+        "7": {
+          "count": 1543,
+          "percentage": 9.01
+        }
+      },
+      "March": {
+        "0": {
+          "count": 1488,
+          "percentage": 8.25
+        },
+        "1": {
+          "count": 6066,
+          "percentage": 33.65
+        },
+        "2": {
+          "count": 2906,
+          "percentage": 16.12
+        },
+        "3": {
+          "count": 2758,
+          "percentage": 15.3
+        },
+        "4": {
+          "count": 896,
+          "percentage": 4.97
+        },
+        "5": {
+          "count": 727,
+          "percentage": 4.03
+        },
+        "6": {
+          "count": 1748,
+          "percentage": 9.7
+        },
+        "7": {
+          "count": 1439,
+          "percentage": 7.98
+        }
+      },
+      "April": {
+        "0": {
+          "count": 1531,
+          "percentage": 8.4
+        },
+        "1": {
+          "count": 6125,
+          "percentage": 33.6
+        },
+        "2": {
+          "count": 3127,
+          "percentage": 17.15
+        },
+        "3": {
+          "count": 2421,
+          "percentage": 13.28
+        },
+        "4": {
+          "count": 722,
+          "percentage": 3.96
+        },
+        "5": {
+          "count": 782,
+          "percentage": 4.29
+        },
+        "6": {
+          "count": 1932,
+          "percentage": 10.6
+        },
+        "7": {
+          "count": 1590,
+          "percentage": 8.72
+        }
+      },
+      "May": {
+        "0": {
+          "count": 1576,
+          "percentage": 8.03
+        },
+        "1": {
+          "count": 6940,
+          "percentage": 35.35
+        },
+        "2": {
+          "count": 3488,
+          "percentage": 17.77
+        },
+        "3": {
+          "count": 2523,
+          "percentage": 12.85
+        },
+        "4": {
+          "count": 725,
+          "percentage": 3.69
+        },
+        "5": {
+          "count": 713,
+          "percentage": 3.63
+        },
+        "6": {
+          "count": 2085,
+          "percentage": 10.62
+        },
+        "7": {
+          "count": 1584,
+          "percentage": 8.07
+        }
+      },
+      "June": {
+        "0": {
+          "count": 1632,
+          "percentage": 8.52
+        },
+        "1": {
+          "count": 6499,
+          "percentage": 33.92
+        },
+        "2": {
+          "count": 2878,
+          "percentage": 15.02
+        },
+        "3": {
+          "count": 3359,
+          "percentage": 17.53
+        },
+        "4": {
+          "count": 816,
+          "percentage": 4.26
+        },
+        "5": {
+          "count": 612,
+          "percentage": 3.19
+        },
+        "6": {
+          "count": 2016,
+          "percentage": 10.52
+        },
+        "7": {
+          "count": 1349,
+          "percentage": 7.04
+        }
+      },
+      "July": {
+        "0": {
+          "count": 1523,
+          "percentage": 7.68
+        },
+        "1": {
+          "count": 6621,
+          "percentage": 33.4
+        },
+        "2": {
+          "count": 3113,
+          "percentage": 15.7
+        },
+        "3": {
+          "count": 2954,
+          "percentage": 14.9
+        },
+        "4": {
+          "count": 647,
+          "percentage": 3.26
+        },
+        "5": {
+          "count": 730,
+          "percentage": 3.68
+        },
+        "6": {
+          "count": 2667,
+          "percentage": 13.45
+        },
+        "7": {
+          "count": 1567,
+          "percentage": 7.91
+        }
+      },
+      "August": {
+        "0": {
+          "count": 1392,
+          "percentage": 7.01
+        },
+        "1": {
+          "count": 6872,
+          "percentage": 34.59
+        },
+        "2": {
+          "count": 2980,
+          "percentage": 15.0
+        },
+        "3": {
+          "count": 3120,
+          "percentage": 15.7
+        },
+        "4": {
+          "count": 806,
+          "percentage": 4.06
+        },
+        "5": {
+          "count": 750,
+          "percentage": 3.78
+        },
+        "6": {
+          "count": 2283,
+          "percentage": 11.49
+        },
+        "7": {
+          "count": 1664,
+          "percentage": 8.38
+        }
+      },
+      "September": {
+        "0": {
+          "count": 1446,
+          "percentage": 7.62
+        },
+        "1": {
+          "count": 6612,
+          "percentage": 34.86
+        },
+        "2": {
+          "count": 2680,
+          "percentage": 14.13
+        },
+        "3": {
+          "count": 3156,
+          "percentage": 16.64
+        },
+        "4": {
+          "count": 721,
+          "percentage": 3.8
+        },
+        "5": {
+          "count": 643,
+          "percentage": 3.39
+        },
+        "6": {
+          "count": 2273,
+          "percentage": 11.99
+        },
+        "7": {
+          "count": 1434,
+          "percentage": 7.56
+        }
+      },
+      "October": {
+        "0": {
+          "count": 1502,
+          "percentage": 7.99
+        },
+        "1": {
+          "count": 6336,
+          "percentage": 33.68
+        },
+        "2": {
+          "count": 2930,
+          "percentage": 15.58
+        },
+        "3": {
+          "count": 2767,
+          "percentage": 14.71
+        },
+        "4": {
+          "count": 604,
+          "percentage": 3.21
+        },
+        "5": {
+          "count": 671,
+          "percentage": 3.57
+        },
+        "6": {
+          "count": 2456,
+          "percentage": 13.06
+        },
+        "7": {
+          "count": 1544,
+          "percentage": 8.21
+        }
+      },
+      "November": {
+        "0": {
+          "count": 1360,
+          "percentage": 7.93
+        },
+        "1": {
+          "count": 5787,
+          "percentage": 33.74
+        },
+        "2": {
+          "count": 2536,
+          "percentage": 14.78
+        },
+        "3": {
+          "count": 2816,
+          "percentage": 16.42
+        },
+        "4": {
+          "count": 705,
+          "percentage": 4.11
+        },
+        "5": {
+          "count": 563,
+          "percentage": 3.28
+        },
+        "6": {
+          "count": 2079,
+          "percentage": 12.12
+        },
+        "7": {
+          "count": 1308,
+          "percentage": 7.63
+        }
+      },
+      "December": {
+        "0": {
+          "count": 1361,
+          "percentage": 8.06
+        },
+        "1": {
+          "count": 5492,
+          "percentage": 32.5
+        },
+        "2": {
+          "count": 2594,
+          "percentage": 15.35
+        },
+        "3": {
+          "count": 2628,
+          "percentage": 15.55
+        },
+        "4": {
+          "count": 722,
+          "percentage": 4.27
+        },
+        "5": {
+          "count": 608,
+          "percentage": 3.6
+        },
+        "6": {
+          "count": 2129,
+          "percentage": 12.6
+        },
+        "7": {
+          "count": 1362,
+          "percentage": 8.06
+        }
+      }
+    }
+  },
+  "clusters": {
+    "0": {
+      "cluster_name": "Small-City Property & Structure Theft",
+      "annual_mean_percentage": 8.05,
+      "monthly_min_percentage": 7.01,
+      "monthly_max_percentage": 9.1,
+      "monthly_trend_slope_pct_per_month": -0.076,
+      "pearson_r": -0.534,
+      "trend_p_value": 0.07390403613847338,
+      "trend_direction": "Stable / Seasonal",
+      "quarterly_percentages": {
+        "Q1 (Winter)": 8.45,
+        "Q2 (Spring)": 8.31,
+        "Q3 (Summer)": 7.44,
+        "Q4 (Fall / Holiday)": 7.99
+      }
+    },
+    "1": {
+      "cluster_name": "Violent Armed Interpersonal & Domestic Assaults",
+      "annual_mean_percentage": 33.69,
+      "monthly_min_percentage": 31.87,
+      "monthly_max_percentage": 35.35,
+      "monthly_trend_slope_pct_per_month": 0.057,
+      "pearson_r": 0.215,
+      "trend_p_value": 0.5013934792520116,
+      "trend_direction": "Stable / Seasonal",
+      "quarterly_percentages": {
+        "Q1 (Winter)": 32.89,
+        "Q2 (Spring)": 34.31,
+        "Q3 (Summer)": 34.28,
+        "Q4 (Fall / Holiday)": 33.32
+      }
+    },
+    "2": {
+      "cluster_name": "Suburban & Mid-Sized Town Daytime Property Theft",
+      "annual_mean_percentage": 15.96,
+      "monthly_min_percentage": 14.13,
+      "monthly_max_percentage": 17.77,
+      "monthly_trend_slope_pct_per_month": -0.259,
+      "pearson_r": -0.763,
+      "trend_p_value": 0.003907359565751033,
+      "trend_direction": "Decreasing",
+      "quarterly_percentages": {
+        "Q1 (Winter)": 17.01,
+        "Q2 (Spring)": 16.65,
+        "Q3 (Summer)": 14.96,
+        "Q4 (Fall / Holiday)": 15.25
+      }
+    },
+    "3": {
+      "cluster_name": "Nocturnal & Weekend Residential/Commercial Burglary",
+      "annual_mean_percentage": 15.1,
+      "monthly_min_percentage": 12.85,
+      "monthly_max_percentage": 17.53,
+      "monthly_trend_slope_pct_per_month": 0.186,
+      "pearson_r": 0.483,
+      "trend_p_value": 0.11180333541274787,
+      "trend_direction": "Stable / Seasonal",
+      "quarterly_percentages": {
+        "Q1 (Winter)": 14.56,
+        "Q2 (Spring)": 14.56,
+        "Q3 (Summer)": 15.74,
+        "Q4 (Fall / Holiday)": 15.53
+      }
+    },
+    "4": {
+      "cluster_name": "Weekend Nightlife Vice & Public Order Enforcement",
+      "annual_mean_percentage": 3.93,
+      "monthly_min_percentage": 3.21,
+      "monthly_max_percentage": 4.97,
+      "monthly_trend_slope_pct_per_month": -0.017,
+      "pearson_r": -0.13,
+      "trend_p_value": 0.6863559758265814,
+      "trend_direction": "Stable / Seasonal",
+      "quarterly_percentages": {
+        "Q1 (Winter)": 4.2,
+        "Q2 (Spring)": 3.97,
+        "Q3 (Summer)": 3.71,
+        "Q4 (Fall / Holiday)": 3.84
+      }
+    },
+    "5": {
+      "cluster_name": "Regulatory & Non-Drug Societal Enterprise Offenses",
+      "annual_mean_percentage": 3.67,
+      "monthly_min_percentage": 3.19,
+      "monthly_max_percentage": 4.29,
+      "monthly_trend_slope_pct_per_month": -0.048,
+      "pearson_r": -0.556,
+      "trend_p_value": 0.060682857935304244,
+      "trend_direction": "Stable / Seasonal",
+      "quarterly_percentages": {
+        "Q1 (Winter)": 3.88,
+        "Q2 (Spring)": 3.69,
+        "Q3 (Summer)": 3.62,
+        "Q4 (Fall / Holiday)": 3.48
+      }
+    },
+    "6": {
+      "cluster_name": "Metropolitan Core High-Density Larceny & Shoplifting",
+      "annual_mean_percentage": 11.57,
+      "monthly_min_percentage": 9.7,
+      "monthly_max_percentage": 13.45,
+      "monthly_trend_slope_pct_per_month": 0.194,
+      "pearson_r": 0.612,
+      "trend_p_value": 0.034534157427508726,
+      "trend_direction": "Increasing",
+      "quarterly_percentages": {
+        "Q1 (Winter)": 10.79,
+        "Q2 (Spring)": 10.58,
+        "Q3 (Summer)": 12.31,
+        "Q4 (Fall / Holiday)": 12.61
+      }
+    },
+    "7": {
+      "cluster_name": "Narcotics Trafficking & Contraband Vice Operations",
+      "annual_mean_percentage": 8.02,
+      "monthly_min_percentage": 7.04,
+      "monthly_max_percentage": 9.01,
+      "monthly_trend_slope_pct_per_month": -0.037,
+      "pearson_r": -0.254,
+      "trend_p_value": 0.42603538852066564,
+      "trend_direction": "Stable / Seasonal",
+      "quarterly_percentages": {
+        "Q1 (Winter)": 8.22,
+        "Q2 (Spring)": 7.93,
+        "Q3 (Summer)": 7.95,
+        "Q4 (Fall / Holiday)": 7.97
+      }
+    }
+  }
+}

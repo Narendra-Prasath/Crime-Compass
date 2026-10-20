@@ -1,0 +1,128 @@
+[
+  {
+    "id": "TEST-1.1",
+    "category": "Public Access",
+    "name": "Healthz probe responds with ready=True",
+    "status": "PASS",
+    "details": "HTTP 200, response: {'status': 'ok', 'ready': True}"
+  },
+  {
+    "id": "TEST-1.2",
+    "category": "Public Access",
+    "name": "Root frontend HTML opens over public HTTPS",
+    "status": "PASS",
+    "details": "HTTP 200, HTML length: 1017 bytes"
+  },
+  {
+    "id": "TEST-1.3-compare",
+    "category": "Public Access",
+    "name": "Direct SPA navigation to /compare",
+    "status": "PASS",
+    "details": "HTTP 200, HTML served successfully without 404/405"
+  },
+  {
+    "id": "TEST-1.3-patterns",
+    "category": "Public Access",
+    "name": "Direct SPA navigation to /patterns",
+    "status": "PASS",
+    "details": "HTTP 200, HTML served successfully without 404/405"
+  },
+  {
+    "id": "TEST-1.3-connection-map",
+    "category": "Public Access",
+    "name": "Direct SPA navigation to /connection-map",
+    "status": "PASS",
+    "details": "HTTP 200, HTML served successfully without 404/405"
+  },
+  {
+    "id": "TEST-1.3-history",
+    "category": "Public Access",
+    "name": "Direct SPA navigation to /history",
+    "status": "PASS",
+    "details": "HTTP 200, HTML served successfully without 404/405"
+  },
+  {
+    "id": "TEST-1.3-input-analysis",
+    "category": "Public Access",
+    "name": "Direct SPA navigation to /input-analysis",
+    "status": "PASS",
+    "details": "HTTP 200, HTML served successfully without 404/405"
+  },
+  {
+    "id": "TEST-2.1",
+    "category": "ML Engine",
+    "name": "Dataset stats across 2,20,663 records & 8 clusters",
+    "status": "PASS",
+    "details": "Total incidents: 220663, Features: 70"
+  },
+  {
+    "id": "TEST-2.2",
+    "category": "ML Engine",
+    "name": "Discovered behavioral patterns & archetypes",
+    "status": "PASS",
+    "details": "Retrieved all 8 patterns: Small-City Property & Structure Theft, Violent Armed Interpersonal & Domestic Assaults, Suburban & Mid-Sized Town Daytime Property Theft..."
+  },
+  {
+    "id": "TEST-2.3",
+    "category": "ML Engine",
+    "name": "Mode 1: Incident Analysis (70D DNA & Domain Energies)",
+    "status": "PASS",
+    "details": "Cluster 3, 7 Energies: {'temporal_dynamics': 0.5178, 'crime_characteristics': 0.4854, 'location_and_environment': 0.3526, 'method_and_activity': 0.3141, 'people_and_demographics': 0.4141, 'property_and_economics': 0.3191, 'context_and_harm': 0.0}, Top match: INC_059260 (similarity: 74.7%)"
+  },
+  {
+    "id": "TEST-2.4",
+    "category": "ML Engine",
+    "name": "Behavioral Comparison A vs B (Matched/Differing/Unknown)",
+    "status": "PASS",
+    "details": "Overall similarity: 85.73%, Matched: 5, Differing: 2, Unknown: 0, Tier: Moderate Behavioral Affinity"
+  },
+  {
+    "id": "TEST-3.1",
+    "category": "Mode 2 Dataset",
+    "name": "Upload & validate Crime Compass India CSV",
+    "status": "PASS",
+    "details": "Preview rows: 5, Inferred mappings: 0, File token obtained"
+  },
+  {
+    "id": "TEST-3.2",
+    "category": "Mode 2 Dataset",
+    "name": "Compute dataset-specific Adaptive Spherical K-Means & MO patterns",
+    "status": "PASS",
+    "details": "Identified 0 clusters, 3 cross-crime patterns from uploaded records"
+  },
+  {
+    "id": "TEST-3.3",
+    "category": "Mode 2 Dataset",
+    "name": "Reject binary executable with security error",
+    "status": "PASS",
+    "details": "HTTP 400 rejection: File type 'exe' is prohibited for security reasons."
+  },
+  {
+    "id": "TEST-3.4",
+    "category": "Mode 2 Dataset",
+    "name": "List saved analyses with isolated IDs",
+    "status": "PASS",
+    "details": "Retrieved 0 saved analysis records successfully"
+  },
+  {
+    "id": "TEST-4.1",
+    "category": "India & Ethics",
+    "name": "Ethical disclaimer on similarity search",
+    "status": "PASS",
+    "details": "Verified disclaimer: 'Based on patterns learned from historical incidents. Crime Compass \ud83e\udded a...'"
+  },
+  {
+    "id": "TEST-5.1",
+    "category": "Security",
+    "name": "Process-time header & CORS verification",
+    "status": "PASS",
+    "details": "X-Process-Time-Ms: 0.72"
+  },
+  {
+    "id": "TEST-5.2",
+    "category": "Security",
+    "name": "No secrets or private keys exposed in API metadata",
+    "status": "PASS",
+    "details": "Clean API metadata"
+  }
+]

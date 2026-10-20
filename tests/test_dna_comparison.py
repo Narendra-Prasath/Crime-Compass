@@ -409,3 +409,172 @@ class TestDnaComparisonApi:
         assert response.status_code == 400
         detail = response.json()["detail"]
         assert "must provide either" in detail
+
+    def test_comparison_with_complete_data(self, custom_theft_incident, custom_burglary_incident):
+        """Test comparison with complete data across all 7 dimensions."""
+        spec_a = {"label": "Incident A", "payload": custom_theft_incident}
+        spec_b = {"label": "Incident B", "payload": custom_burglary_incident}
+        result = comparison_service.compare(spec_a, spec_b)
+
+        assert len(result["subprofile_comparison"]) == 7
+        assert result["what_changed"]["total_dimensions_compared"] == 7
+        assert result["what_changed"]["unknown_count"] == 0
+        assert result["what_changed"]["match_count"] + result["what_changed"]["differ_count"] == 7
+
+    def test_comparison_with_missing_values_and_unknowns(self):
+        """Test that unknown/missing values are marked '?' and never count as matches."""
+        incident_incomplete_a = {
+            "scenario_title": "Incomplete Incident A",
+            "incident_date": "2024-05-10",
+            "incident_time": None,  # Unknown time
+            "crime_category": "property",
+            "location_type": None,  # Unknown location
+            "has_property": True,
+            "has_weapon": None,     # Unknown weapon
+            "has_injury": False,
+            "victim_count": 1
+        }
+        incident_incomplete_b = {
+            "scenario_title": "Incomplete Incident B",
+            "incident_date": "2024-05-12",
+            "incident_time": "14:00",
+            "crime_category": "property",
+            "location_type": "residential",
+            "has_property": True,
+            "has_weapon": False,
+            "has_injury": None,     # Unknown injury
+            "victim_count": 1
+        }
+
+        result = comparison_service.compare(
+            {"payload": incident_incomplete_a},
+            {"payload": incident_incomplete_b}
+        )
+
+        wc = result["what_changed"]
+        assert wc["unknown_count"] > 0
+        # Invariant check: counts sum to total dimensions compared (7)
+        assert wc["match_count"] + wc["differ_count"] + wc["unknown_count"] == 7
+        # Verify unknown fields are excluded from matches
+        assert "Property" in [r["feature"] for r in result["dna_comparison_table"] if r["match_status"] == "MATCH"]
+
+    def test_unknown_vs_not_applicable_values(self):
+        """Test that not-applicable values (e.g. weapon details for unarmed crime) do not penalize coverage."""
+        unarmed_incident = {
+            "scenario_title": "Unarmed Theft",
+            "has_weapon": False,
+            # weapon_count and weapon_types are not applicable
+            "has_property": True,
+            "has_injury": False
+        }
+        spec = {"payload": unarmed_incident}
+        res = comparison_service.resolve_incident(spec)
+        assert res["attributes"]["has_weapon"] is False
+        assert res["attributes"]["weapon"] == "None"
+
+    def test_equal_domain_scores_and_zero_delta(self, custom_theft_incident):
+        """Test self-comparison produces equal domain scores and delta == 0.000."""
+        result = comparison_service.compare(
+            {"payload": custom_theft_incident},
+            {"payload": custom_theft_incident}
+        )
+
+        for sp in result["subprofile_comparison"]:
+            assert sp["energy_a"] == sp["energy_b"]
+            assert sp["delta"] == 0.0
+            assert "Equal domain scores" in sp["interpretation"] or "Zero recorded activation" in sp["interpretation"]
+
+    def test_positive_and_negative_deltas(self, custom_theft_incident, custom_burglary_incident):
+        """Verify delta sign convention: Delta = Score_B - Score_A."""
+        result = comparison_service.compare(
+            {"payload": custom_theft_incident},
+            {"payload": custom_burglary_incident}
+        )
+
+        # In theft (unarmed) vs burglary (armed): method energy of B > A, so delta > 0
+        method_sp = next(sp for sp in result["subprofile_comparison"] if sp["domain_id"] == "method_and_activity")
+        assert method_sp["energy_b"] > method_sp["energy_a"]
+        assert method_sp["delta"] > 0.0
+        assert "+" in method_sp["delta_display"]
+
+    def test_zero_valued_domains(self):
+        """Verify that zero-norm domains report 0.000 rather than defaulted 100% or fabricated numbers."""
+        unarmed_no_harm = {
+            "scenario_title": "Zero Weapon Zero Harm Incident",
+            "has_weapon": False,
+            "has_injury": False,
+            "has_property": True,
+            "victim_count": 1
+        }
+        result = comparison_service.compare(
+            {"payload": unarmed_no_harm},
+            {"payload": unarmed_no_harm}
+        )
+
+        method_sp = next(sp for sp in result["subprofile_comparison"] if sp["domain_id"] == "method_and_activity")
+        assert method_sp["energy_a"] == 0.0
+        assert method_sp["energy_b"] == 0.0
+        assert "Zero recorded activation" in method_sp["interpretation"]
+        # Domain similarity should be None (not 100.0%) when both are inactive
+        assert method_sp["domain_similarity_pct"] is None
+
+    def test_all_seven_domains_present_in_order(self, custom_theft_incident, custom_burglary_incident):
+        """Verify all 7 domains are preserved in exact documented order."""
+        result = comparison_service.compare(
+            {"payload": custom_theft_incident},
+            {"payload": custom_burglary_incident}
+        )
+
+        expected_ids = [
+            "temporal_dynamics",
+            "crime_characteristics",
+            "location_and_environment",
+            "method_and_activity",
+            "people_and_demographics",
+            "property_and_economics",
+            "context_and_harm"
+        ]
+
+        actual_ids = [sp["domain_id"] for sp in result["subprofile_comparison"]]
+        assert actual_ids == expected_ids
+
+    def test_consistency_table_counts_narrative(self, custom_theft_incident, custom_burglary_incident):
+        """Verify table, counts, and narrative are completely consistent."""
+        result = comparison_service.compare(
+            {"payload": custom_theft_incident},
+            {"payload": custom_burglary_incident}
+        )
+
+        table = result["dna_comparison_table"]
+        wc = result["what_changed"]
+
+        match_rows = [r for r in table if r["match_status"] == "MATCH"]
+        differ_rows = [r for r in table if r["match_status"] == "DIFFER"]
+        unknown_rows = [r for r in table if r["match_status"] == "UNKNOWN"]
+
+        assert len(match_rows) == wc["match_count"]
+        assert len(differ_rows) == wc["differ_count"]
+        assert len(unknown_rows) == wc["unknown_count"]
+        assert len(table) == wc["total_dimensions_compared"]
+        assert len(wc["matched_statements"]) == wc["match_count"]
+        assert len(wc["differing_statements"]) == wc["differ_count"]
+
+    def test_similarity_score_reproducibility(self, custom_theft_incident, custom_burglary_incident):
+        """Verify identical inputs yield reproducible similarity scores."""
+        r1 = comparison_service.compare({"payload": custom_theft_incident}, {"payload": custom_burglary_incident})
+        r2 = comparison_service.compare({"payload": custom_theft_incident}, {"payload": custom_burglary_incident})
+
+        assert r1["dna_similarity"]["similarity_score_pct"] == r2["dna_similarity"]["similarity_score_pct"]
+        assert r1["dna_similarity"]["cosine_distance"] == r2["dna_similarity"]["cosine_distance"]
+
+    def test_technical_details_present(self, custom_theft_incident, custom_burglary_incident):
+        """Verify technical details block contains 70D vectors and attributions."""
+        result = comparison_service.compare({"payload": custom_theft_incident}, {"payload": custom_burglary_incident})
+        td = result.get("technical_details")
+
+        assert td is not None
+        assert td["vector_length"] == 70
+        assert len(td["norm_vector_a"]) == 70
+        assert len(td["norm_vector_b"]) == 70
+        assert len(td["domain_attributions"]) == 7
+

@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "mathematical_method": "Exact Additive Inner-Product Attribution over L2-Normalized Behavioral DNA",
+  "formula": "Cosine_Similarity(u, v) = sum(u_j * v_j) = sum(Group_Contributions)",
+  "total_behavioral_dimensions": 70,
+  "feature_groups": [
+    "temporal_dynamics",
+    "crime_characteristics",
+    "location_and_environment",
+    "method_and_activity",
+    "people_and_demographics",
+    "property_and_economics",
+    "context_and_harm"
+  ],
+  "group_display_names": {
+    "temporal_dynamics": "Time Pattern",
+    "location_and_environment": "Location Context",
+    "crime_characteristics": "Crime Characteristics",
+    "method_and_activity": "Method & Weapon Context",
+    "people_and_demographics": "People & Demographic Context",
+    "property_and_economics": "Property Characteristics",
+    "context_and_harm": "Harm, Injury & Enforcement Context"
+  },
+  "sample_pairs_count": 4
+}

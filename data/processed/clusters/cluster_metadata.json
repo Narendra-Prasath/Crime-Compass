@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "total_incidents": 220663,
+  "n_clusters": 8,
+  "algorithm": "MiniBatchKMeans",
+  "evaluation_metrics": {
+    "inertia": 55287.921875,
+    "silhouette_cosine": 0.2553,
+    "davies_bouldin_index": 2.5428,
+    "calinski_harabasz_index": 1579.9,
+    "evaluation_sample_size": 15000
+  },
+  "cluster_counts": {
+    "0": 17725,
+    "1": 74429,
+    "2": 35193,
+    "3": 33335,
+    "4": 8656,
+    "5": 8096,
+    "6": 25542,
+    "7": 17687
+  }
+}

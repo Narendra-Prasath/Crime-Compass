@@ -166,8 +166,32 @@ def test_analyze_dataset_end_to_end():
     unusual = res["unusual_combinations"]
     assert len(unusual) > 0
     for u in unusual:
-        assert u["novelty_label"] in ("Unusual Combination", "Less Common Combination")
+        assert u["novelty_label"] in ("Unusual Pattern in This Dataset", "Less Common Pattern in This Dataset")
         assert len(u["contributing_features"]) > 0
+
+    # Verify Behavioral Domain Energies
+    domain_energies = res.get("domain_energies")
+    assert domain_energies is not None
+    assert len(domain_energies) == 7
+    for dom in domain_energies:
+        assert "name" in dom
+        assert "formula" in dom
+        assert "meaning" in dom
+        assert dom["status"] in ("Calculated", "Insufficient data")
+        if dom["status"] == "Calculated":
+            assert dom["score"] is not None and 0.0 <= dom["score"] <= 100.0
+
+    # Verify Similar Incidents & Query Self-Exclusion (source != target)
+    similars = res["similar_incidents"]
+    for pair in similars:
+        assert pair["source_id"] != pair["target_id"], "Query record cannot be in its own nearest neighbors!"
+        assert pair["similarity_score"] <= 1.0001
+        assert "data_coverage_percentage" in pair
+        assert pair["data_coverage_percentage"] is not None
+
+    # Verify Temporal Evolution has day of week
+    temp = res["temporal_evolution"]
+    assert "day_of_week_distribution" in temp
 
     # Verify Reference Comparison
     ref_comp = res["reference_comparison"]
@@ -228,3 +252,90 @@ def test_analyze_with_location_scope_filter():
     assert res["dataset_summary"]["total_records"] == 2
     assert res["dataset_summary"]["initial_records_count"] == 6
     assert res["dataset_summary"]["excluded_by_scope"] == 4
+
+
+def test_download_sample_dataset_endpoints():
+    """Verify backend endpoints for sample dataset and column mapping template."""
+    sample_resp = client.get("/api/datasets/sample")
+    assert sample_resp.status_code == 200
+    assert "text/csv" in sample_resp.headers["content-type"]
+    sample_text = sample_resp.content.decode("utf-8")
+    assert "demonstration" in sample_text.lower() or "synthetic" in sample_text.lower()
+    assert "Bengaluru" in sample_text or "Karnataka" in sample_text
+
+    tmpl_resp = client.get("/api/datasets/template")
+    assert tmpl_resp.status_code == 200
+    assert "text/csv" in tmpl_resp.headers["content-type"]
+    tmpl_text = tmpl_resp.content.decode("utf-8")
+    assert "incident_id" in tmpl_text
+    assert "incident_date" in tmpl_text
+
+
+def test_sample_india_csv_full_pipeline():
+    """Verify the generated crime_compass_sample_india.csv works cleanly end-to-end."""
+    with open("frontend/public/crime_compass_sample_india.csv", "rb") as f:
+        file_bytes = f.read()
+
+    val_resp = client.post(
+        "/api/datasets/validate",
+        files={"file": ("crime_compass_sample_india.csv", file_bytes, "text/csv")}
+    )
+    assert val_resp.status_code == 200
+    val_data = val_resp.json()
+    assert val_data["total_records"] >= 50
+    assert len(val_data["available_locations"]["states"]) >= 4
+
+    # Run analysis
+    analyze_payload = {
+        "file_token": val_data["file_token"],
+        "filename": "crime_compass_sample_india.csv",
+        "column_mapping": val_data["suggested_mapping"],
+        "scope": {
+            "compare_with_reference": True
+        },
+        "user_id": "test_india_investigator"
+    }
+
+    resp = client.post("/api/datasets/analyze", json=analyze_payload)
+    assert resp.status_code == 200
+    res = resp.json()
+    assert res["dataset_summary"]["total_records"] >= 50
+    assert len(res["behavioral_patterns"]) >= 2
+    assert len(res["domain_energies"]) == 7
+
+    # Verify no fabricated coordinates
+    assert "latitude" not in str(res).lower()
+    assert "longitude" not in str(res).lower()
+
+
+def test_formula_injection_defense():
+    """Verify CSV export sanitizes spreadsheet formula triggers (=, +, -, @, \\t, \\r)."""
+    malicious_csv = """incident_id,incident_date,crime_category,has_weapon,property_value
+=cmd|' /C calc'!A0,2024-01-01,theft,0,100
++123456,2024-01-02,theft,0,200
+-987654,2024-01-03,theft,0,300
+@SUM(1+1),2024-01-04,theft,0,400
+"""
+    val_resp = client.post(
+        "/api/datasets/validate",
+        files={"file": ("injected.csv", malicious_csv.encode("utf-8"), "text/csv")}
+    )
+    assert val_resp.status_code == 200
+    token = val_resp.json()["file_token"]
+
+    analyze_payload = {
+        "file_token": token,
+        "filename": "injected.csv",
+        "column_mapping": val_resp.json()["suggested_mapping"]
+    }
+    resp = client.post("/api/datasets/analyze", json=analyze_payload)
+    assert resp.status_code == 200
+    analysis_id = resp.json()["analysis_id"]
+
+    csv_export = client.get(f"/api/datasets/analyses/{analysis_id}/export?format=csv")
+    assert csv_export.status_code == 200
+    content = csv_export.content.decode("utf-8")
+
+    # In the exported CSV, values starting with dangerous formula characters must be prepended with a single quote
+    assert not any(line.startswith("=cmd") for line in content.splitlines())
+

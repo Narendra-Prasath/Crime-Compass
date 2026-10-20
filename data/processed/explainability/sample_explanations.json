@@ -1,0 +1,845 @@
+[
+  {
+    "incident_pair": [
+      "INC_136975",
+      "INC_145291"
+    ],
+    "similarity_score_pct": 85.7,
+    "cosine_similarity_raw": 0.8573,
+    "main_contributing_similarities": [
+      "Similar time pattern",
+      "Similar people & demographic context",
+      "Similar method & weapon context",
+      "Similar location context",
+      "Similar harm, injury & enforcement context"
+    ],
+    "differences": [
+      "Different crime category (INC_136975: Person vs INC_145291: Society)",
+      "Different property involvement (INC_136975: No Property vs INC_145291: Property Involved)",
+      "Different crime against person"
+    ],
+    "group_contributions": {
+      "temporal_dynamics": {
+        "group_key": "temporal_dynamics",
+        "display_name": "Time Pattern",
+        "absolute_contribution": 0.2498,
+        "percentage_of_similarity": 29.1
+      },
+      "crime_characteristics": {
+        "group_key": "crime_characteristics",
+        "display_name": "Crime Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      "location_and_environment": {
+        "group_key": "location_and_environment",
+        "display_name": "Location Context",
+        "absolute_contribution": 0.1502,
+        "percentage_of_similarity": 17.5
+      },
+      "method_and_activity": {
+        "group_key": "method_and_activity",
+        "display_name": "Method & Weapon Context",
+        "absolute_contribution": 0.1862,
+        "percentage_of_similarity": 21.7
+      },
+      "people_and_demographics": {
+        "group_key": "people_and_demographics",
+        "display_name": "People & Demographic Context",
+        "absolute_contribution": 0.1873,
+        "percentage_of_similarity": 21.9
+      },
+      "property_and_economics": {
+        "group_key": "property_and_economics",
+        "display_name": "Property Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      "context_and_harm": {
+        "group_key": "context_and_harm",
+        "display_name": "Harm, Injury & Enforcement Context",
+        "absolute_contribution": 0.0837,
+        "percentage_of_similarity": 9.8
+      }
+    },
+    "sorted_group_contributions": [
+      {
+        "group_key": "temporal_dynamics",
+        "display_name": "Time Pattern",
+        "absolute_contribution": 0.2498,
+        "percentage_of_similarity": 29.1
+      },
+      {
+        "group_key": "people_and_demographics",
+        "display_name": "People & Demographic Context",
+        "absolute_contribution": 0.1873,
+        "percentage_of_similarity": 21.9
+      },
+      {
+        "group_key": "method_and_activity",
+        "display_name": "Method & Weapon Context",
+        "absolute_contribution": 0.1862,
+        "percentage_of_similarity": 21.7
+      },
+      {
+        "group_key": "location_and_environment",
+        "display_name": "Location Context",
+        "absolute_contribution": 0.1502,
+        "percentage_of_similarity": 17.5
+      },
+      {
+        "group_key": "context_and_harm",
+        "display_name": "Harm, Injury & Enforcement Context",
+        "absolute_contribution": 0.0837,
+        "percentage_of_similarity": 9.8
+      },
+      {
+        "group_key": "crime_characteristics",
+        "display_name": "Crime Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      {
+        "group_key": "property_and_economics",
+        "display_name": "Property Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      }
+    ],
+    "top_contributing_features": [
+      {
+        "feature_name": "has_relationship",
+        "contribution": 0.0753,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.266,
+        "description": "Offender had an established prior relationship with the victim (domestic/acquaintance vs predatory stranger)."
+      },
+      {
+        "feature_name": "offender_age_known",
+        "contribution": 0.0753,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.266,
+        "description": "Flag indicating that offender age is documented."
+      },
+      {
+        "feature_name": "victim_age_known",
+        "contribution": 0.0753,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.266,
+        "description": "Flag indicating that victim age is documented (distinguishes known ages from unknown)."
+      },
+      {
+        "feature_name": "has_injury",
+        "contribution": 0.0753,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.266,
+        "description": "Physical injury or bodily harm was inflicted on one or more victims."
+      },
+      {
+        "feature_name": "population_group_desc_cities_from_100,000_thru_249,999",
+        "contribution": 0.0753,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.266,
+        "description": "Incident occurred in a major metropolitan city (100k-250k population)."
+      },
+      {
+        "feature_name": "has_weapon",
+        "contribution": 0.0753,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.266,
+        "description": "Presence of a weapon during the commission of the incident."
+      }
+    ],
+    "top_differing_features": [
+      {
+        "feature_name": "crime_against_person",
+        "difference": 0.2833,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.0,
+        "description": "Offense targeted human victims directly (violent/personal crime)."
+      },
+      {
+        "feature_name": "crime_against_person_property",
+        "difference": 0.2659,
+        "incident_1_value": 0.0,
+        "incident_2_value": 0.266,
+        "description": "Dual violation involving concurrent crimes against persons and property."
+      },
+      {
+        "feature_name": "has_property",
+        "difference": 0.2659,
+        "incident_1_value": 0.0,
+        "incident_2_value": 0.266,
+        "description": "Indicates property was targeted, stolen, or damaged."
+      },
+      {
+        "feature_name": "offense_categories_count_scaled",
+        "difference": 0.1329,
+        "incident_1_value": 0.0,
+        "incident_2_value": 0.133,
+        "description": "Breadth of distinct crime categories involved in the event."
+      },
+      {
+        "feature_name": "time_weekday_sin",
+        "difference": 0.1195,
+        "incident_1_value": 0.252,
+        "incident_2_value": 0.133,
+        "description": "Cyclical sine component of the day of the week."
+      }
+    ],
+    "formatted_text_summary": "Similarity Score: 85.7%\n\nMain contributing similarities:\n- Similar time pattern\n- Similar people & demographic context\n- Similar method & weapon context\n- Similar location context\n- Similar harm, injury & enforcement context\n\nDifferences:\n- Different crime category (INC_136975: Person vs INC_145291: Society)\n- Different property involvement (INC_136975: No Property vs INC_145291: Property Involved)\n- Different crime against person",
+    "incident_1_context": {
+      "incident_id": "INC_136975",
+      "category": "Person",
+      "hour": 21,
+      "is_night": false,
+      "is_weekend": false,
+      "has_weapon": true,
+      "has_injury": true,
+      "has_property": false
+    },
+    "incident_2_context": {
+      "incident_id": "INC_145291",
+      "category": "Society",
+      "hour": 21,
+      "is_night": false,
+      "is_weekend": false,
+      "has_weapon": true,
+      "has_injury": true,
+      "has_property": true
+    },
+    "comparison_scenario": "Cross-Crime Shared Modus Operandi (Assault vs Robbery)"
+  },
+  {
+    "incident_pair": [
+      "INC_000002",
+      "INC_006454"
+    ],
+    "similarity_score_pct": 98.1,
+    "cosine_similarity_raw": 0.9807,
+    "main_contributing_similarities": [
+      "Similar time pattern",
+      "Similar method & weapon context",
+      "Similar location context",
+      "Similar people & demographic context",
+      "Similar harm, injury & enforcement context",
+      "Similar crime characteristics"
+    ],
+    "differences": [
+      "Different time weekday cos",
+      "Different time hour cos",
+      "Different time hour sin"
+    ],
+    "group_contributions": {
+      "temporal_dynamics": {
+        "group_key": "temporal_dynamics",
+        "display_name": "Time Pattern",
+        "absolute_contribution": 0.2562,
+        "percentage_of_similarity": 26.1
+      },
+      "crime_characteristics": {
+        "group_key": "crime_characteristics",
+        "display_name": "Crime Characteristics",
+        "absolute_contribution": 0.0933,
+        "percentage_of_similarity": 9.5
+      },
+      "location_and_environment": {
+        "group_key": "location_and_environment",
+        "display_name": "Location Context",
+        "absolute_contribution": 0.1796,
+        "percentage_of_similarity": 18.3
+      },
+      "method_and_activity": {
+        "group_key": "method_and_activity",
+        "display_name": "Method & Weapon Context",
+        "absolute_contribution": 0.2307,
+        "percentage_of_similarity": 23.5
+      },
+      "people_and_demographics": {
+        "group_key": "people_and_demographics",
+        "display_name": "People & Demographic Context",
+        "absolute_contribution": 0.1172,
+        "percentage_of_similarity": 12.0
+      },
+      "property_and_economics": {
+        "group_key": "property_and_economics",
+        "display_name": "Property Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      "context_and_harm": {
+        "group_key": "context_and_harm",
+        "display_name": "Harm, Injury & Enforcement Context",
+        "absolute_contribution": 0.1037,
+        "percentage_of_similarity": 10.6
+      }
+    },
+    "sorted_group_contributions": [
+      {
+        "group_key": "temporal_dynamics",
+        "display_name": "Time Pattern",
+        "absolute_contribution": 0.2562,
+        "percentage_of_similarity": 26.1
+      },
+      {
+        "group_key": "method_and_activity",
+        "display_name": "Method & Weapon Context",
+        "absolute_contribution": 0.2307,
+        "percentage_of_similarity": 23.5
+      },
+      {
+        "group_key": "location_and_environment",
+        "display_name": "Location Context",
+        "absolute_contribution": 0.1796,
+        "percentage_of_similarity": 18.3
+      },
+      {
+        "group_key": "people_and_demographics",
+        "display_name": "People & Demographic Context",
+        "absolute_contribution": 0.1172,
+        "percentage_of_similarity": 12.0
+      },
+      {
+        "group_key": "context_and_harm",
+        "display_name": "Harm, Injury & Enforcement Context",
+        "absolute_contribution": 0.1037,
+        "percentage_of_similarity": 10.6
+      },
+      {
+        "group_key": "crime_characteristics",
+        "display_name": "Crime Characteristics",
+        "absolute_contribution": 0.0933,
+        "percentage_of_similarity": 9.5
+      },
+      {
+        "group_key": "property_and_economics",
+        "display_name": "Property Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      }
+    ],
+    "top_contributing_features": [
+      {
+        "feature_name": "has_relationship",
+        "contribution": 0.0933,
+        "incident_1_value": 0.309,
+        "incident_2_value": 0.302,
+        "description": "Offender had an established prior relationship with the victim (domestic/acquaintance vs predatory stranger)."
+      },
+      {
+        "feature_name": "has_weapon",
+        "contribution": 0.0933,
+        "incident_1_value": 0.309,
+        "incident_2_value": 0.302,
+        "description": "Presence of a weapon during the commission of the incident."
+      },
+      {
+        "feature_name": "victim_age_known",
+        "contribution": 0.0933,
+        "incident_1_value": 0.309,
+        "incident_2_value": 0.302,
+        "description": "Flag indicating that victim age is documented (distinguishes known ages from unknown)."
+      },
+      {
+        "feature_name": "population_group_desc_msa_counties_100,000_or_over",
+        "contribution": 0.0933,
+        "incident_1_value": 0.309,
+        "incident_2_value": 0.302,
+        "description": "Incident occurred in a large metropolitan county."
+      },
+      {
+        "feature_name": "has_injury",
+        "contribution": 0.0933,
+        "incident_1_value": 0.309,
+        "incident_2_value": 0.302,
+        "description": "Physical injury or bodily harm was inflicted on one or more victims."
+      },
+      {
+        "feature_name": "crime_against_person",
+        "contribution": 0.0933,
+        "incident_1_value": 0.309,
+        "incident_2_value": 0.302,
+        "description": "Offense targeted human victims directly (violent/personal crime)."
+      }
+    ],
+    "top_differing_features": [
+      {
+        "feature_name": "time_weekday_cos",
+        "difference": 0.1251,
+        "incident_1_value": 0.12,
+        "incident_2_value": 0.245,
+        "description": "Cyclical cosine component of the day of the week."
+      },
+      {
+        "feature_name": "time_hour_cos",
+        "difference": 0.0912,
+        "incident_1_value": 0.021,
+        "incident_2_value": 0.112,
+        "description": "Cyclical cosine component of the hour of the incident, capturing 24-hour periodicity."
+      },
+      {
+        "feature_name": "time_hour_sin",
+        "difference": 0.0721,
+        "incident_1_value": 0.077,
+        "incident_2_value": 0.005,
+        "description": "Cyclical sine component of the hour of the incident, capturing diurnal rhythms."
+      },
+      {
+        "feature_name": "time_month_sin",
+        "difference": 0.0617,
+        "incident_1_value": 0.288,
+        "incident_2_value": 0.227,
+        "description": "Cyclical sine component of the month of the incident, capturing annual seasonality."
+      },
+      {
+        "feature_name": "time_month_cos",
+        "difference": 0.0501,
+        "incident_1_value": 0.232,
+        "incident_2_value": 0.282,
+        "description": "Cyclical cosine component of the month of the incident, capturing winter-to-summer transitions."
+      }
+    ],
+    "formatted_text_summary": "Similarity Score: 98.1%\n\nMain contributing similarities:\n- Similar time pattern\n- Similar method & weapon context\n- Similar location context\n- Similar people & demographic context\n- Similar harm, injury & enforcement context\n- Similar crime characteristics\n\nDifferences:\n- Different time weekday cos\n- Different time hour cos\n- Different time hour sin",
+    "incident_1_context": {
+      "incident_id": "INC_000002",
+      "category": "Person",
+      "hour": 14,
+      "is_night": false,
+      "is_weekend": true,
+      "has_weapon": true,
+      "has_injury": true,
+      "has_property": false
+    },
+    "incident_2_context": {
+      "incident_id": "INC_006454",
+      "category": "Person",
+      "hour": 17,
+      "is_night": false,
+      "is_weekend": true,
+      "has_weapon": true,
+      "has_injury": true,
+      "has_property": false
+    },
+    "comparison_scenario": "High-Fidelity Within-Category Pair (Violent Interpersonal Assault)"
+  },
+  {
+    "incident_pair": [
+      "INC_079500",
+      "INC_108471"
+    ],
+    "similarity_score_pct": 84.4,
+    "cosine_similarity_raw": 0.8438,
+    "main_contributing_similarities": [
+      "Similar time pattern",
+      "Similar people & demographic context",
+      "Similar location context",
+      "Similar property characteristics"
+    ],
+    "differences": [
+      "Different crime category (INC_079500: Property vs INC_108471: Society)",
+      "Different crime against property",
+      "Different has relationship"
+    ],
+    "group_contributions": {
+      "temporal_dynamics": {
+        "group_key": "temporal_dynamics",
+        "display_name": "Time Pattern",
+        "absolute_contribution": 0.409,
+        "percentage_of_similarity": 48.5
+      },
+      "crime_characteristics": {
+        "group_key": "crime_characteristics",
+        "display_name": "Crime Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      "location_and_environment": {
+        "group_key": "location_and_environment",
+        "display_name": "Location Context",
+        "absolute_contribution": 0.1607,
+        "percentage_of_similarity": 19.1
+      },
+      "method_and_activity": {
+        "group_key": "method_and_activity",
+        "display_name": "Method & Weapon Context",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      "people_and_demographics": {
+        "group_key": "people_and_demographics",
+        "display_name": "People & Demographic Context",
+        "absolute_contribution": 0.1832,
+        "percentage_of_similarity": 21.7
+      },
+      "property_and_economics": {
+        "group_key": "property_and_economics",
+        "display_name": "Property Characteristics",
+        "absolute_contribution": 0.0908,
+        "percentage_of_similarity": 10.8
+      },
+      "context_and_harm": {
+        "group_key": "context_and_harm",
+        "display_name": "Harm, Injury & Enforcement Context",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      }
+    },
+    "sorted_group_contributions": [
+      {
+        "group_key": "temporal_dynamics",
+        "display_name": "Time Pattern",
+        "absolute_contribution": 0.409,
+        "percentage_of_similarity": 48.5
+      },
+      {
+        "group_key": "people_and_demographics",
+        "display_name": "People & Demographic Context",
+        "absolute_contribution": 0.1832,
+        "percentage_of_similarity": 21.7
+      },
+      {
+        "group_key": "location_and_environment",
+        "display_name": "Location Context",
+        "absolute_contribution": 0.1607,
+        "percentage_of_similarity": 19.1
+      },
+      {
+        "group_key": "property_and_economics",
+        "display_name": "Property Characteristics",
+        "absolute_contribution": 0.0908,
+        "percentage_of_similarity": 10.8
+      },
+      {
+        "group_key": "crime_characteristics",
+        "display_name": "Crime Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      {
+        "group_key": "method_and_activity",
+        "display_name": "Method & Weapon Context",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      {
+        "group_key": "context_and_harm",
+        "display_name": "Harm, Injury & Enforcement Context",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      }
+    ],
+    "top_contributing_features": [
+      {
+        "feature_name": "victim_age_known",
+        "contribution": 0.081,
+        "incident_1_value": 0.287,
+        "incident_2_value": 0.282,
+        "description": "Flag indicating that victim age is documented (distinguishes known ages from unknown)."
+      },
+      {
+        "feature_name": "time_is_weekend",
+        "contribution": 0.081,
+        "incident_1_value": 0.287,
+        "incident_2_value": 0.282,
+        "description": "Indicates whether the incident occurred during the weekend (Saturday or Sunday)."
+      },
+      {
+        "feature_name": "time_is_night",
+        "contribution": 0.081,
+        "incident_1_value": 0.287,
+        "incident_2_value": 0.282,
+        "description": "Indicates whether the incident occurred during nighttime hours (predominantly 20:00 to 06:00)."
+      },
+      {
+        "feature_name": "offender_age_known",
+        "contribution": 0.081,
+        "incident_1_value": 0.287,
+        "incident_2_value": 0.282,
+        "description": "Flag indicating that offender age is documented."
+      },
+      {
+        "feature_name": "population_group_desc_cities_from_100,000_thru_249,999",
+        "contribution": 0.081,
+        "incident_1_value": 0.287,
+        "incident_2_value": 0.282,
+        "description": "Incident occurred in a major metropolitan city (100k-250k population)."
+      },
+      {
+        "feature_name": "has_property",
+        "contribution": 0.081,
+        "incident_1_value": 0.287,
+        "incident_2_value": 0.282,
+        "description": "Indicates property was targeted, stolen, or damaged."
+      }
+    ],
+    "top_differing_features": [
+      {
+        "feature_name": "crime_against_property",
+        "difference": 0.2872,
+        "incident_1_value": 0.287,
+        "incident_2_value": 0.0,
+        "description": "Offense targeted property, structures, or economic assets."
+      },
+      {
+        "feature_name": "has_relationship",
+        "difference": 0.2821,
+        "incident_1_value": 0.0,
+        "incident_2_value": 0.282,
+        "description": "Offender had an established prior relationship with the victim (domestic/acquaintance vs predatory stranger)."
+      },
+      {
+        "feature_name": "crime_against_person_property",
+        "difference": 0.2821,
+        "incident_1_value": 0.0,
+        "incident_2_value": 0.282,
+        "description": "Dual violation involving concurrent crimes against persons and property."
+      },
+      {
+        "feature_name": "offense_categories_count_scaled",
+        "difference": 0.1411,
+        "incident_1_value": 0.0,
+        "incident_2_value": 0.141,
+        "description": "Breadth of distinct crime categories involved in the event."
+      },
+      {
+        "feature_name": "time_weekday_cos",
+        "difference": 0.1235,
+        "incident_1_value": 0.233,
+        "incident_2_value": 0.11,
+        "description": "Cyclical cosine component of the day of the week."
+      }
+    ],
+    "formatted_text_summary": "Similarity Score: 84.4%\n\nMain contributing similarities:\n- Similar time pattern\n- Similar people & demographic context\n- Similar location context\n- Similar property characteristics\n\nDifferences:\n- Different crime category (INC_079500: Property vs INC_108471: Society)\n- Different crime against property\n- Different has relationship",
+    "incident_1_context": {
+      "incident_id": "INC_079500",
+      "category": "Property",
+      "hour": 1,
+      "is_night": true,
+      "is_weekend": true,
+      "has_weapon": false,
+      "has_injury": false,
+      "has_property": true
+    },
+    "incident_2_context": {
+      "incident_id": "INC_108471",
+      "category": "Society",
+      "hour": 0,
+      "is_night": true,
+      "is_weekend": true,
+      "has_weapon": false,
+      "has_injury": false,
+      "has_property": true
+    },
+    "comparison_scenario": "Nocturnal Weekend Intrusion (Property Burglary vs Home Invasion)"
+  },
+  {
+    "incident_pair": [
+      "INC_136975",
+      "INC_032487"
+    ],
+    "similarity_score_pct": 68.7,
+    "cosine_similarity_raw": 0.6875,
+    "main_contributing_similarities": [
+      "Similar time pattern",
+      "Similar people & demographic context",
+      "Similar location context"
+    ],
+    "differences": [
+      "Different crime category (INC_136975: Person vs INC_032487: Property)",
+      "Different injury status (INC_136975: Injury vs INC_032487: No Injury)",
+      "Different weapon presence (INC_136975: Armed vs INC_032487: Unarmed)",
+      "Different property involvement (INC_136975: No Property vs INC_032487: Property Involved)"
+    ],
+    "group_contributions": {
+      "temporal_dynamics": {
+        "group_key": "temporal_dynamics",
+        "display_name": "Time Pattern",
+        "absolute_contribution": 0.2869,
+        "percentage_of_similarity": 41.7
+      },
+      "crime_characteristics": {
+        "group_key": "crime_characteristics",
+        "display_name": "Crime Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      "location_and_environment": {
+        "group_key": "location_and_environment",
+        "display_name": "Location Context",
+        "absolute_contribution": 0.1803,
+        "percentage_of_similarity": 26.2
+      },
+      "method_and_activity": {
+        "group_key": "method_and_activity",
+        "display_name": "Method & Weapon Context",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      "people_and_demographics": {
+        "group_key": "people_and_demographics",
+        "display_name": "People & Demographic Context",
+        "absolute_contribution": 0.2204,
+        "percentage_of_similarity": 32.1
+      },
+      "property_and_economics": {
+        "group_key": "property_and_economics",
+        "display_name": "Property Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      "context_and_harm": {
+        "group_key": "context_and_harm",
+        "display_name": "Harm, Injury & Enforcement Context",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      }
+    },
+    "sorted_group_contributions": [
+      {
+        "group_key": "temporal_dynamics",
+        "display_name": "Time Pattern",
+        "absolute_contribution": 0.2869,
+        "percentage_of_similarity": 41.7
+      },
+      {
+        "group_key": "people_and_demographics",
+        "display_name": "People & Demographic Context",
+        "absolute_contribution": 0.2204,
+        "percentage_of_similarity": 32.1
+      },
+      {
+        "group_key": "location_and_environment",
+        "display_name": "Location Context",
+        "absolute_contribution": 0.1803,
+        "percentage_of_similarity": 26.2
+      },
+      {
+        "group_key": "crime_characteristics",
+        "display_name": "Crime Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      {
+        "group_key": "method_and_activity",
+        "display_name": "Method & Weapon Context",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      {
+        "group_key": "property_and_economics",
+        "display_name": "Property Characteristics",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      },
+      {
+        "group_key": "context_and_harm",
+        "display_name": "Harm, Injury & Enforcement Context",
+        "absolute_contribution": 0.0,
+        "percentage_of_similarity": 0.0
+      }
+    ],
+    "top_contributing_features": [
+      {
+        "feature_name": "population_group_desc_cities_from_100,000_thru_249,999",
+        "contribution": 0.091,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.321,
+        "description": "Incident occurred in a major metropolitan city (100k-250k population)."
+      },
+      {
+        "feature_name": "offender_age_known",
+        "contribution": 0.091,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.321,
+        "description": "Flag indicating that offender age is documented."
+      },
+      {
+        "feature_name": "victim_age_known",
+        "contribution": 0.091,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.321,
+        "description": "Flag indicating that victim age is documented (distinguishes known ages from unknown)."
+      },
+      {
+        "feature_name": "population_log_scaled",
+        "contribution": 0.0893,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.316,
+        "description": "Logarithmically scaled population of the jurisdiction, representing urban density."
+      },
+      {
+        "feature_name": "time_month_sin",
+        "contribution": 0.0849,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.3,
+        "description": "Cyclical sine component of the month of the incident, capturing annual seasonality."
+      },
+      {
+        "feature_name": "time_weekday_sin",
+        "contribution": 0.08,
+        "incident_1_value": 0.252,
+        "incident_2_value": 0.317,
+        "description": "Cyclical sine component of the day of the week."
+      }
+    ],
+    "top_differing_features": [
+      {
+        "feature_name": "has_property",
+        "difference": 0.3211,
+        "incident_1_value": 0.0,
+        "incident_2_value": 0.321,
+        "description": "Indicates property was targeted, stolen, or damaged."
+      },
+      {
+        "feature_name": "crime_against_property",
+        "difference": 0.3211,
+        "incident_1_value": 0.0,
+        "incident_2_value": 0.321,
+        "description": "Offense targeted property, structures, or economic assets."
+      },
+      {
+        "feature_name": "has_relationship",
+        "difference": 0.2833,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.0,
+        "description": "Offender had an established prior relationship with the victim (domestic/acquaintance vs predatory stranger)."
+      },
+      {
+        "feature_name": "has_injury",
+        "difference": 0.2833,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.0,
+        "description": "Physical injury or bodily harm was inflicted on one or more victims."
+      },
+      {
+        "feature_name": "has_weapon",
+        "difference": 0.2833,
+        "incident_1_value": 0.283,
+        "incident_2_value": 0.0,
+        "description": "Presence of a weapon during the commission of the incident."
+      }
+    ],
+    "formatted_text_summary": "Similarity Score: 68.7%\n\nMain contributing similarities:\n- Similar time pattern\n- Similar people & demographic context\n- Similar location context\n\nDifferences:\n- Different crime category (INC_136975: Person vs INC_032487: Property)\n- Different injury status (INC_136975: Injury vs INC_032487: No Injury)\n- Different weapon presence (INC_136975: Armed vs INC_032487: Unarmed)\n- Different property involvement (INC_136975: No Property vs INC_032487: Property Involved)",
+    "incident_1_context": {
+      "incident_id": "INC_136975",
+      "category": "Person",
+      "hour": 21,
+      "is_night": false,
+      "is_weekend": false,
+      "has_weapon": true,
+      "has_injury": true,
+      "has_property": false
+    },
+    "incident_2_context": {
+      "incident_id": "INC_032487",
+      "category": "Property",
+      "hour": 20,
+      "is_night": false,
+      "is_weekend": false,
+      "has_weapon": false,
+      "has_injury": false,
+      "has_property": true
+    },
+    "comparison_scenario": "Divergent Contrasting Pair (Violent Assault vs Retail Larceny)"
+  }
+]

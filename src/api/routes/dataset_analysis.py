@@ -224,3 +224,40 @@ async def export_dataset_analysis(
     except Exception as e:
         logger.error(f"Error exporting analysis: {e}", exc_info=True)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+@router.get(
+    "/sample",
+    summary="Download the synthetic sample Indian incident dataset (CSV)"
+)
+async def download_sample_dataset() -> Any:
+    """Provides a synthetic sample CSV of Indian incidents for testing Crime Compass Mode 2."""
+    try:
+        filename, media_type, file_bytes = dataset_service.get_sample_dataset_bytes()
+        return Response(
+            content=file_bytes,
+            media_type=media_type,
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+        )
+    except Exception as e:
+        logger.error(f"Error serving sample dataset: {e}", exc_info=True)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+@router.get(
+    "/template",
+    summary="Download the Crime Compass column mapping template CSV"
+)
+async def download_mapping_template() -> Any:
+    """Provides the standard column mapping template CSV."""
+    try:
+        filename, media_type, file_bytes = dataset_service.get_mapping_template_bytes()
+        return Response(
+            content=file_bytes,
+            media_type=media_type,
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+        )
+    except Exception as e:
+        logger.error(f"Error serving template CSV: {e}", exc_info=True)
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+

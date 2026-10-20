@@ -30,3 +30,12 @@ async def get_health() -> HealthResponse:
         indexed_incidents=len(state.incident_ids),
         vector_dimension=len(state.feature_names)
     )
+
+
+@router.get(
+    "/healthz",
+    summary="Lightweight Liveness Probe",
+    description="Immediate 200 OK probe for container orchestrators and load balancers."
+)
+async def healthz():
+    return {"status": "ok", "ready": state.is_ready}

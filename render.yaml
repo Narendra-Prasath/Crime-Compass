@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: crime-compass
+    runtime: python
+    plan: starter # 1 GB RAM recommended for ML index and vector matrices (~600MB resident)
+    region: oregon
+    buildCommand: pip install -r requirements.txt && (cd frontend && npm install && npm run build)
+    startCommand: uvicorn src.api.main:app --host 0.0.0.0 --port $PORT --workers 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.8
+      - key: NODE_VERSION
+        value: 20.11.0
+      - key: DEBUG
+        value: "0"
+      - key: CORS_ORIGINS
+        value: "*"

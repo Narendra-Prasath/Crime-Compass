@@ -2,9 +2,7 @@ import React, { useState, useRef } from 'react';
 import { api } from '../api';
 import type {
   DatasetValidationResult,
-  DatasetAnalysisResult,
-  DatasetPattern,
-  DatasetSimilarIncident
+  DatasetAnalysisResult
 } from '../types';
 import {
   UploadCloud,
@@ -20,20 +18,15 @@ import {
   TrendingUp,
   Network,
   ArrowRight,
-  RotateCcw,
   Download,
   Trash2,
   HelpCircle,
-  Info,
   ChevronDown,
   ChevronUp,
   Cpu,
   ShieldCheck,
   AlertCircle,
-  FileCheck,
-  ArrowLeft,
-  Lock,
-  Tag
+  FileCheck
 } from 'lucide-react';
 import { formatIndianNumber } from '../utils/indiaFormat';
 
@@ -43,7 +36,7 @@ interface DatasetAnalysisExperienceProps {
 
 type WizardStep = 'upload' | 'preview' | 'mapping' | 'validation' | 'scope' | 'analyzing' | 'results';
 
-export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps> = ({ onNavigate }) => {
+export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps> = ({ onNavigate: _onNavigate }) => {
   const [currentStep, setCurrentStep] = useState<WizardStep>('upload');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [validationResult, setValidationResult] = useState<DatasetValidationResult | null>(null);
@@ -72,7 +65,6 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [showTechnicalDetails, setShowTechnicalDetails] = useState<boolean>(false);
-  const [selectedPatternFilter, setSelectedPatternFilter] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -95,8 +87,9 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
   };
 
   const processSelectedFile = async (file: File) => {
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      setError('Crime Compass currently supports CSV datasets for maximum cross-platform compatibility.');
+    const fn = file.name.toLowerCase();
+    if (!fn.endsWith('.csv') && !fn.endsWith('.xlsx') && !fn.endsWith('.xls')) {
+      setError('Please upload a valid CSV or Excel (.xlsx, .xls) dataset file.');
       return;
     }
 
@@ -112,7 +105,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
       setColumnMapping(res.suggested_mapping || {});
       setCurrentStep('preview');
     } catch (err: any) {
-      setError(err.message || 'Failed to inspect and validate uploaded CSV file.');
+      setError(err.message || 'Failed to inspect and validate uploaded dataset file.');
     } finally {
       setLoading(false);
     }
@@ -155,10 +148,18 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
       if (scopeOptions.date_start) cleanScope.date_start = scopeOptions.date_start;
       if (scopeOptions.date_end) cleanScope.date_end = scopeOptions.date_end;
 
+      // Filter mapping to only include actual dataset column names
+      const sanitizedMapping: Record<string, string> = {};
+      Object.entries(columnMapping).forEach(([k, v]) => {
+        if (v && !['unmapped', 'not_available', 'unknown', 'not_applicable'].includes(v)) {
+          sanitizedMapping[k] = v;
+        }
+      });
+
       const res = await api.analyzeDataset({
         file_token: validationResult.file_token,
         filename: validationResult.filename,
-        column_mapping: columnMapping,
+        column_mapping: sanitizedMapping,
         scope: cleanScope,
         user_id: 'investigator_session'
       });
@@ -180,7 +181,9 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
     if (analysisResult?.analysis_id) {
       try {
         await api.deleteDatasetAnalysis(analysisResult.analysis_id);
-      } catch (e) {}
+      } catch {
+        // ignore deletion errors on reset
+      }
     }
     setSelectedFile(null);
     setValidationResult(null);
@@ -365,16 +368,16 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             </div>
 
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '8px' }}>
-              Upload Incident Dataset (CSV)
+              Upload Incident Dataset (CSV or Excel)
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '540px', margin: '0 auto 20px auto' }}>
-              Upload your own incident data from any city, district, police jurisdiction, or custom date range to discover patterns, connections, similarities, and shifts within your dataset.
+              Upload your incident dataset (CSV or .xlsx) from any district, state, or jurisdiction to discover empirical behavioral patterns, modus operandi connections, spatial-temporal distributions, and unusual combinations within your dataset.
             </p>
 
             <input
               ref={fileInputRef}
               type="file"
-              accept=".csv"
+              accept=".csv, .xlsx, .xls"
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />
@@ -394,11 +397,59 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
               }}
             >
               <FileText size={16} />
-              <span>{loading ? 'Inspecting CSV File...' : 'Select CSV File'}</span>
+              <span>{loading ? 'Inspecting Dataset File...' : 'Browse / Select Dataset File'}</span>
             </button>
 
             <div style={{ marginTop: '16px', fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-              Supports standard CSV up to 15 MB (~50,000 incident rows). Indian and international location formats supported.
+              Supports standard CSV and Excel (.xlsx, .xls) up to 15 MB (~50,000 incident records). Fully client-isolated processing.
+            </div>
+          </div>
+
+          {/* Demonstration Sample & Template Bar */}
+          <div
+            style={{
+              marginTop: '20px',
+              padding: '16px 20px',
+              background: 'var(--bg-subtle)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-md)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '12px'
+            }}
+          >
+            <div style={{ textAlign: 'left', maxWidth: '520px' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                <Sparkles size={14} />
+                <span>Want to test Mode 2 instantly with realistic Indian data?</span>
+              </div>
+              <p style={{ margin: 0, fontSize: '0.74rem', color: 'var(--text-dim)', lineHeight: '1.4' }}>
+                All rows in this sample dataset are synthetic and created for software demonstration. They are not real police records and must not be used as evidence or as a representation of actual crime rates.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <a
+                href="/crime_compass_sample_india.csv"
+                download="crime_compass_sample_india.csv"
+                className="btn btn-secondary"
+                style={{ fontSize: '0.78rem', padding: '6px 12px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Download size={14} />
+                <span>Download Sample Dataset</span>
+              </a>
+
+              <a
+                href="/crime_compass_column_mapping_template.csv"
+                download="crime_compass_column_mapping_template.csv"
+                className="btn btn-secondary"
+                style={{ fontSize: '0.78rem', padding: '6px 12px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Download size={14} />
+                <span>Download Mapping Template</span>
+              </a>
             </div>
           </div>
         </div>
@@ -423,7 +474,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
                 <span>Dataset Inspection & Preview</span>
               </h3>
               <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.84rem' }}>
-                File: <strong>{validationResult.filename}</strong> ({(validationResult.file_size_bytes / 1024).toFixed(1)} KB)
+                File: <strong>{selectedFile?.name || validationResult.filename}</strong> ({(validationResult.file_size_bytes / 1024).toFixed(1)} KB)
               </p>
             </div>
 
@@ -564,18 +615,57 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             </div>
           </div>
 
+          {/* Guidance Banner */}
+          <div
+            style={{
+              background: 'rgba(14, 165, 233, 0.08)',
+              border: '1px solid rgba(14, 165, 233, 0.25)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '12px 16px',
+              marginBottom: '16px',
+              fontSize: '0.82rem',
+              color: 'var(--text-muted)'
+            }}
+          >
+            <strong style={{ color: 'var(--accent-cyan)' }}>Fidelity Assurance:</strong> Crime Compass does not treat missing data as a match or silently replace unknown values with arbitrary defaults. You can mark fields as <em>Mapped</em>, <em>Not Available</em>, <em>Unknown</em>, or <em>Not Applicable</em>. The behavioral engine computes intelligence scoped strictly to your observed fields.
+          </div>
+
           {/* Mapping Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
             {validationResult.mapping_details.map((item) => {
               const currentMappedCol = columnMapping[item.standard_field] || '';
-              const isMapped = Boolean(currentMappedCol);
+              const isColMapped = Boolean(currentMappedCol && validationResult.columns.includes(currentMappedCol));
+              const isUnknown = currentMappedCol === 'unknown';
+              const isNotApplicable = currentMappedCol === 'not_applicable';
+
+              let badgeText = 'Not Available';
+              let badgeBg = 'rgba(148, 163, 184, 0.1)';
+              let badgeColor = 'var(--text-dim)';
+
+              if (isColMapped) {
+                badgeText = `Mapped (${currentMappedCol})`;
+                badgeBg = 'rgba(16, 185, 129, 0.15)';
+                badgeColor = 'var(--accent-emerald)';
+              } else if (isUnknown) {
+                badgeText = 'Unknown / Unobserved';
+                badgeBg = 'rgba(245, 158, 11, 0.15)';
+                badgeColor = 'var(--accent-amber)';
+              } else if (isNotApplicable) {
+                badgeText = 'Not Applicable';
+                badgeBg = 'rgba(148, 163, 184, 0.15)';
+                badgeColor = 'var(--text-muted)';
+              } else if (item.required && !currentMappedCol) {
+                badgeText = 'Required (Unmapped)';
+                badgeBg = 'rgba(244, 63, 94, 0.15)';
+                badgeColor = 'var(--accent-rose)';
+              }
 
               return (
                 <div
                   key={item.standard_field}
                   style={{
                     background: 'var(--bg-subtle)',
-                    border: `1px solid ${isMapped ? 'var(--border-subtle)' : item.required ? 'rgba(244, 63, 94, 0.4)' : 'var(--border-subtle)'}`,
+                    border: `1px solid ${isColMapped ? 'var(--border-subtle)' : item.required && !currentMappedCol ? 'rgba(244, 63, 94, 0.4)' : 'var(--border-subtle)'}`,
                     borderRadius: 'var(--radius-sm)',
                     padding: '14px'
                   }}
@@ -590,15 +680,11 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
                         fontWeight: 600,
                         padding: '2px 8px',
                         borderRadius: '4px',
-                        background: item.required
-                          ? isMapped ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)'
-                          : isMapped ? 'rgba(14, 165, 233, 0.15)' : 'rgba(148, 163, 184, 0.1)',
-                        color: item.required
-                          ? isMapped ? 'var(--accent-emerald)' : 'var(--accent-rose)'
-                          : isMapped ? 'var(--accent-cyan)' : 'var(--text-dim)'
+                        background: badgeBg,
+                        color: badgeColor
                       }}
                     >
-                      {item.required ? (isMapped ? 'Required ✓' : 'Required') : (isMapped ? 'Mapped' : 'Optional')}
+                      {badgeText}
                     </span>
                   </div>
 
@@ -607,7 +693,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
                   </p>
 
                   <select
-                    value={currentMappedCol || 'unmapped'}
+                    value={currentMappedCol || (item.required ? 'unmapped' : 'not_available')}
                     onChange={(e) => handleMappingChange(item.standard_field, e.target.value)}
                     style={{
                       width: '100%',
@@ -615,17 +701,22 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
                       border: '1px solid var(--border-subtle)',
                       borderRadius: '4px',
                       padding: '7px 10px',
-                      color: isMapped ? 'var(--text-main)' : 'var(--text-dim)',
+                      color: isColMapped ? 'var(--text-main)' : 'var(--text-dim)',
                       fontSize: '0.82rem',
                       cursor: 'pointer'
                     }}
                   >
-                    <option value="unmapped">-- Unmapped / Not in Dataset --</option>
-                    {validationResult.columns.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
+                    <option value="unmapped">-- Select Mapping or Status --</option>
+                    <option value="not_available">⚪ Not Available (Field not in dataset)</option>
+                    <option value="unknown">❓ Unknown / Unobserved</option>
+                    <option value="not_applicable">⛔ Not Applicable to this jurisdiction</option>
+                    <optgroup label="Uploaded Dataset Columns">
+                      {validationResult.columns.map((c) => (
+                        <option key={c} value={c}>
+                          📁 {c}
+                        </option>
+                      ))}
+                    </optgroup>
                   </select>
                 </div>
               );
@@ -1008,7 +1099,90 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             </div>
           </div>
 
-          {/* 2. BEHAVIORAL PATTERNS (EMPIRICALLY DISCOVERED IN UPLOADED DATA) */}
+          {/* 2. BEHAVIORAL DOMAIN ENERGIES (7-DOMAIN PROFILING) */}
+          {analysisResult.domain_energies && analysisResult.domain_energies.length > 0 && (
+            <div
+              style={{
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border-subtle)',
+                borderRadius: 'var(--radius-lg)',
+                padding: '24px',
+                marginBottom: '24px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+                <div>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Compass size={18} style={{ color: 'var(--accent-cyan)' }} />
+                    <span>2. Behavioral Domain Energies (7-Domain Profiling)</span>
+                  </h3>
+                  <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                    Calculated from actual uploaded records using documented RMS formulas on the unit hypersphere S^69. Unmapped or omitted domains show "Insufficient data" rather than a fabricated score.
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+                {analysisResult.domain_energies.map((dom) => {
+                  const isCalculated = dom.status === 'Calculated' && dom.score !== null;
+                  return (
+                    <div
+                      key={dom.id}
+                      style={{
+                        background: 'var(--bg-subtle)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: 'var(--radius-sm)',
+                        padding: '14px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                          {dom.name}
+                        </span>
+                        {isCalculated ? (
+                          <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>
+                            {dom.score}%
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: '0.72rem', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: 'rgba(148, 163, 184, 0.15)', color: 'var(--text-muted)' }}>
+                            Insufficient data
+                          </span>
+                        )}
+                      </div>
+
+                      {isCalculated && (
+                        <div style={{ width: '100%', height: '6px', background: 'var(--bg-card)', borderRadius: '3px', overflow: 'hidden', marginBottom: '8px' }}>
+                          <div
+                            style={{
+                              width: `${dom.score}%`,
+                              height: '100%',
+                              background: 'linear-gradient(90deg, #0ea5e9, #a855f7)',
+                              borderRadius: '3px'
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      <p style={{ margin: '0 0 8px 0', fontSize: '0.76rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                        {dom.meaning}
+                      </p>
+
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)', borderTop: '1px solid var(--border-subtle)', paddingTop: '6px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                        <div>
+                          <strong>Fields Used:</strong> {dom.mapped_fields && dom.mapped_fields.length > 0 ? dom.mapped_fields.join(', ') : 'None mapped'}
+                        </div>
+                        <div>
+                          <strong>Formula:</strong> {dom.formula}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 3. BEHAVIORAL PATTERNS (EMPIRICALLY DISCOVERED IN UPLOADED DATA) */}
           <div
             style={{
               background: 'var(--bg-card)',
@@ -1022,7 +1196,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
               <div>
                 <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Layers size={18} style={{ color: 'var(--accent-purple)' }} />
-                  <span>2. Discovered Behavioral Patterns ({analysisResult.behavioral_patterns.length})</span>
+                  <span>3. Discovered Behavioral Patterns ({analysisResult.behavioral_patterns.length})</span>
                 </h3>
                 <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                   Empirical modus operandi clusters discovered by Spherical K-Means directly from your uploaded data records.
@@ -1080,7 +1254,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             </div>
           </div>
 
-          {/* 3. SIMILAR INCIDENTS (WITH QUERY SELF-EXCLUSION) */}
+          {/* 4. SIMILAR INCIDENTS (WITH QUERY SELF-EXCLUSION & COVERAGE) */}
           <div
             style={{
               background: 'var(--bg-card)',
@@ -1092,7 +1266,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
           >
             <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Network size={18} style={{ color: 'var(--accent-cyan)' }} />
-              <span>3. Pairwise Similar Incidents (Cosine Cos(θ) &gt; 0)</span>
+              <span>4. Pairwise Similar Incidents (Cosine Cos(θ) &gt; 0)</span>
             </h3>
             <p style={{ margin: '0 0 16px 0', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
               Identifies nearest-neighbor connections between distinct incidents within your dataset. (Query self-exclusion strictly enforced).
@@ -1113,9 +1287,14 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
                     <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)' }}>
                       <strong>{pair.source_id}</strong> ↔ <strong>{pair.target_id}</strong>
                     </div>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-emerald)', background: 'rgba(16, 185, 129, 0.15)', padding: '2px 8px', borderRadius: '4px' }}>
-                      {(pair.similarity_score * 100).toFixed(1)}% Match
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
+                        Coverage: {pair.data_coverage_percentage ?? 100}%
+                      </span>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-emerald)', background: 'rgba(16, 185, 129, 0.15)', padding: '2px 8px', borderRadius: '4px' }}>
+                        {(pair.similarity_score * 100).toFixed(1)}% Match
+                      </span>
+                    </div>
                   </div>
 
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '8px' }}>
@@ -1131,7 +1310,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             </div>
           </div>
 
-          {/* 4. CROSS-CRIME PATTERNS */}
+          {/* 5. CONNECTIONS ACROSS INCIDENT CATEGORIES */}
           {analysisResult.cross_crime_patterns.length > 0 && (
             <div
               style={{
@@ -1144,7 +1323,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             >
               <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Sparkles size={18} style={{ color: 'var(--accent-amber)' }} />
-                <span>4. Cross-Crime Behavioral Patterns</span>
+                <span>5. Modus Operandi Connections Across Incident Categories</span>
               </h3>
               <p style={{ margin: '0 0 16px 0', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                 Identifies shared modus operandi characteristics across differing formal statutory categories.
@@ -1175,7 +1354,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
                     </p>
 
                     <div style={{ fontSize: '0.74rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                      Note: {cc.non_offender_disclaimer}
+                      Advisory: {cc.non_offender_disclaimer}
                     </div>
                   </div>
                 ))}
@@ -1183,7 +1362,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             </div>
           )}
 
-          {/* 5. LOCATION-SPECIFIC INSIGHTS */}
+          {/* 6. LOCATION-SPECIFIC INSIGHTS */}
           {analysisResult.location_insights.is_available && (
             <div
               style={{
@@ -1196,10 +1375,10 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             >
               <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <MapPin size={18} style={{ color: 'var(--accent-cyan)' }} />
-                <span>5. Location-Specific Distribution</span>
+                <span>6. Location-Specific Distribution</span>
               </h3>
               <p style={{ margin: '0 0 16px 0', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                Incident counts and category breakdowns across mapped geographical jurisdictions.
+                Incident counts and category breakdowns across mapped geographical jurisdictions (no fabricated coordinates).
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
@@ -1234,7 +1413,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             </div>
           )}
 
-          {/* 6. TEMPORAL EVOLUTION */}
+          {/* 7. TEMPORAL ANALYSIS */}
           {analysisResult.temporal_evolution.is_available && (
             <div
               style={{
@@ -1247,33 +1426,67 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             >
               <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <TrendingUp size={18} style={{ color: 'var(--accent-emerald)' }} />
-                <span>6. Temporal Timeline Distribution</span>
+                <span>7. Temporal Analysis & Reporting Rhythm</span>
               </h3>
               <p style={{ margin: '0 0 16px 0', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                Incident counts over recorded monthly periods.
+                Incident counts over recorded monthly periods, day of week, and hourly distribution where available.
               </p>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                {analysisResult.temporal_evolution.period_breakdown.map((item, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      background: 'var(--bg-subtle)',
-                      border: '1px solid var(--border-subtle)',
-                      borderRadius: 'var(--radius-sm)',
-                      padding: '10px 14px',
-                      minWidth: '120px'
-                    }}
-                  >
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)' }}>
-                      {item.period}
-                    </div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-emerald)' }}>
-                      {item.incident_count} <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>({item.proportion}%)</span>
-                    </div>
+              {/* Monthly breakdown */}
+              {analysisResult.temporal_evolution.period_breakdown.length > 0 && (
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: '8px' }}>
+                    Monthly Incident Distribution
                   </div>
-                ))}
-              </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                    {analysisResult.temporal_evolution.period_breakdown.map((item, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          background: 'var(--bg-subtle)',
+                          border: '1px solid var(--border-subtle)',
+                          borderRadius: 'var(--radius-sm)',
+                          padding: '10px 14px',
+                          minWidth: '120px'
+                        }}
+                      >
+                        <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                          {item.period}
+                        </div>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-emerald)' }}>
+                          {item.incident_count} <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>({item.proportion}%)</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Day of week breakdown */}
+              {analysisResult.temporal_evolution.day_of_week_distribution && Object.keys(analysisResult.temporal_evolution.day_of_week_distribution).length > 0 && (
+                <div style={{ marginBottom: '14px' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-dim)', textTransform: 'uppercase', marginBottom: '8px' }}>
+                    Incidents by Day of Week
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {Object.entries(analysisResult.temporal_evolution.day_of_week_distribution).map(([day, cnt]) => (
+                      <div
+                        key={day}
+                        style={{
+                          background: 'var(--bg-subtle)',
+                          border: '1px solid var(--border-subtle)',
+                          borderRadius: 'var(--radius-sm)',
+                          padding: '8px 14px',
+                          minWidth: '100px'
+                        }}
+                      >
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>{day}</div>
+                        <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)' }}>{cnt}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div style={{ marginTop: '14px', fontSize: '0.74rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
                 Disclaimer: {analysisResult.temporal_evolution.disclaimer}
@@ -1281,7 +1494,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             </div>
           )}
 
-          {/* 7. UNUSUAL BEHAVIORAL COMBINATIONS */}
+          {/* 8. UNUSUAL PATTERNS IN THIS DATASET */}
           {analysisResult.unusual_combinations.length > 0 && (
             <div
               style={{
@@ -1294,10 +1507,10 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             >
               <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <AlertTriangle size={18} style={{ color: 'var(--accent-amber)' }} />
-                <span>7. Unusual Behavioral Configurations</span>
+                <span>8. Unusual Patterns in This Dataset</span>
               </h3>
               <p style={{ margin: '0 0 16px 0', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                Incidents displaying atypical combinations of behavioral traits relative to the dataset's empirical pattern clusters.
+                Identifies records or combinations that differ statistically from the dominant clusters within this uploaded dataset. (Statistical novelty only; does not predict individual criminal behavior).
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
@@ -1333,7 +1546,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             </div>
           )}
 
-          {/* 8. COMPARISON WITH HISTORICAL REFERENCE DATASET */}
+          {/* 9. COMPARISON WITH HISTORICAL REFERENCE DATASET */}
           {analysisResult.reference_comparison && analysisResult.reference_comparison.status === 'completed' && (
             <div
               style={{
@@ -1346,7 +1559,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             >
               <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Compass size={18} style={{ color: 'var(--accent-cyan)' }} />
-                <span>8. Comparison with Historical Reference Dataset</span>
+                <span>9. Comparison with Historical Reference Dataset</span>
               </h3>
               <p style={{ margin: '0 0 16px 0', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                 Cross-dataset cosine alignment between your dataset's discovered patterns and the 8 pre-trained Alabama 2024 NIBRS reference patterns.
@@ -1384,7 +1597,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             </div>
           )}
 
-          {/* 9. WHY THESE RESULTS? (FACTS VS ML FINDINGS VS INTERPRETATIONS) */}
+          {/* 10. WHY THESE RESULTS? (FACTS VS ML FINDINGS VS INTERPRETATIONS) */}
           <div
             style={{
               background: 'var(--bg-card)',
@@ -1396,7 +1609,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
           >
             <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-main)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <HelpCircle size={18} style={{ color: 'var(--accent-purple)' }} />
-              <span>9. Why These Results? (Analytical Transparency)</span>
+              <span>10. Why These Results? (Analytical Transparency)</span>
             </h3>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
@@ -1435,7 +1648,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             </div>
           </div>
 
-          {/* 10. TECHNICAL DETAILS (EXPANDABLE) */}
+          {/* 11. TECHNICAL DETAILS (EXPANDABLE) */}
           <div
             style={{
               background: 'var(--bg-card)',
@@ -1463,7 +1676,7 @@ export const DatasetAnalysisExperience: React.FC<DatasetAnalysisExperienceProps>
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Cpu size={18} style={{ color: 'var(--accent-cyan)' }} />
-                <span>10. Technical Specifications & Pipeline Configuration</span>
+                <span>11. Technical Specifications & Pipeline Configuration</span>
               </div>
               {showTechnicalDetails ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
             </button>

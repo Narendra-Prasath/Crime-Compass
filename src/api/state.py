@@ -27,7 +27,14 @@ from src.api.config import (
     CLEANING_METADATA_PATH,
     DNA_METADATA_PATH
 )
-from src.features.config import FEATURE_GROUPS, FEATURE_DESCRIPTIONS
+from src.features.config import (
+    FEATURE_GROUPS,
+    FEATURE_DESCRIPTIONS,
+    FEATURE_FRIENDLY_NAMES,
+    FEATURE_BEHAVIORAL_DOMAINS,
+    DOMAIN_LABELS,
+    FEATURE_SALIENCE_WEIGHTS
+)
 from src.models.similarity.engine import BehavioralSimilarityEngine
 from src.models.explainability.explainer import BehavioralSimilarityExplainer
 from src.models.clustering.engine import BehavioralClusterer
@@ -401,12 +408,62 @@ class ApplicationState:
                 sub_vec = vec[indices]
                 group_energies[grp_name] = round(float(np.linalg.norm(sub_vec)), 4)
 
-        # Top active traits (non-zero features sorted descending)
-        top_active = sorted(
-            [{"feature": f, "value": round(float(v), 4)} for f, v in vector_dict.items() if v > 0.001],
-            key=lambda x: x["value"],
+        # Reverse mapping from feature to group
+        feat_to_group = {
+            col: grp for grp, cols in self.feature_groups.items() for col in cols
+        }
+
+        # Top active traits with domain awareness, salience, and balanced tie-breaking
+        raw_candidates = []
+        for f, v in vector_dict.items():
+            if v > 0.001:
+                grp = feat_to_group.get(f, "other")
+                grp_energy = group_energies.get(grp, 0.0)
+                salience = FEATURE_SALIENCE_WEIGHTS.get(f, 1.0)
+                raw_candidates.append({
+                    "feature": f,
+                    "label": FEATURE_FRIENDLY_NAMES.get(f, f.replace("_", " ").title()),
+                    "domain": grp,
+                    "domain_label": DOMAIN_LABELS.get(grp, grp.replace("_", " ").title()),
+                    "value": round(float(v), 4),
+                    "energy_share_pct": round(float((v ** 2) * 100.0), 2),
+                    "grp_energy": grp_energy,
+                    "salience": salience,
+                    "description": FEATURE_DESCRIPTIONS.get(f, f)
+                })
+
+        # Multi-criteria sort:
+        # 1. Coordinate magnitude v (highest normalized components first)
+        # 2. Domain energy of the trait's parent group (prioritizing high-activity behavioral domains)
+        # 3. Behavioral salience (core MO actions over administrative flags)
+        raw_candidates.sort(
+            key=lambda x: (round(x["value"], 4), round(x["grp_energy"], 4), x["salience"]),
             reverse=True
-        )[:10]
+        )
+
+        # Balanced selection across domains (at most 3 traits per domain in top 10 if diverse options exist)
+        domain_counts: Dict[str, int] = {}
+        top_active = []
+        overflow = []
+        for cand in raw_candidates:
+            grp = cand["domain"]
+            if domain_counts.get(grp, 0) < 3:
+                domain_counts[grp] = domain_counts.get(grp, 0) + 1
+                top_active.append(cand)
+            else:
+                overflow.append(cand)
+            if len(top_active) == 10:
+                break
+
+        if len(top_active) < 10 and overflow:
+            for cand in overflow:
+                top_active.append(cand)
+                if len(top_active) == 10:
+                    break
+
+        for trait in top_active:
+            trait.pop("grp_energy", None)
+            trait.pop("salience", None)
 
         return {
             "incident_id": incident_id,

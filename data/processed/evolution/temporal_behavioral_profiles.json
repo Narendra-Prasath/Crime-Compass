@@ -1,0 +1,150 @@
+{
+  "Q1 (Winter)": {
+    "quarter_index": 1,
+    "name": "Q1 (Winter)",
+    "total_incidents": 52124,
+    "percentage_of_annual": 23.62,
+    "dominant_behavioral_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 30.32,
+        "against_property_pct": 50.94,
+        "against_society_pct": 15.32
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 24.86,
+        "weekend_pct": 26.91,
+        "mean_hour": 12.47
+      },
+      "location_patterns": {
+        "median_population": 38323,
+        "mean_population": 81099
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 29.78
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 68.58
+      },
+      "people_patterns": {
+        "known_relationship_pct": 31.62
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 28.64,
+        "drug_involvement_pct": 11.17,
+        "on_scene_arrest_pct": 24.15,
+        "criminal_activity_pct": 28.83
+      }
+    }
+  },
+  "Q2 (Spring)": {
+    "quarter_index": 2,
+    "name": "Q2 (Spring)",
+    "total_incidents": 57025,
+    "percentage_of_annual": 25.84,
+    "dominant_behavioral_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 31.71,
+        "against_property_pct": 50.24,
+        "against_society_pct": 14.74
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 26.49,
+        "weekend_pct": 27.79,
+        "mean_hour": 12.5
+      },
+      "location_patterns": {
+        "median_population": 38323,
+        "mean_population": 81704
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 30.95
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 67.29
+      },
+      "people_patterns": {
+        "known_relationship_pct": 32.78
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 29.83,
+        "drug_involvement_pct": 10.79,
+        "on_scene_arrest_pct": 23.44,
+        "criminal_activity_pct": 28.25
+      }
+    }
+  },
+  "Q3 (Summer)": {
+    "quarter_index": 3,
+    "name": "Q3 (Summer)",
+    "total_incidents": 58654,
+    "percentage_of_annual": 26.58,
+    "dominant_behavioral_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 31.65,
+        "against_property_pct": 50.5,
+        "against_society_pct": 14.37
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 27.25,
+        "weekend_pct": 27.42,
+        "mean_hour": 12.43
+      },
+      "location_patterns": {
+        "median_population": 46545,
+        "mean_population": 87442
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 30.6
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 67.41
+      },
+      "people_patterns": {
+        "known_relationship_pct": 32.73
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 29.57,
+        "drug_involvement_pct": 10.56,
+        "on_scene_arrest_pct": 22.03,
+        "criminal_activity_pct": 27.0
+      }
+    }
+  },
+  "Q4 (Fall / Holiday)": {
+    "quarter_index": 4,
+    "name": "Q4 (Fall / Holiday)",
+    "total_incidents": 52860,
+    "percentage_of_annual": 23.96,
+    "dominant_behavioral_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 30.64,
+        "against_property_pct": 51.41,
+        "against_society_pct": 14.34
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 25.61,
+        "weekend_pct": 27.71,
+        "mean_hour": 12.5
+      },
+      "location_patterns": {
+        "median_population": 43076,
+        "mean_population": 86769
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 30.14
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 68.51
+      },
+      "people_patterns": {
+        "known_relationship_pct": 31.89
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 29.09,
+        "drug_involvement_pct": 10.73,
+        "on_scene_arrest_pct": 21.82,
+        "criminal_activity_pct": 26.67
+      }
+    }
+  }
+}

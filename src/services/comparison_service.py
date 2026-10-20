@@ -30,6 +30,217 @@ from src.features.config import FEATURE_GROUPS
 logger = logging.getLogger("CRIME_DNA_COMPARISON_SERVICE")
 
 
+SEVEN_DOMAINS_METADATA = [
+    {
+        "domain_id": "temporal_dynamics",
+        "domain_name": "Temporal Dynamics",
+        "description": "What time-related information is recorded, including incident time, day of week, month, and day/night classification.",
+        "start_idx": 0,
+        "end_idx": 8,
+        "expected_fields": ["incident_time", "incident_hour", "incident_date", "incident_month", "incident_weekday", "is_weekend", "is_night"],
+        "formula": "E_temp = ||v_temp||_2 = sqrt(sum_{i in temporal} v_i^2) over unit hypersphere S^69"
+    },
+    {
+        "domain_id": "crime_characteristics",
+        "domain_name": "Crime Characteristics",
+        "description": "What statutory crime category, attempt status, and offense counts are recorded.",
+        "start_idx": 8,
+        "end_idx": 18,
+        "expected_fields": ["crime_category", "primary_crime_category", "is_attempted", "offense_count"],
+        "formula": "E_crime = ||v_crime||_2 = sqrt(sum_{i in crime} v_i^2) over unit hypersphere S^69"
+    },
+    {
+        "domain_id": "location_and_environment",
+        "domain_name": "Location and Environment",
+        "description": "What location type, premises setting, and geographic environmental context are recorded.",
+        "start_idx": 18,
+        "end_idx": 35,
+        "expected_fields": ["location_type", "location", "population_setting", "location_count", "population"],
+        "formula": "E_loc = ||v_loc||_2 = sqrt(sum_{i in location} v_i^2) over unit hypersphere S^69"
+    },
+    {
+        "domain_id": "method_and_activity",
+        "domain_name": "Method and Activity",
+        "description": "What method, weapon context, or secondary criminal activity is recorded.",
+        "start_idx": 35,
+        "end_idx": 43,
+        "expected_fields": ["has_weapon", "weapon_count", "weapon_types", "has_criminal_activity"],
+        "formula": "E_method = ||v_method||_2 = sqrt(sum_{i in method} v_i^2) over unit hypersphere S^69"
+    },
+    {
+        "domain_id": "people_and_demographics",
+        "domain_name": "People and Demographics",
+        "description": "What people-related counts and aggregate demographics are recorded (never used for personal identity matching).",
+        "start_idx": 43,
+        "end_idx": 56,
+        "expected_fields": ["victim_count", "victim_avg_age", "victim_sexes_count", "offender_count", "offender_avg_age", "offender_sexes_count"],
+        "formula": "E_people = ||v_people||_2 = sqrt(sum_{i in people} v_i^2) over unit hypersphere S^69"
+    },
+    {
+        "domain_id": "property_and_economics",
+        "domain_name": "Property and Economics",
+        "description": "What property involvement, loss type, stolen items, or monetary valuations are recorded.",
+        "start_idx": 56,
+        "end_idx": 62,
+        "expected_fields": ["has_property", "property_value", "property_record_count", "has_stolen_property", "stolen_count", "is_cargo_theft"],
+        "formula": "E_prop = ||v_prop||_2 = sqrt(sum_{i in property} v_i^2) over unit hypersphere S^69"
+    },
+    {
+        "domain_id": "context_and_harm",
+        "domain_name": "Context and Harm",
+        "description": "What physical victim injury, substance presence, bias motivation, or on-scene arrest is recorded.",
+        "start_idx": 62,
+        "end_idx": 70,
+        "expected_fields": ["has_injury", "injury_record_count", "has_drug", "suspected_drug_count", "has_bias_motivation", "has_arrest", "arrest_count"],
+        "formula": "E_harm = ||v_harm||_2 = sqrt(sum_{i in harm} v_i^2) over unit hypersphere S^69"
+    }
+]
+
+
+def calculate_incident_coverage(raw_data: Dict[str, Any], attributes: Dict[str, Any], domain_meta: Dict[str, Any]) -> Dict[str, Any]:
+    dom_id = domain_meta["domain_id"]
+    valid_fields = []
+    missing_fields = []
+    not_applicable = []
+    data = {**raw_data, **attributes}
+
+    if dom_id == "method_and_activity":
+        has_wep = data.get("has_weapon")
+        if has_wep is False:
+            not_applicable.extend(["weapon_count", "weapon_types"])
+    elif dom_id == "property_and_economics":
+        has_prop = data.get("has_property")
+        if has_prop is False:
+            not_applicable.extend(["property_value", "property_record_count", "has_stolen_property", "stolen_count", "is_cargo_theft"])
+    elif dom_id == "context_and_harm":
+        has_inj = data.get("has_injury")
+        if has_inj is False:
+            not_applicable.append("injury_record_count")
+        has_drg = data.get("has_drug")
+        if has_drg is False:
+            not_applicable.append("suspected_drug_count")
+        has_arr = data.get("has_arrest")
+        if has_arr is False:
+            not_applicable.append("arrest_count")
+
+    for f in domain_meta["expected_fields"]:
+        if f in not_applicable:
+            continue
+        v = data.get(f)
+        if v is not None and v != "" and str(v).lower() not in ("unknown", "unspecified", "null", "?", "none"):
+            valid_fields.append(f)
+        else:
+            missing_fields.append(f)
+
+    total_applicable = len(valid_fields) + len(missing_fields)
+    pct = round((len(valid_fields) / max(1, total_applicable)) * 100, 1)
+    status = "Sufficient data" if pct >= 60.0 else ("Partial data" if pct > 0 else "Insufficient data")
+    return {
+        "valid_count": len(valid_fields),
+        "total_applicable": total_applicable,
+        "valid_fields": valid_fields,
+        "missing_fields": missing_fields,
+        "not_applicable": not_applicable,
+        "coverage_pct": pct,
+        "status": status,
+        "display": f"{len(valid_fields)} of {total_applicable} expected fields ({pct}%)"
+    }
+
+
+def extract_domain_contributing_features(data: Dict[str, Any], attributes: Dict[str, Any], dom_id: str) -> List[str]:
+    merged = {**data, **attributes}
+    traits = []
+    if dom_id == "temporal_dynamics":
+        if "time" in attributes and "unknown" not in str(attributes["time"]).lower():
+            traits.append(f"Recorded timing: {attributes['time']}")
+        if merged.get("is_weekend") is not None:
+            traits.append("Weekend occurrence" if merged["is_weekend"] else "Weekday occurrence")
+        if merged.get("incident_month") is not None:
+            traits.append(f"Month: {merged['incident_month']}")
+    elif dom_id == "crime_characteristics":
+        if "crime" in attributes and "unknown" not in str(attributes["crime"]).lower():
+            traits.append(f"Category: {attributes['crime']}")
+        if merged.get("is_attempted") is not None:
+            traits.append("Attempted crime" if merged["is_attempted"] else "Completed crime")
+        if merged.get("offense_count") is not None:
+            traits.append(f"Offense count: {merged['offense_count']}")
+    elif dom_id == "location_and_environment":
+        if "location" in attributes and "unknown" not in str(attributes["location"]).lower():
+            traits.append(f"Setting: {attributes['location']}")
+        if merged.get("population_setting") is not None:
+            traits.append(f"Population setting: {str(merged['population_setting']).replace('_', ' ').title()}")
+    elif dom_id == "method_and_activity":
+        if merged.get("has_weapon") is not None:
+            traits.append("Armed encounter" if merged["has_weapon"] else "Unarmed execution")
+        if merged.get("has_criminal_activity") is not None:
+            traits.append("Associated criminal activity" if merged["has_criminal_activity"] else "No secondary criminal activity")
+    elif dom_id == "people_and_demographics":
+        if merged.get("victim_count") is not None:
+            traits.append(f"Victim count: {merged['victim_count']}")
+        if merged.get("offender_count") is not None:
+            traits.append(f"Offender count: {merged['offender_count']}")
+    elif dom_id == "property_and_economics":
+        if merged.get("has_property") is not None:
+            if merged["has_property"]:
+                val = merged.get("property_value", 0.0)
+                traits.append(f"Property targeted (${val:,.0f})" if val > 0 else "Property targeted")
+            else:
+                traits.append("Non-property motive")
+    elif dom_id == "context_and_harm":
+        if merged.get("has_injury") is not None:
+            traits.append("Physical harm inflicted" if merged["has_injury"] else "No physical injury reported")
+        if merged.get("has_drug") is not None:
+            traits.append("Substance involvement" if merged["has_drug"] else "No substance involvement")
+        if merged.get("has_arrest") is not None:
+            traits.append("Scene arrest effectuated" if merged["has_arrest"] else "No scene arrest")
+    return traits
+
+
+def extract_domain_missing_features(cov: Dict[str, Any]) -> List[str]:
+    friendly_names = {
+        "incident_time": "Incident time",
+        "incident_hour": "Incident hour",
+        "incident_date": "Incident date",
+        "incident_month": "Calendar month",
+        "incident_weekday": "Day of week",
+        "is_weekend": "Weekend status",
+        "is_night": "Diurnal classification",
+        "crime_category": "Crime category",
+        "primary_crime_category": "Statutory category",
+        "is_attempted": "Attempted flag",
+        "offense_count": "Offense count",
+        "location_type": "Location type",
+        "location": "Setting context",
+        "population_setting": "Population setting",
+        "location_count": "Location count",
+        "population": "Population size",
+        "has_weapon": "Weapon presence",
+        "weapon_count": "Weapon count",
+        "weapon_types": "Weapon types",
+        "has_criminal_activity": "Criminal activity flag",
+        "victim_count": "Victim count",
+        "victim_avg_age": "Victim age",
+        "victim_sexes_count": "Victim demographics",
+        "offender_count": "Offender count",
+        "offender_avg_age": "Offender age",
+        "offender_sexes_count": "Offender demographics",
+        "has_property": "Property flag",
+        "property_value": "Property value",
+        "property_record_count": "Property record count",
+        "has_stolen_property": "Stolen property status",
+        "stolen_count": "Stolen items count",
+        "is_cargo_theft": "Cargo theft flag",
+        "has_injury": "Injury flag",
+        "injury_record_count": "Injury records count",
+        "has_drug": "Drug flag",
+        "suspected_drug_count": "Suspected drug count",
+        "has_bias_motivation": "Bias motivation flag",
+        "has_arrest": "Arrest flag",
+        "arrest_count": "Arrest count"
+    }
+    return [friendly_names.get(f, f.replace("_", " ").title()) for f in cov.get("missing_fields", [])]
+
+
 class BehavioralComparisonService:
     """
     Core service for comparative behavioral analysis between two incidents.
@@ -113,6 +324,7 @@ class BehavioralComparisonService:
                     "label": spec.get("label") or f"Historical Incident {inc_id}",
                     "norm_vector": vec,
                     "subprofile_energies": subprofile_energies,
+                    "raw_data": context,
                     "attributes": {
                         "time": time_str,
                         "is_night": is_night,
@@ -227,6 +439,7 @@ class BehavioralComparisonService:
             "label": spec.get("label") or input_data.get("scenario_title") or default_label,
             "norm_vector": norm_vec,
             "subprofile_energies": subprofile_energies,
+            "raw_data": input_data,
             "human_dna_chips": human_dna.get("summary_chips", []),
             "attributes": {
                 "time": time_str,
@@ -266,7 +479,7 @@ class BehavioralComparisonService:
 
         Returns:
             Structured comparison result with similarity, DNA table, matching/differing
-            characteristics, and "What Changed?" analysis.
+            characteristics, neutral explanations, 7 audited domain energies, and technical details.
         """
         if state is None:
             from src.api.state import state as global_state
@@ -279,15 +492,15 @@ class BehavioralComparisonService:
         vec_a = res_a["norm_vector"]
         vec_b = res_b["norm_vector"]
 
-        # Ensure unit L2 normalization
+        # Ensure unit L2 normalization on S^69
         if vec_a is not None:
-            norm_a = np.linalg.norm(vec_a)
+            norm_a = float(np.linalg.norm(vec_a))
             vec_a = vec_a / (norm_a if norm_a > 0 else 1.0)
         if vec_b is not None:
-            norm_b = np.linalg.norm(vec_b)
+            norm_b = float(np.linalg.norm(vec_b))
             vec_b = vec_b / (norm_b if norm_b > 0 else 1.0)
 
-        # 2. Scientifically valid DNA similarity score using cosine representation
+        # 2. Scientifically valid DNA similarity score using cosine dot product
         if vec_a is not None and vec_b is not None:
             raw_cosine = float(np.dot(vec_a, vec_b))
             similarity_score_pct = round(max(0.0, min(100.0, raw_cosine * 100.0)), 2)
@@ -297,22 +510,25 @@ class BehavioralComparisonService:
             similarity_score_pct = 0.0
             cosine_distance = 1.0
 
+        # Documented threshold tiers (product-defined interpretation)
         if similarity_score_pct >= 90.0:
             match_tier = "High Behavioral Affinity"
-            affinity_summary = "Very high alignment across modus operandi dimensions."
+            affinity_summary = "Very high alignment across modus operandi dimensions (threshold: ≥90.0%)."
         elif similarity_score_pct >= 75.0:
             match_tier = "Moderate Behavioral Affinity"
-            affinity_summary = "Noticeable behavioral alignment with identifiable divergences."
+            affinity_summary = "Noticeable behavioral alignment with identifiable divergences (threshold: 75.0%–89.9%)."
         elif similarity_score_pct >= 50.0:
             match_tier = "Partial Behavioral Overlap"
-            affinity_summary = "Shared characteristics in select operational domains."
+            affinity_summary = "Shared characteristics in select operational domains (threshold: 50.0%–74.9%)."
         else:
             match_tier = "Divergent Behavioral Profiles"
-            affinity_summary = "Substantially distinct modus operandi profiles."
+            affinity_summary = "Substantially distinct modus operandi profiles (threshold: <50.0%)."
 
-        # 3. Construct Feature-by-Feature DNA Comparison Table
+        # 3. Construct Feature-by-Feature DNA Comparison across 7 Observable Dimensions
         attr_a = res_a["attributes"]
         attr_b = res_b["attributes"]
+        raw_a = res_a.get("raw_data", {})
+        raw_b = res_b.get("raw_data", {})
 
         table_rows = []
         matching_chars = []
@@ -323,6 +539,9 @@ class BehavioralComparisonService:
         match_items = []
         differ_items = []
         unknown_items = []
+        matched_statements = []
+        differing_statements = []
+        unknown_statements = []
         strongest_similarities = []
         most_meaningful_differences = []
 
@@ -334,7 +553,7 @@ class BehavioralComparisonService:
             if isinstance(val, (int, float)):
                 return False
             s = str(val).strip().lower()
-            return s in ("unknown", "unspecified", "not recorded", "null", "?")
+            return s in ("unknown", "unspecified", "not recorded", "null", "?", "none_recorded")
 
         # --- Dimension 1: Time ---
         time_a_unk = is_val_unknown(attr_a.get("time")) or attr_a.get("is_night") is None
@@ -353,6 +572,7 @@ class BehavioralComparisonService:
             })
             unknown_items.append("Time / diurnal cycle")
             unknown_chars.append("Diurnal timing unrecorded or unspecified in one or both records")
+            unknown_statements.append("Diurnal timing (day/night) was unobserved in one or both records.")
         else:
             time_match = (attr_a["is_night"] == attr_b["is_night"])
             time_status = "MATCH" if time_match else "DIFFER"
@@ -367,13 +587,17 @@ class BehavioralComparisonService:
             })
             if time_match:
                 match_items.append(time_val_a)
-                matching_chars.append(f"Consistent diurnal timing ({time_val_a.lower()} execution)")
+                stmt = f"Both incidents occurred during {time_val_a.lower()} hours."
+                matching_chars.append(stmt)
+                matched_statements.append(stmt)
                 strongest_similarities.append(f"Consistent timing: both offenses occurred during {time_val_a.lower()} hours.")
             else:
                 differ_items.append("Timing / diurnal pattern")
-                differing_chars.append(f"Diurnal shift: Incident A ({time_val_a}) vs Incident B ({time_val_b})")
-                transitions.append(f"Timing transitioned from {time_val_a} to {time_val_b}")
-                most_meaningful_differences.append(f"Diurnal shift: Incident A was {time_val_a.lower()} while Incident B was {time_val_b.lower()}.")
+                stmt = f"Incident A occurred during the {'night' if attr_a['is_night'] else 'day'}; Incident B occurred {'at night' if attr_b['is_night'] else 'during the day'}."
+                differing_chars.append(stmt)
+                differing_statements.append(stmt)
+                transitions.append(f"Timing shifted: Incident A was {time_val_a} while Incident B was {time_val_b}.")
+                most_meaningful_differences.append(f"Diurnal shift: Incident A occurred during {time_val_a.lower()} hours while Incident B occurred during {time_val_b.lower()} hours.")
 
         # --- Dimension 2: Location ---
         loc_a = attr_a.get("location", "Unknown")
@@ -392,6 +616,7 @@ class BehavioralComparisonService:
             })
             unknown_items.append("Location context")
             unknown_chars.append("Location environment unspecified or unobserved")
+            unknown_statements.append("Location setting was unobserved or unspecified in one or both records.")
         else:
             loc_match = (loc_a.lower() == loc_b.lower())
             loc_status = "MATCH" if loc_match else "DIFFER"
@@ -406,13 +631,17 @@ class BehavioralComparisonService:
             })
             if loc_match:
                 match_items.append(loc_a)
-                matching_chars.append(f"Identical location setting ({loc_a})")
-                strongest_similarities.append(f"Identical setting: both incidents targeted {loc_a.lower()} environments.")
+                stmt = f"Both incidents occurred in {loc_a.lower()} settings."
+                matching_chars.append(stmt)
+                matched_statements.append(stmt)
+                strongest_similarities.append(f"Identical location setting: both incidents targeted {loc_a.lower()} environments.")
             else:
                 differ_items.append("Location context")
-                differing_chars.append(f"Spatial setting delta: Incident A ({loc_a}) vs Incident B ({loc_b})")
-                transitions.append(f"Target location environment shifted from {loc_a} to {loc_b}")
-                most_meaningful_differences.append(f"Target environment differed: Incident A was {loc_a} vs Incident B was {loc_b}.")
+                stmt = f"Location environment differs (Incident A: {loc_a} vs Incident B: {loc_b})."
+                differing_chars.append(stmt)
+                differing_statements.append(stmt)
+                transitions.append(f"Location setting differs: {loc_a} in Incident A vs {loc_b} in Incident B.")
+                most_meaningful_differences.append(f"Location setting differed: Incident A targeted {loc_a} whereas Incident B targeted {loc_b}.")
 
         # --- Dimension 3: Property ---
         prop_a_unk = attr_a.get("has_property") is None
@@ -431,6 +660,7 @@ class BehavioralComparisonService:
             })
             unknown_items.append("Property involvement")
             unknown_chars.append("Property involvement data unrecorded in one or both incidents")
+            unknown_statements.append("Property involvement status was unrecorded in one or both records.")
         else:
             prop_match = (attr_a["has_property"] == attr_b["has_property"])
             prop_status = "MATCH" if prop_match else "DIFFER"
@@ -445,16 +675,20 @@ class BehavioralComparisonService:
             })
             if prop_match:
                 match_items.append("Property" if attr_a["has_property"] else "No property")
-                matching_chars.append(f"Consistent property involvement ({'property acquisition' if attr_a['has_property'] else 'no property target'})")
+                stmt = "Both involved property." if attr_a["has_property"] else "Neither involved property."
+                matching_chars.append(stmt)
+                matched_statements.append(stmt)
                 if attr_a["has_property"]:
-                    strongest_similarities.append("Target property motive: both incidents sought tangible property acquisition.")
+                    strongest_similarities.append("Target property motive: both incidents involved property acquisition.")
                 else:
                     strongest_similarities.append("Non-property motive: neither incident targeted property theft.")
             else:
                 differ_items.append("Property involvement")
-                differing_chars.append(f"Property objective delta: Incident A ({prop_a}) vs Incident B ({prop_b})")
-                transitions.append(f"Property involvement shifted from {prop_a} to {prop_b}")
-                most_meaningful_differences.append(f"Property motive differed: Incident A was {prop_a.lower()} vs Incident B was {prop_b.lower()}.")
+                stmt = f"Property involvement differs (Incident A: {prop_a} vs Incident B: {prop_b})."
+                differing_chars.append(stmt)
+                differing_statements.append(stmt)
+                transitions.append(f"Property involvement differs: {prop_a} in Incident A vs {prop_b} in Incident B.")
+                most_meaningful_differences.append(f"Property involvement differed: Incident A was {prop_a.lower()} whereas Incident B was {prop_b.lower()}.")
 
         # --- Dimension 4: Weapon ---
         wep_a_unk = attr_a.get("has_weapon") is None or is_val_unknown(attr_a.get("weapon"))
@@ -473,6 +707,7 @@ class BehavioralComparisonService:
             })
             unknown_items.append("Weapon presence")
             unknown_chars.append("Weapon deployment unobserved or unspecified in one or both incidents")
+            unknown_statements.append("Weapon deployment context was unobserved or unspecified in one or both records.")
         else:
             wep_match = (attr_a["has_weapon"] == attr_b["has_weapon"])
             wep_status = "MATCH" if wep_match else "DIFFER"
@@ -487,23 +722,24 @@ class BehavioralComparisonService:
             })
             if wep_match:
                 match_items.append("No weapon" if not attr_a["has_weapon"] else "Weapon present")
-                matching_chars.append(f"Equally {'armed' if attr_a['has_weapon'] else 'unarmed'} execution")
+                stmt = "Both incidents were unarmed encounters." if not attr_a["has_weapon"] else "Both incidents involved weapons."
+                matching_chars.append(stmt)
+                matched_statements.append(stmt)
                 if not attr_a["has_weapon"]:
                     strongest_similarities.append("Unarmed execution: neither incident deployed weapons or lethal force.")
                 else:
                     strongest_similarities.append("Armed encounter: both incidents involved weapons.")
             else:
                 differ_items.append("Weapon context")
-                differing_chars.append(f"Weapon escalation/delta: Incident A ({wep_a}) vs Incident B ({wep_b})")
-                transitions.append(f"Weapon deployment changed from {wep_a} to {wep_b}")
+                stmt = f"Weapon context differs (Incident A: {wep_a} vs Incident B: {wep_b})."
+                differing_chars.append(stmt)
+                differing_statements.append(stmt)
+                transitions.append(f"Weapon deployment differed: {wep_a} in Incident A vs {wep_b} in Incident B.")
                 if not attr_a["has_weapon"] and attr_b["has_weapon"]:
-                    escalations.append("Weapon Escalation: Transitioned from unarmed to armed encounter.")
-                    most_meaningful_differences.append(f"Weapon escalation: Incident A was unarmed while Incident B introduced {wep_b}.")
+                    escalations.append(f"Weapon Context: Transitioned from unarmed to armed encounter ({wep_b}).")
                 elif attr_a["has_weapon"] and not attr_b["has_weapon"]:
-                    escalations.append("Weapon De-escalation: Transitioned from armed encounter to unarmed execution.")
-                    most_meaningful_differences.append("Weapon de-escalation: armed encounter in Incident A reduced to unarmed in Incident B.")
-                else:
-                    most_meaningful_differences.append(f"Weapon type disparity: {wep_a} vs {wep_b}.")
+                    escalations.append(f"Weapon Context: Armed encounter in Incident A reduced to unarmed in Incident B.")
+                most_meaningful_differences.append(f"Weapon context differs: Incident A was {wep_a} whereas Incident B was {wep_b}.")
 
         # --- Dimension 5: Injury ---
         inj_a_unk = attr_a.get("has_injury") is None or is_val_unknown(attr_a.get("injury"))
@@ -522,6 +758,7 @@ class BehavioralComparisonService:
             })
             unknown_items.append("Physical injury")
             unknown_chars.append("Injury outcome unspecified or unrecorded in one or both records")
+            unknown_statements.append("Physical trauma outcome was unrecorded in one or both records.")
         else:
             inj_match = (attr_a["has_injury"] == attr_b["has_injury"])
             inj_status = "MATCH" if inj_match else "DIFFER"
@@ -536,20 +773,22 @@ class BehavioralComparisonService:
             })
             if inj_match:
                 match_items.append("No injury" if not attr_a["has_injury"] else "Physical injury")
-                matching_chars.append(f"Harm dynamic aligned ({'injury inflicted' if attr_a['has_injury'] else 'no physical injury'})")
+                stmt = "Both reported no physical injury." if not attr_a["has_injury"] else "Both reported physical victim injury."
+                matching_chars.append(stmt)
+                matched_statements.append(stmt)
                 if not attr_a["has_injury"]:
                     strongest_similarities.append("Zero physical harm: no victim injuries occurred in either offense.")
                 else:
                     strongest_similarities.append("Harm outcome: physical injuries were sustained in both offenses.")
             else:
                 differ_items.append("Injury / physical harm")
-                differing_chars.append(f"Physical harm disparity: Incident A ({inj_a}) vs Incident B ({inj_b})")
-                transitions.append(f"Injury outcome shifted from {inj_a} to {inj_b}")
+                stmt = f"Physical injury context differs (Incident A: {inj_a} vs Incident B: {inj_b})."
+                differing_chars.append(stmt)
+                differing_statements.append(stmt)
+                transitions.append(f"Harm outcome differed: {inj_a} in Incident A vs {inj_b} in Incident B.")
                 if not attr_a["has_injury"] and attr_b["has_injury"]:
-                    escalations.append("Harm Escalation: Physical victim injury was inflicted in Incident B.")
-                    most_meaningful_differences.append("Harm escalation: Incident B resulted in victim injury whereas Incident A was non-injurious.")
-                else:
-                    most_meaningful_differences.append(f"Injury outcome delta: {inj_a} vs {inj_b}.")
+                    escalations.append("Harm / Injury Context: Physical victim injury reported in Incident B.")
+                most_meaningful_differences.append(f"Physical injury context differs: Incident A was {inj_a.lower()} whereas Incident B was {inj_b.lower()}.")
 
         # --- Dimension 6: Crime Category ---
         crime_a = attr_a.get("crime", "Unknown")
@@ -571,6 +810,7 @@ class BehavioralComparisonService:
             })
             unknown_items.append("Crime category")
             unknown_chars.append("Offense category classification unobserved")
+            unknown_statements.append("Statutory offense category was unspecified in one or both records.")
         else:
             crime_match = (crime_a.lower() == crime_b.lower())
             crime_status = "MATCH" if crime_match else "DIFFER"
@@ -586,42 +826,69 @@ class BehavioralComparisonService:
             same_crime_category = crime_match
             if crime_match:
                 match_items.append(f"Crime category ({crime_a})")
-                matching_chars.append(f"Identical offense category ({crime_a})")
+                stmt = f"Both incidents fall under the {crime_a} category."
+                matching_chars.append(stmt)
+                matched_statements.append(stmt)
                 crime_category_status = "Same Crime Category"
                 crime_category_detail = f"Both incidents belong to the same statutory category: {crime_a}."
                 strongest_similarities.append(f"Statutory crime category aligned: {crime_a}.")
             else:
                 differ_items.append("Crime category")
-                differing_chars.append(f"Cross-category divergence: Incident A ({crime_a}) vs Incident B ({crime_b})")
-                transitions.append(f"Statutory category shifted from {crime_a} to {crime_b}")
+                stmt = f"The recorded crime categories differ (Incident A: {crime_a} vs Incident B: {crime_b})."
+                differing_chars.append(stmt)
+                differing_statements.append(stmt)
+                transitions.append(f"Offense category differed: {crime_a} in Incident A vs {crime_b} in Incident B.")
                 crime_category_status = "Different Crime Category"
                 crime_category_detail = f"Different crime categories: Incident A is {crime_a} while Incident B is {crime_b}. The DNA engine evaluates behavioral MO alignment despite different legal labels."
-                most_meaningful_differences.append(f"Statutory crime category shifted from {crime_a} to {crime_b}.")
+                most_meaningful_differences.append(f"Statutory crime categories differ: Incident A is {crime_a} whereas Incident B is {crime_b}.")
 
         # --- Dimension 7: Victim Count ---
         vic_a = str(attr_a.get("victim_count", "1"))
         vic_b = str(attr_b.get("victim_count", "1"))
-        vic_match = (vic_a == vic_b)
-        table_rows.append({
-            "feature": "Victim Count",
-            "incident_a": f"{vic_a} {'victim' if vic_a == '1' else 'victims'}",
-            "incident_b": f"{vic_b} {'victim' if vic_b == '1' else 'victims'}",
-            "result": "✓" if vic_match else "△",
-            "match_status": "MATCH" if vic_match else "DIFFER",
-            "details": f"Victim headcount comparison ({vic_a} vs {vic_b})"
-        })
-        if vic_match:
-            match_items.append(f"Victim headcount ({vic_a})")
-            matching_chars.append(f"Equal victim count ({vic_a})")
-        else:
-            differ_items.append("Victim headcount")
-            differing_chars.append(f"Victim headcount disparity ({vic_a} vs {vic_b})")
-            most_meaningful_differences.append(f"Victim headcount diverged: {vic_a} vs {vic_b}.")
+        vic_a_unk = is_val_unknown(vic_a)
+        vic_b_unk = is_val_unknown(vic_b)
 
-        # 4. Synthesize "What Changed?" Prominent Section
-        match_count = len(match_items)
-        differ_count = len(differ_items)
-        unknown_count = len(unknown_items)
+        if vic_a_unk or vic_b_unk:
+            table_rows.append({
+                "feature": "Victim Count",
+                "incident_a": "Unknown" if vic_a_unk else vic_a,
+                "incident_b": "Unknown" if vic_b_unk else vic_b,
+                "result": "?",
+                "match_status": "UNKNOWN",
+                "details": f"Victim headcount unspecified in one or both records"
+            })
+            unknown_items.append("Victim headcount")
+            unknown_chars.append("Victim headcount unspecified or unobserved")
+            unknown_statements.append("Victim headcount was unrecorded or unspecified in one or both records.")
+        else:
+            vic_match = (vic_a == vic_b)
+            vic_status = "MATCH" if vic_match else "DIFFER"
+            vic_sym = "✓" if vic_match else "△"
+            table_rows.append({
+                "feature": "Victim Count",
+                "incident_a": f"{vic_a} {'victim' if vic_a == '1' else 'victims'}",
+                "incident_b": f"{vic_b} {'victim' if vic_b == '1' else 'victims'}",
+                "result": vic_sym,
+                "match_status": vic_status,
+                "details": f"Victim headcount comparison ({vic_a} vs {vic_b})"
+            })
+            if vic_match:
+                match_items.append(f"Victim headcount ({vic_a})")
+                stmt = f"Both involved {vic_a} victim{'s' if vic_a != '1' else ''}."
+                matching_chars.append(stmt)
+                matched_statements.append(stmt)
+            else:
+                differ_items.append("Victim headcount")
+                stmt = f"Victim headcount differs (Incident A: {vic_a} vs Incident B: {vic_b})."
+                differing_chars.append(stmt)
+                differing_statements.append(stmt)
+                most_meaningful_differences.append(f"Victim headcount diverged: {vic_a} vs {vic_b}.")
+
+        # 4. Strict Count Calculation (Zero Double-Counting, Mutually Exclusive)
+        match_count = len(matched_statements)
+        differ_count = len(differing_statements)
+        unknown_count = len(unknown_statements)
+        total_dimensions = len(table_rows)
 
         summary_match_line = f"{match_count} behavioral characteristic{'s' if match_count != 1 else ''} match."
         summary_differ_line = f"{differ_count} behavioral characteristic{'s' if differ_count != 1 else ''} differ."
@@ -637,7 +904,7 @@ class BehavioralComparisonService:
             headline = "Homogeneous Modus Operandi: High behavioral continuity across all compared dimensions."
             narrative = (
                 f"Incident A and Incident B exhibit identical behavioral patterns across timing, location setting, "
-                f"property involvement, weapon state, and injury dynamics."
+                f"property involvement, weapon state, injury dynamics, and victim count."
             )
         else:
             diff_names = [r["feature"] for r in table_rows if r["match_status"] == "DIFFER"]
@@ -645,14 +912,12 @@ class BehavioralComparisonService:
             headline = f"Behavioral Transition in {diff_summary_str}: {match_count} dimensions matched, {differ_count} diverged, {unknown_count} unobserved."
 
             narrative_parts = []
-            if escalations:
-                narrative_parts.append(" ".join(escalations))
             if transitions:
-                narrative_parts.append(f"Key operational shifts observed: {'; '.join(transitions[:3])}.")
+                narrative_parts.append(f"Observed behavioral differences: {'; '.join(transitions[:3])}.")
             if matching_chars:
-                narrative_parts.append(f"Underlying behavioral continuity remains rooted in {matching_chars[0].lower()}.")
+                narrative_parts.append(f"Shared behavioral patterns include {matching_chars[0].lower()}.")
             if unknown_chars:
-                narrative_parts.append(f"Note: {len(unknown_chars)} characteristic(s) were unobserved and not counted toward similarity.")
+                narrative_parts.append(f"Note: {unknown_count} characteristic(s) were unobserved and strictly excluded from matching.")
 
             narrative = " ".join(narrative_parts)
 
@@ -664,7 +929,7 @@ class BehavioralComparisonService:
             "match_count": match_count,
             "differ_count": differ_count,
             "unknown_count": unknown_count,
-            "total_dimensions_compared": len(table_rows),
+            "total_dimensions_compared": total_dimensions,
             "summary_match_line": summary_match_line,
             "summary_differ_line": summary_differ_line,
             "summary_unknown_line": summary_unknown_line,
@@ -672,6 +937,9 @@ class BehavioralComparisonService:
             "match_items": match_items,
             "differ_items": differ_items,
             "unknown_items": unknown_items,
+            "matched_statements": matched_statements,
+            "differing_statements": differing_statements,
+            "unknown_statements": unknown_statements,
             "same_crime_category": same_crime_category,
             "crime_category_status": crime_category_status,
             "crime_category_detail": crime_category_detail,
@@ -679,32 +947,132 @@ class BehavioralComparisonService:
             "most_meaningful_differences": most_meaningful_differences,
         }
 
-        # 5. Subprofile Group Energy Comparison
-        energies_a = res_a.get("subprofile_energies", {})
-        energies_b = res_b.get("subprofile_energies", {})
-        all_groups = list(dict.fromkeys(list(energies_a.keys()) + list(energies_b.keys())))
-
+        # 5. Audited 7-Domain Behavioral Energies & Covariance
         subprofile_comparison = []
-        for grp in all_groups:
-            e_a = energies_a.get(grp, 0.0)
-            e_b = energies_b.get(grp, 0.0)
+        domain_attributions = []
+        total_dot = float(np.dot(vec_a, vec_b)) if (vec_a is not None and vec_b is not None) else 0.0
+
+        for d_meta in SEVEN_DOMAINS_METADATA:
+            dom_id = d_meta["domain_id"]
+            dom_name = d_meta["domain_name"]
+            st: int = int(d_meta["start_idx"])
+            en: int = int(d_meta["end_idx"])
+            slice_len: int = en - st
+
+            u_g = vec_a[st:en] if vec_a is not None else np.zeros(slice_len)
+            v_g = vec_b[st:en] if vec_b is not None else np.zeros(slice_len)
+
+            e_a = round(float(np.linalg.norm(u_g)), 4)
+            e_b = round(float(np.linalg.norm(v_g)), 4)
             delta = round(e_b - e_a, 4)
+
+            score_a_pct = round(e_a * 100.0, 1)
+            score_b_pct = round(e_b * 100.0, 1)
+            delta_pct = round((e_b - e_a) * 100.0, 1)
+
+            if delta > 0:
+                delta_display = f"+{delta_pct:.1f} percentage points (+{delta:.3f})"
+            elif delta < 0:
+                delta_display = f"{delta_pct:.1f} percentage points ({delta:.3f})"
+            else:
+                delta_display = "0.0 percentage points (0.000)"
+
+            # Data Coverage calculation
+            cov_a = calculate_incident_coverage(raw_a, attr_a, d_meta)
+            cov_b = calculate_incident_coverage(raw_b, attr_b, d_meta)
+
+            if cov_a["status"] == "Sufficient data" and cov_b["status"] == "Sufficient data":
+                cov_status = "Sufficient data"
+            elif cov_a["status"] == "Insufficient data" or cov_b["status"] == "Insufficient data":
+                cov_status = "Insufficient data"
+            else:
+                cov_status = "Partial data"
+
+            # Dot-product similarity and attribution
+            dot_g = float(np.dot(u_g, v_g))
+            if e_a > 0.001 and e_b > 0.001:
+                dom_sim_pct = round(max(0.0, min(100.0, (dot_g / (e_a * e_b)) * 100.0)), 1)
+            elif e_a == 0.0 and e_b == 0.0:
+                dom_sim_pct = None  # Concordantly zero activation, not 100%
+            else:
+                dom_sim_pct = 0.0
+
+            dom_contrib_pct = round((max(0.0, dot_g) / max(1e-6, total_dot)) * 100.0, 1) if total_dot > 0 else 0.0
+
+            traits_a = extract_domain_contributing_features(raw_a, attr_a, dom_id)
+            traits_b = extract_domain_contributing_features(raw_b, attr_b, dom_id)
+            missing_a = extract_domain_missing_features(cov_a)
+            missing_b = extract_domain_missing_features(cov_b)
+
+            # Plain-English Interpretation
+            if e_a == 0.0 and e_b == 0.0:
+                interpretation = f"Zero recorded activation in both incidents (no {dom_name.lower()} signal observed, such as unarmed execution or zero physical harm)."
+            elif abs(delta) < 0.02:
+                interpretation = f"Equal domain scores ({e_a:.3f}); both incidents show similar coordinate activation in {dom_name.lower()}."
+            elif delta > 0:
+                interpretation = f"Incident B exhibits higher {dom_name.lower()} activation ({e_b:.3f} vs {e_a:.3f}, Δ = +{delta:.3f})."
+            else:
+                interpretation = f"Incident B exhibits lower {dom_name.lower()} activation ({e_b:.3f} vs {e_a:.3f}, Δ = {delta:.3f})."
+
+            alignment_label = "Aligned" if abs(delta) < 0.1 else ("Elevated in B" if delta > 0 else "Elevated in A")
+
             subprofile_comparison.append({
-                "group_name": grp.replace("_", " ").title(),
+                "group_name": dom_name,
+                "domain_id": dom_id,
+                "description": d_meta["description"],
                 "energy_a": e_a,
                 "energy_b": e_b,
                 "delta": delta,
-                "alignment": "Aligned" if abs(delta) < 0.1 else ("Elevated in B" if delta > 0 else "Elevated in A")
+                "score_a_pct": score_a_pct,
+                "score_b_pct": score_b_pct,
+                "delta_pct": delta_pct,
+                "delta_display": delta_display,
+                "data_coverage_a": cov_a["display"],
+                "data_coverage_b": cov_b["display"],
+                "data_coverage_status": cov_status,
+                "domain_similarity_pct": dom_sim_pct,
+                "domain_contribution_pct": dom_contrib_pct,
+                "alignment": alignment_label,
+                "interpretation": interpretation,
+                "contributing_features_a": traits_a,
+                "contributing_features_b": traits_b,
+                "missing_features_a": missing_a,
+                "missing_features_b": missing_b,
+                "calculation_formula": d_meta["formula"]
             })
 
-        # 6. Ethical Non-Offender Boundary and Network Map Explanation
+            domain_attributions.append({
+                "domain": dom_name,
+                "dot_product": round(dot_g, 4),
+                "contribution_pct": dom_contrib_pct
+            })
+
+        # 6. Technical Details Block
+        technical_details = {
+            "vector_length": 70,
+            "norm_vector_a": [round(float(x), 4) for x in vec_a] if vec_a is not None else [],
+            "norm_vector_b": [round(float(x), 4) for x in vec_b] if vec_b is not None else [],
+            "raw_cosine_similarity": round(raw_cosine, 4),
+            "cosine_distance": cosine_distance,
+            "similarity_formula": "S(u, v) = u · v = sum_{i=1}^{70} u_i * v_i over unit hypersphere S^69 (||u||_2 = 1.0, ||v||_2 = 1.0)",
+            "score_conversion_formula": "Similarity Score (%) = max(0.0, min(100.0, raw_cosine * 100.0))",
+            "threshold_tiers": {
+                "High Behavioral Affinity": "≥ 90.0%",
+                "Moderate Behavioral Affinity": "75.0% – 89.9%",
+                "Partial Behavioral Overlap": "50.0% – 74.9%",
+                "Divergent Behavioral Profiles": "< 50.0%"
+            },
+            "domain_attributions": domain_attributions
+        }
+
+        # 7. Ethical Non-Offender Boundary and Network Map Explanation
         ethical_advisory = (
-            "Based on patterns learned from historical incidents. "
-            "Crime Compass 🧭 analyzes behavioral patterns in historical incident data. "
-            "Similarity or novelty does not establish offender identity, guilt, or causation. "
-            "Behavioral similarity reflects shared modus operandi characteristics between incidents. "
-            "It does NOT indicate the same offender or establish investigative linkage without physical forensic evidence. "
-            "All graph nodes and connection links represent crime categories, modus operandi clusters, or environmental patterns—never identified persons."
+            "Crime Compass analyzes recorded incident characteristics and historical behavioral patterns. "
+            "Similarity and novelty scores describe patterns in the available data. "
+            "They do not establish offender identity, guilt, causation, or investigative linkage. "
+            "Behavioral similarity reflects shared modus operandi characteristics between incidents; "
+            "it does NOT indicate the same offender or establish investigative linkage without physical forensic evidence. "
+            "All graph nodes, connection maps, and network links represent crime categories, behavioral clusters, or environmental patterns—never identified persons."
         )
 
         return {
@@ -731,6 +1099,7 @@ class BehavioralComparisonService:
             "unknown_characteristics": unknown_chars,
             "what_changed": what_changed,
             "subprofile_comparison": subprofile_comparison,
+            "technical_details": technical_details,
             "ethical_advisory": ethical_advisory
         }
 

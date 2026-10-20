@@ -1,0 +1,1023 @@
+{
+  "CCP_00": {
+    "pattern_id": "CCP_00",
+    "cluster_id": 0,
+    "pattern_name": "Cross-Crime: Small-City Property & Structure Theft",
+    "total_incidents": 17725,
+    "categories_represented": [
+      {
+        "category_name": "Property",
+        "incident_count": 17583,
+        "percentage": 99.2
+      },
+      {
+        "category_name": "Person + Property",
+        "incident_count": 89,
+        "percentage": 0.5
+      },
+      {
+        "category_name": "Person",
+        "incident_count": 50,
+        "percentage": 0.28
+      }
+    ],
+    "dominant_behavioral_characteristics": {
+      "crime_characteristics": {
+        "against_person_pct": 0.28,
+        "against_property_pct": 99.2,
+        "against_society_pct": 0.01,
+        "compound_categories_pct": 0.51
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 14.79,
+        "weekend_pct": 21.02,
+        "mean_hour": 12.8
+      },
+      "location_patterns": {
+        "mean_population": 16505,
+        "urban_environment": "Small Municipality / Town"
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 0.91
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 99.72
+      },
+      "people_patterns": {
+        "known_relationship_pct": 0.81
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 0.82,
+        "drug_involvement_pct": 0.0,
+        "criminal_activity_pct": 4.57,
+        "on_scene_arrest_pct": 17.2
+      }
+    },
+    "inter_category_similarities": {
+      "Property <-> Person + Property": 0.7963,
+      "Property <-> Person": 0.7509,
+      "Person + Property <-> Person": 0.6935
+    },
+    "exemplar_incidents": [
+      {
+        "incident_id": "INC_171133",
+        "crime_category": "Property",
+        "category_description": "Property Offense",
+        "incident_hour": 16,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": false,
+        "has_arrest": false
+      },
+      {
+        "incident_id": "INC_041928",
+        "crime_category": "Person + Property",
+        "category_description": "Violent Robbery / Confrontational Property Crime",
+        "incident_hour": 15,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": true,
+        "has_arrest": false
+      },
+      {
+        "incident_id": "INC_097111",
+        "crime_category": "Person",
+        "category_description": "Violent Offense Against Person",
+        "incident_hour": 13,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": false,
+        "has_drug": false,
+        "has_relationship": false,
+        "has_arrest": false
+      }
+    ],
+    "exemplar_pairwise_similarities": {
+      "INC_171133 (Property) <-> INC_041928 (Person + Property)": 0.7783,
+      "INC_171133 (Property) <-> INC_097111 (Person)": 0.7863,
+      "INC_041928 (Person + Property) <-> INC_097111 (Person)": 0.6812
+    },
+    "cross_crime_evidence": {
+      "categories_count": 3,
+      "shannon_entropy": 0.0527,
+      "simpson_diversity": 0.0159,
+      "cross_crime_incidents": 142,
+      "cross_crime_percentage": 0.8,
+      "avg_inter_category_cosine_similarity": 0.7469,
+      "shared_behavior_rationale": "Despite originating from 3 legally distinct statutory crime categories, incidents in this pattern share an average behavioral cosine similarity of 0.747. They converge on identical environmental and modus operandi parameters: weapon presence rate = 0.91%, nighttime rate = 14.79%, and bodily injury rate = 0.82%."
+    }
+  },
+  "CCP_01": {
+    "pattern_id": "CCP_01",
+    "cluster_id": 1,
+    "pattern_name": "Cross-Crime: Violent Armed Interpersonal & Domestic Assaults",
+    "total_incidents": 74429,
+    "categories_represented": [
+      {
+        "category_name": "Person",
+        "incident_count": 68332,
+        "percentage": 91.81
+      },
+      {
+        "category_name": "Person + Property",
+        "incident_count": 4790,
+        "percentage": 6.44
+      },
+      {
+        "category_name": "Property",
+        "incident_count": 701,
+        "percentage": 0.94
+      },
+      {
+        "category_name": "Person + Society",
+        "incident_count": 531,
+        "percentage": 0.71
+      },
+      {
+        "category_name": "Person + Property + Society",
+        "incident_count": 50,
+        "percentage": 0.07
+      },
+      {
+        "category_name": "Property + Society",
+        "incident_count": 25,
+        "percentage": 0.03
+      }
+    ],
+    "dominant_behavioral_characteristics": {
+      "crime_characteristics": {
+        "against_person_pct": 91.81,
+        "against_property_pct": 0.94,
+        "against_society_pct": 0.0,
+        "compound_categories_pct": 7.25
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 26.04,
+        "weekend_pct": 30.29,
+        "mean_hour": 13.1
+      },
+      "location_patterns": {
+        "mean_population": 43076,
+        "urban_environment": "Suburban / Mid-Size"
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 85.31
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 8.27
+      },
+      "people_patterns": {
+        "known_relationship_pct": 94.06
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 84.8,
+        "drug_involvement_pct": 0.35,
+        "criminal_activity_pct": 30.38,
+        "on_scene_arrest_pct": 20.14
+      }
+    },
+    "inter_category_similarities": {
+      "Person <-> Person + Property": 0.8115,
+      "Person <-> Property": 0.8171,
+      "Person <-> Person + Society": 0.7214,
+      "Person <-> Person + Property + Society": 0.6903,
+      "Person <-> Property + Society": 0.6972,
+      "Person + Property <-> Property": 0.8827,
+      "Person + Property <-> Person + Society": 0.7864,
+      "Person + Property <-> Person + Property + Society": 0.8114,
+      "Person + Property <-> Property + Society": 0.8065,
+      "Property <-> Person + Society": 0.7875,
+      "Property <-> Person + Property + Society": 0.7859,
+      "Property <-> Property + Society": 0.8097,
+      "Person + Society <-> Person + Property + Society": 0.9188,
+      "Person + Society <-> Property + Society": 0.9149,
+      "Person + Property + Society <-> Property + Society": 0.925
+    },
+    "exemplar_incidents": [
+      {
+        "incident_id": "INC_136975",
+        "crime_category": "Person",
+        "category_description": "Violent Offense Against Person",
+        "incident_hour": 21,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": true,
+        "has_injury": true,
+        "has_property": false,
+        "has_drug": false,
+        "has_relationship": true,
+        "has_arrest": false
+      },
+      {
+        "incident_id": "INC_145291",
+        "crime_category": "Person + Property",
+        "category_description": "Violent Robbery / Confrontational Property Crime",
+        "incident_hour": 21,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": true,
+        "has_injury": true,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": true,
+        "has_arrest": false
+      },
+      {
+        "incident_id": "INC_077765",
+        "crime_category": "Property",
+        "category_description": "Property Offense",
+        "incident_hour": 20,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": true,
+        "has_injury": true,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": true,
+        "has_arrest": false
+      }
+    ],
+    "exemplar_pairwise_similarities": {
+      "INC_136975 (Person) <-> INC_145291 (Person + Property)": 0.8573,
+      "INC_136975 (Person) <-> INC_077765 (Property)": 0.8288,
+      "INC_145291 (Person + Property) <-> INC_077765 (Property)": 0.8745
+    },
+    "cross_crime_evidence": {
+      "categories_count": 6,
+      "shannon_entropy": 0.3418,
+      "simpson_diversity": 0.1528,
+      "cross_crime_incidents": 6097,
+      "cross_crime_percentage": 8.19,
+      "avg_inter_category_cosine_similarity": 0.8111,
+      "shared_behavior_rationale": "Despite originating from 6 legally distinct statutory crime categories, incidents in this pattern share an average behavioral cosine similarity of 0.811. They converge on identical environmental and modus operandi parameters: weapon presence rate = 85.31%, nighttime rate = 26.04%, and bodily injury rate = 84.8%."
+    }
+  },
+  "CCP_02": {
+    "pattern_id": "CCP_02",
+    "cluster_id": 2,
+    "pattern_name": "Cross-Crime: Suburban & Mid-Sized Town Daytime Property Theft",
+    "total_incidents": 35193,
+    "categories_represented": [
+      {
+        "category_name": "Property",
+        "incident_count": 35072,
+        "percentage": 99.66
+      },
+      {
+        "category_name": "Person + Property",
+        "incident_count": 120,
+        "percentage": 0.34
+      }
+    ],
+    "dominant_behavioral_characteristics": {
+      "crime_characteristics": {
+        "against_person_pct": 0.0,
+        "against_property_pct": 99.66,
+        "against_society_pct": 0.0,
+        "compound_categories_pct": 0.34
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 6.79,
+        "weekend_pct": 0.0,
+        "mean_hour": 13.0
+      },
+      "location_patterns": {
+        "mean_population": 33015,
+        "urban_environment": "Suburban / Mid-Size"
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 0.54
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 100.0
+      },
+      "people_patterns": {
+        "known_relationship_pct": 0.34
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 0.49,
+        "drug_involvement_pct": 0.0,
+        "criminal_activity_pct": 5.13,
+        "on_scene_arrest_pct": 12.99
+      }
+    },
+    "inter_category_similarities": {
+      "Property <-> Person + Property": 0.7622
+    },
+    "exemplar_incidents": [
+      {
+        "incident_id": "INC_010957",
+        "crime_category": "Property",
+        "category_description": "Property Offense",
+        "incident_hour": 11,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": false,
+        "has_arrest": false
+      },
+      {
+        "incident_id": "INC_120455",
+        "crime_category": "Person + Property",
+        "category_description": "Violent Robbery / Confrontational Property Crime",
+        "incident_hour": 12,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": true,
+        "has_arrest": false
+      }
+    ],
+    "exemplar_pairwise_similarities": {
+      "INC_010957 (Property) <-> INC_120455 (Person + Property)": 0.656
+    },
+    "cross_crime_evidence": {
+      "categories_count": 2,
+      "shannon_entropy": 0.0231,
+      "simpson_diversity": 0.0069,
+      "cross_crime_incidents": 121,
+      "cross_crime_percentage": 0.34,
+      "avg_inter_category_cosine_similarity": 0.7622,
+      "shared_behavior_rationale": "Despite originating from 2 legally distinct statutory crime categories, incidents in this pattern share an average behavioral cosine similarity of 0.762. They converge on identical environmental and modus operandi parameters: weapon presence rate = 0.54%, nighttime rate = 6.79%, and bodily injury rate = 0.49%."
+    }
+  },
+  "CCP_03": {
+    "pattern_id": "CCP_03",
+    "cluster_id": 3,
+    "pattern_name": "Cross-Crime: Nocturnal & Weekend Residential/Commercial Burglary",
+    "total_incidents": 33335,
+    "categories_represented": [
+      {
+        "category_name": "Property",
+        "incident_count": 33065,
+        "percentage": 99.19
+      },
+      {
+        "category_name": "Person + Property",
+        "incident_count": 238,
+        "percentage": 0.71
+      },
+      {
+        "category_name": "Person",
+        "incident_count": 31,
+        "percentage": 0.09
+      }
+    ],
+    "dominant_behavioral_characteristics": {
+      "crime_characteristics": {
+        "against_person_pct": 0.09,
+        "against_property_pct": 99.19,
+        "against_society_pct": 0.0,
+        "compound_categories_pct": 0.72
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 48.1,
+        "weekend_pct": 77.03,
+        "mean_hour": 10.1
+      },
+      "location_patterns": {
+        "mean_population": 62087,
+        "urban_environment": "Suburban / Mid-Size"
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 1.65
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 99.91
+      },
+      "people_patterns": {
+        "known_relationship_pct": 0.87
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 1.57,
+        "drug_involvement_pct": 0.0,
+        "criminal_activity_pct": 2.62,
+        "on_scene_arrest_pct": 9.38
+      }
+    },
+    "inter_category_similarities": {
+      "Property <-> Person + Property": 0.8081,
+      "Property <-> Person": 0.7476,
+      "Person + Property <-> Person": 0.7301
+    },
+    "exemplar_incidents": [
+      {
+        "incident_id": "INC_079500",
+        "crime_category": "Property",
+        "category_description": "Property Offense",
+        "incident_hour": 1,
+        "is_weekend": true,
+        "is_night": true,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": false,
+        "has_arrest": false
+      },
+      {
+        "incident_id": "INC_108471",
+        "crime_category": "Person + Property",
+        "category_description": "Violent Robbery / Confrontational Property Crime",
+        "incident_hour": 0,
+        "is_weekend": true,
+        "is_night": true,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": true,
+        "has_arrest": false
+      },
+      {
+        "incident_id": "INC_150497",
+        "crime_category": "Person",
+        "category_description": "Violent Offense Against Person",
+        "incident_hour": 0,
+        "is_weekend": true,
+        "is_night": true,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": false,
+        "has_drug": false,
+        "has_relationship": false,
+        "has_arrest": false
+      }
+    ],
+    "exemplar_pairwise_similarities": {
+      "INC_079500 (Property) <-> INC_108471 (Person + Property)": 0.8438,
+      "INC_079500 (Property) <-> INC_150497 (Person)": 0.8094,
+      "INC_108471 (Person + Property) <-> INC_150497 (Person)": 0.7425
+    },
+    "cross_crime_evidence": {
+      "categories_count": 3,
+      "shannon_entropy": 0.0502,
+      "simpson_diversity": 0.0161,
+      "cross_crime_incidents": 270,
+      "cross_crime_percentage": 0.81,
+      "avg_inter_category_cosine_similarity": 0.7619,
+      "shared_behavior_rationale": "Despite originating from 3 legally distinct statutory crime categories, incidents in this pattern share an average behavioral cosine similarity of 0.762. They converge on identical environmental and modus operandi parameters: weapon presence rate = 1.65%, nighttime rate = 48.1%, and bodily injury rate = 1.57%."
+    }
+  },
+  "CCP_04": {
+    "pattern_id": "CCP_04",
+    "cluster_id": 4,
+    "pattern_name": "Cross-Crime: Weekend Nightlife Vice & Public Order Enforcement",
+    "total_incidents": 8656,
+    "categories_represented": [
+      {
+        "category_name": "Society",
+        "incident_count": 7969,
+        "percentage": 92.06
+      },
+      {
+        "category_name": "Property + Society",
+        "incident_count": 350,
+        "percentage": 4.04
+      },
+      {
+        "category_name": "Person + Society",
+        "incident_count": 113,
+        "percentage": 1.31
+      },
+      {
+        "category_name": "Property",
+        "incident_count": 93,
+        "percentage": 1.07
+      },
+      {
+        "category_name": "Person + Property",
+        "incident_count": 65,
+        "percentage": 0.75
+      },
+      {
+        "category_name": "Person",
+        "incident_count": 52,
+        "percentage": 0.6
+      },
+      {
+        "category_name": "Person + Property + Society",
+        "incident_count": 14,
+        "percentage": 0.16
+      }
+    ],
+    "dominant_behavioral_characteristics": {
+      "crime_characteristics": {
+        "against_person_pct": 0.6,
+        "against_property_pct": 1.07,
+        "against_society_pct": 92.06,
+        "compound_categories_pct": 6.26
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 37.56,
+        "weekend_pct": 100.0,
+        "mean_hour": 12.5
+      },
+      "location_patterns": {
+        "mean_population": 29794,
+        "urban_environment": "Suburban / Mid-Size"
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 7.12
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 93.61
+      },
+      "people_patterns": {
+        "known_relationship_pct": 2.15
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 1.32,
+        "drug_involvement_pct": 68.08,
+        "criminal_activity_pct": 99.66,
+        "on_scene_arrest_pct": 72.53
+      }
+    },
+    "inter_category_similarities": {
+      "Society <-> Property + Society": 0.7852,
+      "Society <-> Person + Society": 0.7144,
+      "Society <-> Property": 0.8412,
+      "Society <-> Person + Property": 0.783,
+      "Society <-> Person": 0.7544,
+      "Society <-> Person + Property + Society": 0.6807,
+      "Property + Society <-> Person + Society": 0.839,
+      "Property + Society <-> Property": 0.7819,
+      "Property + Society <-> Person + Property": 0.7468,
+      "Property + Society <-> Person": 0.6359,
+      "Property + Society <-> Person + Property + Society": 0.8378,
+      "Person + Society <-> Property": 0.6835,
+      "Person + Society <-> Person + Property": 0.7357,
+      "Person + Society <-> Person": 0.5655,
+      "Person + Society <-> Person + Property + Society": 0.922,
+      "Property <-> Person + Property": 0.7855,
+      "Property <-> Person": 0.7253,
+      "Property <-> Person + Property + Society": 0.6576,
+      "Person + Property <-> Person": 0.7346,
+      "Person + Property <-> Person + Property + Society": 0.7199,
+      "Person <-> Person + Property + Society": 0.5118
+    },
+    "exemplar_incidents": [
+      {
+        "incident_id": "INC_092376",
+        "crime_category": "Society",
+        "category_description": "Societal / Public Order Offense",
+        "incident_hour": 2,
+        "is_weekend": true,
+        "is_night": true,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": true,
+        "has_relationship": false,
+        "has_arrest": true
+      },
+      {
+        "incident_id": "INC_040189",
+        "crime_category": "Property + Society",
+        "category_description": "Vandalism / Contraband Property Offense",
+        "incident_hour": 20,
+        "is_weekend": true,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": true,
+        "has_relationship": false,
+        "has_arrest": true
+      },
+      {
+        "incident_id": "INC_110277",
+        "crime_category": "Person + Society",
+        "category_description": "Interpersonal Disorder / Resisting Offense",
+        "incident_hour": 2,
+        "is_weekend": true,
+        "is_night": true,
+        "has_weapon": true,
+        "has_injury": true,
+        "has_property": true,
+        "has_drug": true,
+        "has_relationship": true,
+        "has_arrest": true
+      }
+    ],
+    "exemplar_pairwise_similarities": {
+      "INC_092376 (Society) <-> INC_040189 (Property + Society)": 0.7031,
+      "INC_092376 (Society) <-> INC_110277 (Person + Society)": 0.7104,
+      "INC_040189 (Property + Society) <-> INC_110277 (Person + Society)": 0.7466
+    },
+    "cross_crime_evidence": {
+      "categories_count": 7,
+      "shannon_entropy": 0.389,
+      "simpson_diversity": 0.1504,
+      "cross_crime_incidents": 687,
+      "cross_crime_percentage": 7.94,
+      "avg_inter_category_cosine_similarity": 0.7353,
+      "shared_behavior_rationale": "Despite originating from 7 legally distinct statutory crime categories, incidents in this pattern share an average behavioral cosine similarity of 0.735. They converge on identical environmental and modus operandi parameters: weapon presence rate = 7.12%, nighttime rate = 37.56%, and bodily injury rate = 1.32%."
+    }
+  },
+  "CCP_05": {
+    "pattern_id": "CCP_05",
+    "cluster_id": 5,
+    "pattern_name": "Cross-Crime: Regulatory & Non-Drug Societal Enterprise Offenses",
+    "total_incidents": 8096,
+    "categories_represented": [
+      {
+        "category_name": "Society",
+        "incident_count": 7382,
+        "percentage": 91.18
+      },
+      {
+        "category_name": "Property + Society",
+        "incident_count": 353,
+        "percentage": 4.36
+      },
+      {
+        "category_name": "Person",
+        "incident_count": 156,
+        "percentage": 1.93
+      },
+      {
+        "category_name": "Person + Property",
+        "incident_count": 132,
+        "percentage": 1.63
+      },
+      {
+        "category_name": "Property",
+        "incident_count": 59,
+        "percentage": 0.73
+      },
+      {
+        "category_name": "Person + Society",
+        "incident_count": 13,
+        "percentage": 0.16
+      }
+    ],
+    "dominant_behavioral_characteristics": {
+      "crime_characteristics": {
+        "against_person_pct": 1.93,
+        "against_property_pct": 0.73,
+        "against_society_pct": 91.18,
+        "compound_categories_pct": 6.16
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 26.89,
+        "weekend_pct": 0.0,
+        "mean_hour": 12.9
+      },
+      "location_patterns": {
+        "mean_population": 58514,
+        "urban_environment": "Suburban / Mid-Size"
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 11.14
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 77.08
+      },
+      "people_patterns": {
+        "known_relationship_pct": 1.54
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 0.22,
+        "drug_involvement_pct": 0.0,
+        "criminal_activity_pct": 98.88,
+        "on_scene_arrest_pct": 57.65
+      }
+    },
+    "inter_category_similarities": {
+      "Society <-> Property + Society": 0.7528,
+      "Society <-> Person": 0.7848,
+      "Society <-> Person + Property": 0.7885,
+      "Society <-> Property": 0.8363,
+      "Society <-> Person + Society": 0.6801,
+      "Property + Society <-> Person": 0.6395,
+      "Property + Society <-> Person + Property": 0.7583,
+      "Property + Society <-> Property": 0.7472,
+      "Property + Society <-> Person + Society": 0.8281,
+      "Person <-> Person + Property": 0.7269,
+      "Person <-> Property": 0.6882,
+      "Person <-> Person + Society": 0.6322,
+      "Person + Property <-> Property": 0.7444,
+      "Person + Property <-> Person + Society": 0.7802,
+      "Property <-> Person + Society": 0.6782
+    },
+    "exemplar_incidents": [
+      {
+        "incident_id": "INC_091821",
+        "crime_category": "Society",
+        "category_description": "Societal / Public Order Offense",
+        "incident_hour": 21,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": false,
+        "has_arrest": true
+      },
+      {
+        "incident_id": "INC_150846",
+        "crime_category": "Property + Society",
+        "category_description": "Vandalism / Contraband Property Offense",
+        "incident_hour": 15,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": false,
+        "has_arrest": true
+      },
+      {
+        "incident_id": "INC_152720",
+        "crime_category": "Person",
+        "category_description": "Violent Offense Against Person",
+        "incident_hour": 9,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": false,
+        "has_drug": false,
+        "has_relationship": false,
+        "has_arrest": false
+      }
+    ],
+    "exemplar_pairwise_similarities": {
+      "INC_091821 (Society) <-> INC_150846 (Property + Society)": 0.7717,
+      "INC_091821 (Society) <-> INC_152720 (Person)": 0.7585,
+      "INC_150846 (Property + Society) <-> INC_152720 (Person)": 0.6545
+    },
+    "cross_crime_evidence": {
+      "categories_count": 6,
+      "shannon_entropy": 0.4113,
+      "simpson_diversity": 0.166,
+      "cross_crime_incidents": 714,
+      "cross_crime_percentage": 8.82,
+      "avg_inter_category_cosine_similarity": 0.7377,
+      "shared_behavior_rationale": "Despite originating from 6 legally distinct statutory crime categories, incidents in this pattern share an average behavioral cosine similarity of 0.738. They converge on identical environmental and modus operandi parameters: weapon presence rate = 11.14%, nighttime rate = 26.89%, and bodily injury rate = 0.22%."
+    }
+  },
+  "CCP_06": {
+    "pattern_id": "CCP_06",
+    "cluster_id": 6,
+    "pattern_name": "Cross-Crime: Metropolitan Core High-Density Larceny & Shoplifting",
+    "total_incidents": 25542,
+    "categories_represented": [
+      {
+        "category_name": "Property",
+        "incident_count": 25423,
+        "percentage": 99.53
+      },
+      {
+        "category_name": "Person + Property",
+        "incident_count": 90,
+        "percentage": 0.35
+      },
+      {
+        "category_name": "Person",
+        "incident_count": 26,
+        "percentage": 0.1
+      }
+    ],
+    "dominant_behavioral_characteristics": {
+      "crime_characteristics": {
+        "against_person_pct": 0.1,
+        "against_property_pct": 99.53,
+        "against_society_pct": 0.01,
+        "compound_categories_pct": 0.35
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 24.6,
+        "weekend_pct": 0.0,
+        "mean_hour": 12.4
+      },
+      "location_patterns": {
+        "mean_population": 195418,
+        "urban_environment": "Metropolitan Core"
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 2.09
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 99.9
+      },
+      "people_patterns": {
+        "known_relationship_pct": 1.13
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 2.04,
+        "drug_involvement_pct": 0.0,
+        "criminal_activity_pct": 2.56,
+        "on_scene_arrest_pct": 6.05
+      }
+    },
+    "inter_category_similarities": {
+      "Property <-> Person + Property": 0.8141,
+      "Property <-> Person": 0.7587,
+      "Person + Property <-> Person": 0.728
+    },
+    "exemplar_incidents": [
+      {
+        "incident_id": "INC_032487",
+        "crime_category": "Property",
+        "category_description": "Property Offense",
+        "incident_hour": 20,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": false,
+        "has_arrest": false
+      },
+      {
+        "incident_id": "INC_211624",
+        "crime_category": "Person + Property",
+        "category_description": "Violent Robbery / Confrontational Property Crime",
+        "incident_hour": 8,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": false,
+        "has_relationship": true,
+        "has_arrest": false
+      },
+      {
+        "incident_id": "INC_117168",
+        "crime_category": "Person",
+        "category_description": "Violent Offense Against Person",
+        "incident_hour": 11,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": false,
+        "has_drug": false,
+        "has_relationship": false,
+        "has_arrest": false
+      }
+    ],
+    "exemplar_pairwise_similarities": {
+      "INC_032487 (Property) <-> INC_211624 (Person + Property)": 0.7391,
+      "INC_032487 (Property) <-> INC_117168 (Person)": 0.7088,
+      "INC_211624 (Person + Property) <-> INC_117168 (Person)": 0.7075
+    },
+    "cross_crime_evidence": {
+      "categories_count": 3,
+      "shannon_entropy": 0.0326,
+      "simpson_diversity": 0.0093,
+      "cross_crime_incidents": 119,
+      "cross_crime_percentage": 0.47,
+      "avg_inter_category_cosine_similarity": 0.767,
+      "shared_behavior_rationale": "Despite originating from 3 legally distinct statutory crime categories, incidents in this pattern share an average behavioral cosine similarity of 0.767. They converge on identical environmental and modus operandi parameters: weapon presence rate = 2.09%, nighttime rate = 24.6%, and bodily injury rate = 2.04%."
+    }
+  },
+  "CCP_07": {
+    "pattern_id": "CCP_07",
+    "cluster_id": 7,
+    "pattern_name": "Cross-Crime: Narcotics Trafficking & Contraband Vice Operations",
+    "total_incidents": 17687,
+    "categories_represented": [
+      {
+        "category_name": "Society",
+        "incident_count": 17049,
+        "percentage": 96.39
+      },
+      {
+        "category_name": "Property + Society",
+        "incident_count": 571,
+        "percentage": 3.23
+      },
+      {
+        "category_name": "Person + Society",
+        "incident_count": 54,
+        "percentage": 0.31
+      },
+      {
+        "category_name": "Person + Property + Society",
+        "incident_count": 13,
+        "percentage": 0.07
+      }
+    ],
+    "dominant_behavioral_characteristics": {
+      "crime_characteristics": {
+        "against_person_pct": 0.0,
+        "against_property_pct": 0.0,
+        "against_society_pct": 96.39,
+        "compound_categories_pct": 3.61
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 30.8,
+        "weekend_pct": 0.0,
+        "mean_hour": 12.9
+      },
+      "location_patterns": {
+        "mean_population": 26964,
+        "urban_environment": "Suburban / Mid-Size"
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 3.42
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 100.0
+      },
+      "people_patterns": {
+        "known_relationship_pct": 0.37
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 0.29,
+        "drug_involvement_pct": 100.0,
+        "criminal_activity_pct": 100.0,
+        "on_scene_arrest_pct": 68.87
+      }
+    },
+    "inter_category_similarities": {
+      "Society <-> Property + Society": 0.7832,
+      "Society <-> Person + Society": 0.7075,
+      "Society <-> Person + Property + Society": 0.6731,
+      "Property + Society <-> Person + Society": 0.8419,
+      "Property + Society <-> Person + Property + Society": 0.8406,
+      "Person + Society <-> Person + Property + Society": 0.9227
+    },
+    "exemplar_incidents": [
+      {
+        "incident_id": "INC_165253",
+        "crime_category": "Society",
+        "category_description": "Societal / Public Order Offense",
+        "incident_hour": 21,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": true,
+        "has_relationship": false,
+        "has_arrest": true
+      },
+      {
+        "incident_id": "INC_204116",
+        "crime_category": "Property + Society",
+        "category_description": "Vandalism / Contraband Property Offense",
+        "incident_hour": 15,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": false,
+        "has_injury": false,
+        "has_property": true,
+        "has_drug": true,
+        "has_relationship": false,
+        "has_arrest": true
+      },
+      {
+        "incident_id": "INC_197747",
+        "crime_category": "Person + Society",
+        "category_description": "Interpersonal Disorder / Resisting Offense",
+        "incident_hour": 7,
+        "is_weekend": false,
+        "is_night": false,
+        "has_weapon": true,
+        "has_injury": true,
+        "has_property": true,
+        "has_drug": true,
+        "has_relationship": true,
+        "has_arrest": true
+      }
+    ],
+    "exemplar_pairwise_similarities": {
+      "INC_165253 (Society) <-> INC_204116 (Property + Society)": 0.7888,
+      "INC_165253 (Society) <-> INC_197747 (Person + Society)": 0.6563,
+      "INC_204116 (Property + Society) <-> INC_197747 (Person + Society)": 0.754
+    },
+    "cross_crime_evidence": {
+      "categories_count": 4,
+      "shannon_entropy": 0.1692,
+      "simpson_diversity": 0.0698,
+      "cross_crime_incidents": 638,
+      "cross_crime_percentage": 3.61,
+      "avg_inter_category_cosine_similarity": 0.7949,
+      "shared_behavior_rationale": "Despite originating from 4 legally distinct statutory crime categories, incidents in this pattern share an average behavioral cosine similarity of 0.795. They converge on identical environmental and modus operandi parameters: weapon presence rate = 3.42%, nighttime rate = 30.8%, and bodily injury rate = 0.29%."
+    }
+  }
+}

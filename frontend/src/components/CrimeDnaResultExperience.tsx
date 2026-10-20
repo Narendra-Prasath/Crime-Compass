@@ -2,20 +2,11 @@ import React, { useState } from 'react';
 import type {
   InputAnalysisResult,
   IncidentInputPayload,
-  SimilarMatch,
   DomainCoverageItem,
   CompactTrait
 } from '../types';
 import { FeedbackWidget } from './FeedbackWidget';
 import {
-  Fingerprint,
-  Compass,
-  Layers,
-  Network,
-  HelpCircle,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle2,
   Cpu,
   ChevronDown,
   ChevronUp,
@@ -25,23 +16,15 @@ import {
   ExternalLink,
   ShieldAlert,
   Info,
-  Calendar,
-  Clock,
+  CheckCircle2,
   MapPin,
-  Sparkles,
-  ArrowRight,
-  Lock,
-  Tag,
-  Sliders,
+  Layers,
   Check,
-  Share2,
-  Globe2
+  HelpCircle
 } from 'lucide-react';
 import {
   formatIndianNumber,
-  formatCurrency,
-  formatIndianDate,
-  formatIndianTime
+  formatCurrency
 } from '../utils/indiaFormat';
 
 interface CrimeDnaResultExperienceProps {
@@ -180,11 +163,6 @@ export const CrimeDnaResultExperience: React.FC<CrimeDnaResultExperienceProps> =
     return true;
   });
 
-  const safePct = (val: any, fallback = 0, digits = 1): string => {
-    const n = typeof val === 'number' && !isNaN(val) ? val : fallback;
-    return n.toFixed(digits);
-  };
-
   // Calculate highest similarity score
   const topSimilarityPct = (
     analysisResult.similar_historical_incidents?.[0]?.similarity_score_pct ??
@@ -202,17 +180,26 @@ export const CrimeDnaResultExperience: React.FC<CrimeDnaResultExperienceProps> =
     if (raw) {
       const list = Array.isArray(raw) ? raw : Object.values(raw);
       if (list.length > 0) {
-        return list.map((d: any) => ({
-          domain_id: d.domain_id || d.domain_key || 'domain',
-          name: d.name || d.label || d.domain_key || 'Domain',
-          coverage_pct: typeof d.coverage_pct === 'number' ? d.coverage_pct : 0,
-          valid_fields_count: d.valid_fields_count ?? d.available_fields_count ?? 0,
-          total_applicable_fields: d.total_applicable_fields ?? d.total_supported_fields ?? 0,
-          unspecified_fields_count: d.unspecified_fields_count ?? 0,
-          description: d.description || '',
-          available_fields: Array.isArray(d.available_fields) ? d.available_fields : [],
-          unspecified_fields: Array.isArray(d.unspecified_fields) ? d.unspecified_fields : []
-        }));
+        return list.map((d: any) => {
+          const valid = d.valid_fields_count ?? d.available_fields_count ?? 0;
+          const unspec = d.unspecified_fields_count ?? 0;
+          const notApp = d.not_applicable_fields_count ?? 0;
+          const totalApp = d.total_applicable_fields ?? (valid + unspec);
+          const computedPct = totalApp > 0 ? Math.round((valid / totalApp) * 1000) / 10 : 100.0;
+          return {
+            domain_id: d.domain_id || d.domain_key || 'domain',
+            name: d.name || d.label || d.domain_key || 'Domain',
+            coverage_pct: typeof d.coverage_pct === 'number' ? d.coverage_pct : computedPct,
+            valid_fields_count: valid,
+            total_applicable_fields: totalApp,
+            unspecified_fields_count: unspec,
+            not_applicable_fields_count: notApp,
+            total_supported_fields: d.total_supported_fields ?? (totalApp + notApp),
+            description: d.description || '',
+            available_fields: Array.isArray(d.available_fields) ? d.available_fields : [],
+            unspecified_fields: Array.isArray(d.unspecified_fields) ? d.unspecified_fields : []
+          };
+        });
       }
     }
     return [
@@ -283,6 +270,19 @@ export const CrimeDnaResultExperience: React.FC<CrimeDnaResultExperienceProps> =
         unspecified_fields: []
       }
     ];
+  })();
+
+  // Overall Schema Coverage percentage computed precisely from data or domains
+  const overallCoveragePct: number = (() => {
+    if (typeof analysisResult.data_coverage?.overall_coverage_pct === 'number') {
+      return analysisResult.data_coverage.overall_coverage_pct;
+    }
+    if (typeof analysisResult.behavioral_dna?.data_coverage?.overall_coverage_pct === 'number') {
+      return analysisResult.behavioral_dna.data_coverage.overall_coverage_pct;
+    }
+    const totalValid = domainCoverage.reduce((acc, d) => acc + (d.valid_fields_count || 0), 0);
+    const totalApplicable = domainCoverage.reduce((acc, d) => acc + (d.total_applicable_fields || 0), 0);
+    return totalApplicable > 0 ? (totalValid / totalApplicable) * 100 : 100.0;
   })();
 
   // Compact Behavioral Fingerprint Traits (Part C)
@@ -562,7 +562,7 @@ export const CrimeDnaResultExperience: React.FC<CrimeDnaResultExperienceProps> =
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--accent-cyan)' }}>
-                {(analysisResult.data_coverage?.overall_coverage_pct ?? 94.4).toFixed(1)}%
+                {overallCoveragePct.toFixed(1)}%
               </div>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>Overall Schema Coverage</div>
             </div>
@@ -597,7 +597,10 @@ export const CrimeDnaResultExperience: React.FC<CrimeDnaResultExperienceProps> =
                     />
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-dim)', marginBottom: '3px' }}>
-                    <span>{domain.valid_fields_count}/{domain.total_applicable_fields} valid fields</span>
+                    <span>
+                      {domain.valid_fields_count}/{domain.total_applicable_fields} valid fields
+                      {(domain.not_applicable_fields_count ?? 0) > 0 ? ` (${domain.not_applicable_fields_count} N/A)` : ''}
+                    </span>
                     <span>{domain.unspecified_fields_count > 0 ? `${domain.unspecified_fields_count} unspecified` : 'all applicable specified'}</span>
                   </div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', lineHeight: 1.35 }}>
@@ -1353,11 +1356,24 @@ export const CrimeDnaResultExperience: React.FC<CrimeDnaResultExperienceProps> =
               Observed Features Evaluated in Novelty Assessment:
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-              {analysisResult.novelty_assessment.observed_features_contributing.map((feat, fIdx) => (
-                <span key={fIdx} className="badge" style={{ fontSize: '0.68rem' }}>
-                  {feat}
-                </span>
-              ))}
+              {analysisResult.novelty_assessment.observed_features_contributing.map((feat: any, fIdx: number) => {
+                const label = typeof feat === 'string'
+                  ? feat
+                  : (feat?.factor_name || feat?.feature_name || feat?.explanation || 'Evaluated Feature');
+                const deltaStr = typeof feat === 'object' && feat?.direction && feat?.deviation_delta !== undefined
+                  ? ` (${feat.direction === 'higher' ? '+' : '-'}${Math.abs(feat.deviation_delta).toFixed(2)})`
+                  : '';
+                return (
+                  <span
+                    key={fIdx}
+                    className="badge"
+                    style={{ fontSize: '0.68rem', background: 'rgba(245, 158, 11, 0.1)', color: 'var(--accent-amber)', border: '1px solid rgba(245, 158, 11, 0.25)' }}
+                    title={typeof feat === 'object' && feat?.explanation ? feat.explanation : undefined}
+                  >
+                    {label}{deltaStr}
+                  </span>
+                );
+              })}
             </div>
           </div>
         )}

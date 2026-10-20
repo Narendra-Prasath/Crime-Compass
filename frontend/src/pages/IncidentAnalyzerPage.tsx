@@ -14,6 +14,96 @@ interface IncidentAnalyzerPageProps {
 
 const PRESET_INCIDENTS = ['INC_136975', 'INC_145291', 'INC_171133', 'INC_082341', 'INC_135749'];
 
+const getDimensionFriendlyLabel = (feature: string, label?: string): string => {
+  if (label && label !== feature) return label;
+  const friendlyMap: Record<string, string> = {
+    time_hour_sin: 'Diurnal Rhythm (Sine)',
+    time_hour_cos: 'Diurnal Rhythm (Cos)',
+    time_month_sin: 'Seasonal Timing (Sine)',
+    time_month_cos: 'Seasonal Timing (Cos)',
+    time_weekday_sin: 'Weekly Rhythm (Sine)',
+    time_weekday_cos: 'Weekly Rhythm (Cos)',
+    time_is_weekend: 'Weekend Occurrence',
+    time_is_night: 'Nocturnal Execution (Night)',
+    crime_against_person: 'Crimes Against Person',
+    crime_against_property: 'Property Offense',
+    crime_against_society: 'Societal Regulation Offense',
+    crime_against_person_property: 'Dual Person & Property Offense',
+    crime_against_person_society: 'Person & Society Crime',
+    crime_against_property_society: 'Property & Society Crime',
+    crime_against_person_property_society: 'Multi-Category Crime',
+    offense_count_scaled: 'Offense Count Volume',
+    offense_categories_count_scaled: 'Category Diversity',
+    is_attempted: 'Attempted Offense',
+    location_count_scaled: 'Multi-Location Scene',
+    population_log_scaled: 'Urban Population Density',
+    'population_group_desc_cities_from_10,000_thru_24,999': 'Small City (10k-25k pop.)',
+    'population_group_desc_cities_from_100,000_thru_249,999': 'Metropolitan Core (100k-250k)',
+    'population_group_desc_cities_from_2,500_thru_9,999': 'Town Setting (2.5k-10k pop.)',
+    'population_group_desc_cities_from_25,000_thru_49,999': 'Mid-Sized City (25k-50k pop.)',
+    'population_group_desc_cities_from_50,000_thru_99,999': 'Medium-Large City (50k-100k)',
+    'population_group_desc_cities_under_2,500': 'Rural Municipality (<2.5k pop.)',
+    'population_group_desc_msa_counties_100,000_or_over': 'Major Metro County (>100k)',
+    'population_group_desc_msa_counties_from_10,000_thru_24,999': 'Small Metro County (10k-25k)',
+    'population_group_desc_msa_counties_from_25,000_thru_99,999': 'Mid-Metro County (25k-100k)',
+    'population_group_desc_msa_counties_under_10,000': 'Rural Metro County (<10k)',
+    'population_group_desc_non_msa_state_police': 'State Police Corridor',
+    'population_group_desc_non_msa_counties_from_10,000_thru_24,999': 'Rural County (10k-25k pop.)',
+    'population_group_desc_non_msa_counties_from_25,000_thru_99,999': 'Mid-Rural County (25k-100k)',
+    'population_group_desc_non_msa_counties_under_10,000': 'Remote Rural County (<10k)',
+    agency_is_state_police: 'State Police Jurisdiction',
+    has_weapon: 'Weapon Deployed',
+    weapon_count_scaled: 'Weapon Volume',
+    weapon_types_count_scaled: 'Weapon Diversity',
+    is_multi_weapon: 'Multi-Weapon Arsenal',
+    has_criminal_activity: 'Secondary Criminal Activity',
+    criminal_activity_count_scaled: 'Enterprise Activity Volume',
+    has_relationship: 'Prior Victim-Offender Relationship',
+    relationship_count_scaled: 'Interpersonal Ties Complexity',
+    victim_count_scaled: 'Victim Headcount',
+    is_multi_victim: 'Multiple Victims Targeted',
+    victim_age_known: 'Documented Victim Demographics',
+    victim_avg_age_scaled: 'Victim Age Index',
+    victim_age_spread_scaled: 'Cross-Generational Victim Spread',
+    victim_sexes_count_scaled: 'Mixed-Gender Victim Group',
+    victim_types_count_scaled: 'Diverse Victim Types',
+    offender_count_scaled: 'Offender Group Size',
+    is_co_offender: 'Co-Offenders Present',
+    offender_age_known: 'Documented Offender Profile',
+    offender_avg_age_scaled: 'Offender Age Index',
+    offender_age_spread_scaled: 'Perpetrator Age Dispersion',
+    offender_sexes_count_scaled: 'Mixed-Gender Co-Offenders',
+    has_property: 'Property Loss / Targeted',
+    property_record_count_scaled: 'Property Records Volume',
+    has_stolen_property: 'Stolen Property Involved',
+    stolen_count_scaled: 'Stolen Item Volume',
+    property_value_log_scaled: 'Financial Valuation Index',
+    is_cargo_theft: 'Commercial Cargo Theft',
+    has_injury: 'Bodily Harm / Injury Inflicted',
+    injury_record_count_scaled: 'Injury Severity Volume',
+    has_drug: 'Narcotics Involvement',
+    suspected_drug_count_scaled: 'Suspected Drug Varieties',
+    estimated_drug_quantity_log_scaled: 'Contraband Quantity Volume',
+    has_bias_motivation: 'Hate / Bias Motivation',
+    has_arrest_on_scene: 'Immediate Scene Arrest',
+    arrest_count_scaled: 'On-Scene Arrest Volume',
+  };
+  return friendlyMap[feature] || feature.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+};
+
+const getDimensionDomain = (feature: string, domain?: string, domainLabel?: string): string => {
+  if (domainLabel) return domainLabel;
+  if (domain) return domain.replace(/_/g, ' ').toUpperCase();
+  if (feature.startsWith('time_')) return 'Time Pattern';
+  if (feature.startsWith('crime_') || feature.startsWith('offense_') || feature === 'is_attempted') return 'Crime Type';
+  if (feature.startsWith('population_') || feature.startsWith('location_') || feature.includes('state_police')) return 'Location';
+  if (feature.includes('weapon') || feature.includes('relationship') || feature.includes('criminal_activity')) return 'Method / MO';
+  if (feature.includes('victim') || feature.includes('offender') || feature.includes('co_offender')) return 'People / Context';
+  if (feature.includes('property') || feature.includes('stolen') || feature.includes('cargo')) return 'Property';
+  if (feature.includes('injury') || feature.includes('drug') || feature.includes('bias') || feature.includes('arrest')) return 'Harm / Outcome';
+  return 'Dimension';
+};
+
 export const IncidentAnalyzerPage: React.FC<IncidentAnalyzerPageProps> = ({
   initialIncidentId = 'INC_136975',
   onNavigate,
@@ -287,20 +377,71 @@ export const IncidentAnalyzerPage: React.FC<IncidentAnalyzerPageProps> = ({
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {(dna.top_active_traits || []).map((trait, idx) => (
-                    <div key={idx}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '3px' }}>
-                        <span className="mono" style={{ color: 'var(--text-main)' }}>{trait.feature}</span>
-                        <span className="mono" style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>
-                          {trait.value.toFixed(4)}
-                        </span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {(dna.top_active_traits || []).map((trait, idx) => {
+                    const friendlyName = getDimensionFriendlyLabel(trait.feature, trait.label);
+                    const domainName = getDimensionDomain(trait.feature, trait.domain, trait.domain_label);
+                    const energyPct = trait.energy_share_pct ?? Math.round(trait.value * trait.value * 1000) / 10;
+                    return (
+                      <div key={idx} style={{ padding: '2px 0' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            fontSize: '0.78rem',
+                            marginBottom: '4px',
+                            gap: '12px'
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, overflow: 'hidden' }}>
+                            <span
+                              style={{
+                                color: 'var(--text-main)',
+                                fontWeight: 600,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                              }}
+                              title={trait.description || `${friendlyName} (${trait.feature})`}
+                            >
+                              {friendlyName}
+                            </span>
+                            <span
+                              style={{
+                                fontSize: '0.64rem',
+                                padding: '1px 5px',
+                                borderRadius: '3px',
+                                background: 'rgba(255,255,255,0.06)',
+                                color: 'var(--text-dim)',
+                                flexShrink: 0,
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              {domainName}
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: 'auto' }}>
+                            <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)' }} title="Normalized component energy share (v²)">
+                              {energyPct.toFixed(1)}% energy
+                            </span>
+                            <span className="mono" style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>
+                              {trait.value.toFixed(4)}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="progress-bar-container" style={{ height: '5px' }}>
+                          <div
+                            className="progress-bar-fill"
+                            style={{
+                              width: `${Math.min(100, Math.max(8, trait.value * 250))}%`,
+                              backgroundColor: 'var(--accent-cyan)'
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div className="progress-bar-container">
-                        <div className="progress-bar-fill" style={{ width: `${Math.min(100, trait.value * 250)}%` }} />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>

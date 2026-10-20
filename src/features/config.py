@@ -206,3 +206,134 @@ FEATURE_DESCRIPTIONS: Dict[str, str] = {
     "has_arrest_on_scene": "Incident resolved with immediate on-scene arrest.",
     "arrest_count_scaled": "Number of arrestees taken into custody on-scene.",
 }
+
+# Concise, professional, human-readable labels for all 70 behavioral fingerprint dimensions
+FEATURE_FRIENDLY_NAMES: Dict[str, str] = {
+    # 1. Temporal Dynamics
+    "time_hour_sin": "Diurnal Rhythm (Cycle Sine)",
+    "time_hour_cos": "Diurnal Rhythm (Cycle Cos)",
+    "time_month_sin": "Seasonal Timing (Annual Sine)",
+    "time_month_cos": "Seasonal Timing (Annual Cos)",
+    "time_weekday_sin": "Weekly Rhythm (Day Sine)",
+    "time_weekday_cos": "Weekly Rhythm (Day Cos)",
+    "time_is_weekend": "Weekend Execution",
+    "time_is_night": "Nocturnal Execution (Night)",
+
+    # 2. Crime Characteristics
+    "crime_against_person": "Direct Violence Against Person",
+    "crime_against_property": "Property / Economic Targeting",
+    "crime_against_society": "Societal Regulation Breach",
+    "crime_against_person_property": "Dual Person & Property Offense",
+    "crime_against_person_society": "Dual Person & Societal Offense",
+    "crime_against_property_society": "Dual Property & Societal Offense",
+    "crime_against_person_property_society": "Multi-Domain Offense",
+    "offense_count_scaled": "Offense Volume Index",
+    "offense_categories_count_scaled": "Offense Category Breadth",
+    "is_attempted": "Attempted Offense Status",
+
+    # 3. Location & Environment
+    "location_count_scaled": "Multi-Scene Geometry",
+    "population_log_scaled": "Urban Population Density",
+    "population_group_desc_cities_from_10,000_thru_24,999": "Small City (10k-25k pop.)",
+    "population_group_desc_cities_from_100,000_thru_249,999": "Metropolitan Core (100k-250k)",
+    "population_group_desc_cities_from_2,500_thru_9,999": "Town Setting (2.5k-10k pop.)",
+    "population_group_desc_cities_from_25,000_thru_49,999": "Mid-Sized City (25k-50k pop.)",
+    "population_group_desc_cities_from_50,000_thru_99,999": "Medium-Large City (50k-100k)",
+    "population_group_desc_cities_under_2,500": "Rural Municipality (<2.5k pop.)",
+    "population_group_desc_msa_counties_100,000_or_over": "Large Metro County (>100k)",
+    "population_group_desc_msa_counties_from_10,000_thru_24,999": "Small Metro County (10k-25k)",
+    "population_group_desc_msa_counties_from_25,000_thru_99,999": "Mid-Metro County (25k-100k)",
+    "population_group_desc_msa_counties_under_10,000": "Rural Metro County (<10k)",
+    "population_group_desc_non_msa_state_police": "State Police Corridor Setting",
+    "population_group_desc_non_msa_counties_from_10,000_thru_24,999": "Rural County (10k-25k pop.)",
+    "population_group_desc_non_msa_counties_from_25,000_thru_99,999": "Mid-Rural County (25k-100k)",
+    "population_group_desc_non_msa_counties_under_10,000": "Remote Rural County (<10k)",
+    "agency_is_state_police": "State Police Jurisdiction",
+
+    # 4. Method & Activity
+    "has_weapon": "Weapon Deployed",
+    "weapon_count_scaled": "Weapon Deployment Volume",
+    "weapon_types_count_scaled": "Weapon Diversity Index",
+    "is_multi_weapon": "Multi-Weapon Arsenal",
+    "has_criminal_activity": "Secondary Criminal Activity",
+    "criminal_activity_count_scaled": "Enterprise Activity Volume",
+    "has_relationship": "Prior Interpersonal Relationship",
+    "relationship_count_scaled": "Relationship Complexity",
+
+    # 5. People & Demographics
+    "victim_count_scaled": "Victim Count Index",
+    "is_multi_victim": "Multiple Victims Targeted",
+    "victim_age_known": "Documented Victim Demographics",
+    "victim_avg_age_scaled": "Victim Age Index",
+    "victim_age_spread_scaled": "Cross-Generational Victim Spread",
+    "victim_sexes_count_scaled": "Mixed-Gender Victim Group",
+    "victim_types_count_scaled": "Diverse Victim Types",
+    "offender_count_scaled": "Offender Crew Size",
+    "is_co_offender": "Co-Offenders Acting in Concert",
+    "offender_age_known": "Documented Offender Profile",
+    "offender_avg_age_scaled": "Offender Age Index",
+    "offender_age_spread_scaled": "Perpetrator Age Dispersion",
+    "offender_sexes_count_scaled": "Mixed-Gender Co-Offenders",
+
+    # 6. Property & Economics
+    "has_property": "Property Targeted / Loss",
+    "property_record_count_scaled": "Property Records Volume",
+    "has_stolen_property": "Stolen Property Involved",
+    "stolen_count_scaled": "Stolen Item Volume",
+    "property_value_log_scaled": "Financial Valuation Index",
+    "is_cargo_theft": "Commercial Cargo Theft",
+
+    # 7. Context & Harm
+    "has_injury": "Bodily Harm / Injury Inflicted",
+    "injury_record_count_scaled": "Injury Severity Volume",
+    "has_drug": "Contraband / Narcotics Presence",
+    "suspected_drug_count_scaled": "Suspected Narcotics Varieties",
+    "estimated_drug_quantity_log_scaled": "Narcotics Volume Index",
+    "has_bias_motivation": "Hate / Bias Motivation",
+    "has_arrest_on_scene": "Immediate Scene Arrest",
+    "arrest_count_scaled": "On-Scene Arrest Volume",
+}
+
+# Domain mapping for all 70 features
+FEATURE_BEHAVIORAL_DOMAINS: Dict[str, str] = {
+    col: grp
+    for grp, cols in FEATURE_GROUPS.items()
+    for col in cols
+}
+
+# Human-facing labels for 7 behavioral domains
+DOMAIN_LABELS: Dict[str, str] = {
+    "temporal_dynamics": "Time Pattern",
+    "crime_characteristics": "Crime Type",
+    "location_and_environment": "Location",
+    "method_and_activity": "Method / MO",
+    "people_and_demographics": "People / Context",
+    "property_and_economics": "Property",
+    "context_and_harm": "Harm / Outcome",
+}
+
+# Modus operandi salience weights for breaking ties between normalized features with identical magnitude
+FEATURE_SALIENCE_WEIGHTS: Dict[str, float] = {
+    "has_weapon": 3.2,
+    "has_injury": 3.2,
+    "is_multi_weapon": 2.9,
+    "crime_against_person_property": 2.9,
+    "crime_against_person": 2.8,
+    "crime_against_property": 2.7,
+    "is_multi_victim": 2.8,
+    "is_cargo_theft": 2.7,
+    "has_criminal_activity": 2.6,
+    "has_property": 2.5,
+    "has_relationship": 2.5,
+    "time_is_night": 2.5,
+    "has_bias_motivation": 2.6,
+    "has_drug": 2.4,
+    "is_co_offender": 2.3,
+    "has_arrest_on_scene": 2.2,
+    "has_stolen_property": 2.2,
+    "is_attempted": 2.0,
+    "time_is_weekend": 1.9,
+    "victim_age_known": 1.1,
+    "offender_age_known": 1.1,
+}
+

@@ -72,6 +72,11 @@ export interface IncidentProfile {
 export interface FeatureTrait {
   feature: string;
   value: number;
+  label?: string;
+  domain?: string;
+  domain_label?: string;
+  energy_share_pct?: number;
+  description?: string;
 }
 
 export interface BehavioralDNA {
@@ -89,6 +94,8 @@ export interface DomainCoverageItem {
   valid_fields_count: number;
   total_applicable_fields: number;
   unspecified_fields_count: number;
+  not_applicable_fields_count?: number;
+  total_supported_fields?: number;
   description: string;
   available_fields: string[];
   unspecified_fields: string[];
@@ -560,7 +567,7 @@ export interface InputAnalysisResult {
     neutral_label_description?: string;
     method_used?: string;
     data_limitations?: string;
-    observed_features_contributing?: string[];
+    observed_features_contributing?: Array<string | Record<string, any>>;
     percentile_description: string;
     distance_to_nearest_cluster: number;
     nearest_cluster_name: string;
@@ -745,15 +752,44 @@ export interface WhatChangedDetail {
   total_dimensions_compared: number;
   summary_match_line?: string;
   summary_differ_line?: string;
+  summary_unknown_line?: string;
   summary_text?: string;
   match_items: string[];
   differ_items: string[];
   unknown_items?: string[];
+  matched_statements?: string[];
+  differing_statements?: string[];
+  unknown_statements?: string[];
   same_crime_category: boolean;
   crime_category_status: string;
   crime_category_detail: string;
   strongest_similarities: string[];
   most_meaningful_differences: string[];
+}
+
+export interface SubprofileComparisonDomain {
+  group_name: string;
+  domain_id?: string;
+  description?: string;
+  energy_a: number;
+  energy_b: number;
+  delta: number;
+  score_a_pct?: number;
+  score_b_pct?: number;
+  delta_pct?: number;
+  delta_display?: string;
+  data_coverage_a?: string;
+  data_coverage_b?: string;
+  data_coverage_status?: string;
+  domain_similarity_pct?: number | null;
+  domain_contribution_pct?: number;
+  alignment: string;
+  interpretation?: string;
+  contributing_features_a?: string[];
+  contributing_features_b?: string[];
+  missing_features_a?: string[];
+  missing_features_b?: string[];
+  calculation_formula?: string;
 }
 
 export interface DnaComparisonResponse {
@@ -774,13 +810,22 @@ export interface DnaComparisonResponse {
   differing_characteristics: string[];
   unknown_characteristics?: string[];
   what_changed: WhatChangedDetail;
-  subprofile_comparison: Array<{
-    group_name: string;
-    energy_a: number;
-    energy_b: number;
-    delta: number;
-    alignment: string;
-  }>;
+  subprofile_comparison: SubprofileComparisonDomain[];
+  technical_details?: {
+    vector_length: number;
+    norm_vector_a: number[];
+    norm_vector_b: number[];
+    raw_cosine_similarity: number;
+    cosine_distance: number;
+    similarity_formula: string;
+    score_conversion_formula: string;
+    threshold_tiers: Record<string, string>;
+    domain_attributions: Array<{
+      domain: string;
+      dot_product: number;
+      contribution_pct: number;
+    }>;
+  };
   ethical_advisory: string;
   network_map_disclaimer?: string;
 }
@@ -1039,6 +1084,7 @@ export interface DatasetSimilarIncident {
   target_cluster: string;
   matching_characteristics: string[];
   differing_characteristics: string[];
+  data_coverage_percentage?: number;
 }
 
 export interface CrossCrimePatternItem {
@@ -1076,6 +1122,7 @@ export interface TemporalEvolution {
   is_available: boolean;
   period_breakdown: TemporalPeriodSummary[];
   hourly_distribution: Record<string, number>;
+  day_of_week_distribution?: Record<string, number>;
   disclaimer: string;
 }
 
@@ -1098,6 +1145,18 @@ export interface DatasetSummary {
   date_range: string;
   geographic_scope: string;
   fields_used: string[];
+}
+
+export interface DatasetDomainEnergy {
+  id: string;
+  name: string;
+  status: 'Calculated' | 'Insufficient data';
+  score: number | null;
+  mapped_fields: string[];
+  formula: string;
+  normalization: string;
+  meaning: string;
+  explanation: string;
 }
 
 export interface DatasetAnalysisResult {
@@ -1124,6 +1183,7 @@ export interface DatasetAnalysisResult {
     }>;
     disclaimer: string;
   } | null;
+  domain_energies?: DatasetDomainEnergy[];
   why_these_results: {
     observed_facts: string[];
     algorithm_findings: string[];

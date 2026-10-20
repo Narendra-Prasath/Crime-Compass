@@ -1,0 +1,13 @@
+{
+  "include": [
+    "src",
+    "tests"
+  ],
+  "extraPaths": [
+    ".",
+    "./.venv/lib/python3.14/site-packages",
+    "/Users/nare/5th SEM/Zero_Spoil/.venv/lib/python3.14/site-packages"
+  ],
+  "venvPath": ".",
+  "venv": ".venv"
+}

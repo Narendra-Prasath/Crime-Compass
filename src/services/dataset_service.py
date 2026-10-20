@@ -277,38 +277,125 @@ class DatasetAnalysisService:
     # STEP 1 & 2 & 3 & 4: Validate, Preview, Auto-Map
     # =========================================================================
 
-    def validate_and_preview(self, file_content: bytes, filename: str) -> Dict[str, Any]:
-        """
-        Validates uploaded CSV file, extracts a 5-row preview, computes stats,
-        and automatically suggests column mappings to the 70D Behavioral DNA schema.
-        """
-        t0 = time.perf_counter()
+    @staticmethod
+    def _read_xlsx(file_bytes: bytes) -> pd.DataFrame:
+        """Reads basic .xlsx file using Python standard library (zipfile + xml)."""
+        import zipfile
+        import xml.etree.ElementTree as ET
+        try:
+            with zipfile.ZipFile(io.BytesIO(file_bytes)) as z:
+                shared_strings = []
+                if "xl/sharedStrings.xml" in z.namelist():
+                    tree = ET.fromstring(z.read("xl/sharedStrings.xml"))
+                    for si in tree.findall(".//{*}si"):
+                        texts = [t.text or "" for t in si.findall(".//{*}t")]
+                        shared_strings.append("".join(texts))
 
-        # 1. Size Check
+                sheet_xml = None
+                for name in z.namelist():
+                    if name.startswith("xl/worksheets/sheet") and name.endswith(".xml"):
+                        sheet_xml = z.read(name)
+                        break
+                if not sheet_xml:
+                    raise ValueError("No worksheet found in .xlsx file")
+
+                tree = ET.fromstring(sheet_xml)
+                rows_data = []
+                for row in tree.findall(".//{*}row"):
+                    row_cells = {}
+                    for c in row.findall(".//{*}c"):
+                        ref = c.attrib.get("r", "")
+                        t = c.attrib.get("t", "")
+                        v = c.find(".//{*}v")
+                        val = v.text if v is not None and v.text is not None else ""
+                        if t == "s" and val.isdigit():
+                            idx = int(val)
+                            if idx < len(shared_strings):
+                                val = shared_strings[idx]
+                        col_letter = "".join([ch for ch in ref if ch.isalpha()])
+                        row_cells[col_letter] = val
+                    if row_cells:
+                        rows_data.append(row_cells)
+
+                if not rows_data:
+                    return pd.DataFrame()
+
+                all_cols = sorted(list(set().union(*[r.keys() for r in rows_data])))
+                grid = []
+                for r in rows_data:
+                    grid.append([r.get(c, "") for c in all_cols])
+
+                if len(grid) < 2:
+                    return pd.DataFrame(columns=grid[0] if grid else [])
+                return pd.DataFrame(grid[1:], columns=grid[0])
+        except Exception as e:
+            raise ValueError(f"Failed to parse Excel (.xlsx) file: {str(e)}")
+
+    def _parse_file_to_dataframe(self, file_content: bytes, filename: str) -> pd.DataFrame:
+        """Robustly parses user uploaded CSV or Excel (.xlsx) file with security checks."""
         if not file_content or len(file_content) == 0:
-            raise ValueError("Uploaded file is empty (0 bytes). Please upload a valid CSV file containing incident records.")
+            raise ValueError("Uploaded file is empty (0 bytes). Please upload a valid CSV or Excel (.xlsx) file containing incident records.")
 
         if len(file_content) > MAX_FILE_SIZE_BYTES:
             size_mb = len(file_content) / (1024 * 1024)
             raise ValueError(f"File size ({size_mb:.2f} MB) exceeds maximum allowed size ({MAX_FILE_SIZE_BYTES // (1024 * 1024)} MB).")
 
-        # 2. Content & Encoding Check
+        lower_fn = filename.lower()
+        unsafe_exts = [".exe", ".sh", ".bat", ".cmd", ".dll", ".so", ".app", ".py", ".msi", ".vbs", ".bin", ".js"]
+        if any(lower_fn.endswith(ext) for ext in unsafe_exts):
+            raise ValueError(f"File type '{filename.split('.')[-1]}' is prohibited for security reasons.")
+
+        allowed_exts = [".csv", ".tsv", ".txt", ".xlsx", ".xls"]
+        if not any(lower_fn.endswith(ext) for ext in allowed_exts):
+            raise ValueError(
+                f"File '{filename}' has an unsupported file format. "
+                "Only structured tabular files (.csv, .tsv, .txt, .xlsx, .xls) are permitted."
+            )
+
+        # Excel (.xlsx) format
+        if lower_fn.endswith((".xlsx", ".xls")) or file_content[:4] == b"PK\x03\x04":
+            df = self._read_xlsx(file_content)
+            if df.empty:
+                raise ValueError("The uploaded Excel file contains headers but zero incident records.")
+            return df
+
+        # Binary check for CSV
         if b"\x00" in file_content[:1024]:
             raise ValueError("Uploaded file appears to be a binary or executable file, which is strictly prohibited for security.")
 
+        # CSV parsing with comment='#' support for disclaimers
         df = None
         for enc in ["utf-8", "utf-8-sig", "latin-1", "cp1252"]:
             try:
-                df = pd.read_csv(io.BytesIO(file_content), encoding=enc)
+                df = pd.read_csv(io.BytesIO(file_content), encoding=enc, comment="#")
                 break
             except Exception:
                 continue
+
+        if df is None:
+            for enc in ["utf-8", "utf-8-sig", "latin-1", "cp1252"]:
+                try:
+                    df = pd.read_csv(io.BytesIO(file_content), encoding=enc)
+                    break
+                except Exception:
+                    continue
 
         if df is None:
             raise ValueError("Failed to parse CSV file. Please ensure the file is properly formatted with comma or standard delimiters.")
 
         if df.empty:
             raise ValueError("The uploaded CSV contains headers but zero incident records.")
+
+        return df
+
+    def validate_and_preview(self, file_content: bytes, filename: str) -> Dict[str, Any]:
+        """
+        Validates uploaded CSV or Excel file, extracts a 5-row preview, computes stats,
+        and automatically suggests column mappings to the 70D Behavioral DNA schema.
+        """
+        t0 = time.perf_counter()
+
+        df = self._parse_file_to_dataframe(file_content, filename)
 
         if len(df) > MAX_RECORDS_LIMIT:
             logger.warning(f"Dataset has {len(df)} rows. Capping at {MAX_RECORDS_LIMIT} rows for responsive performance.")
@@ -523,15 +610,17 @@ class DatasetAnalysisService:
             filename, df = self._temp_cache[file_token]
             df = df.copy()
         elif file_content:
-            for enc in ["utf-8", "utf-8-sig", "latin-1", "cp1252"]:
-                try:
-                    df = pd.read_csv(io.BytesIO(file_content), encoding=enc)
-                    break
-                except Exception:
-                    continue
+            df = self._parse_file_to_dataframe(file_content, filename)
 
         if df is None or df.empty:
             raise ValueError("No valid dataset found to analyze. Please upload or validate a dataset first.")
+
+        # Sanitize column mapping: ignore unmapped/unknown/not_applicable status values
+        ignored_status_values = {"unmapped", "not_available", "unknown", "not_applicable", ""}
+        column_mapping = {
+            k: v for k, v in column_mapping.items()
+            if v and str(v).strip().lower() not in ignored_status_values and str(v) in df.columns
+        }
 
         # 2. Apply Scope Filtering (Location and Date Range)
         initial_records_count = len(df)
@@ -767,6 +856,12 @@ class DatasetAnalysisService:
             for n_idx, s_val in top_neighbors:
                 target_rec = records[n_idx]
                 matching, differing = self._explain_pair_differences(src_rec, target_rec)
+
+                # Compute available data coverage across mapped fields
+                total_mapped_f = max(1, len([k for k, v in column_mapping.items() if v in filtered_df.columns]))
+                cov_fields = sum(1 for k, v in column_mapping.items() if v in filtered_df.columns and src_rec.get(k) is not None and target_rec.get(k) is not None)
+                coverage_pct = round(cov_fields / total_mapped_f * 100, 1)
+
                 similar_pairs.append({
                     "source_id": src_rec["incident_id"],
                     "target_id": target_rec["incident_id"],
@@ -776,7 +871,8 @@ class DatasetAnalysisService:
                     "source_cluster": f"DP_{src_rec['cluster_id'] + 1:02d}",
                     "target_cluster": f"DP_{target_rec['cluster_id'] + 1:02d}",
                     "matching_characteristics": matching,
-                    "differing_characteristics": differing
+                    "differing_characteristics": differing,
+                    "data_coverage_percentage": coverage_pct
                 })
 
         # Keep top 8 unique most informative pairs
@@ -896,18 +992,26 @@ class DatasetAnalysisService:
             "is_available": False,
             "period_breakdown": [],
             "hourly_distribution": {},
+            "day_of_week_distribution": {},
             "disclaimer": "Temporal trends reflect data reporting timelines. Incomplete or delayed reporting must not be interpreted as proof that incidents increased or decreased."
         }
 
-        # Group by month or year if date available
+        # Group by month, hour, and day of week if date/time available
         monthly_counts: Dict[str, int] = {}
         hourly_counts: Dict[int, int] = {}
+        dow_counts: Dict[str, int] = {}
         for r in records:
             d_str = r.get("incident_date")
             t_str = r.get("incident_time")
             if d_str:
                 month_key = str(d_str)[:7]  # YYYY-MM
                 monthly_counts[month_key] = monthly_counts.get(month_key, 0) + 1
+                try:
+                    dt = pd.to_datetime(d_str)
+                    dow = dt.strftime("%A")
+                    dow_counts[dow] = dow_counts.get(dow, 0) + 1
+                except Exception:
+                    pass
             if t_str:
                 try:
                     hr = int(str(t_str).split(":")[0])
@@ -915,7 +1019,7 @@ class DatasetAnalysisService:
                 except Exception:
                     pass
 
-        if len(monthly_counts) >= 2 or len(hourly_counts) >= 2:
+        if len(monthly_counts) >= 2 or len(hourly_counts) >= 2 or len(dow_counts) >= 2:
             period_list = []
             for m_key in sorted(monthly_counts.keys()):
                 period_list.append({
@@ -928,6 +1032,7 @@ class DatasetAnalysisService:
                 "is_available": True,
                 "period_breakdown": period_list,
                 "hourly_distribution": {f"{hr:02d}:00": cnt for hr, cnt in sorted(hourly_counts.items())},
+                "day_of_week_distribution": dow_counts,
                 "disclaimer": "Temporal trends reflect data reporting timelines. Incomplete or delayed reporting must not be interpreted as proof that incidents increased or decreased."
             }
 
@@ -952,7 +1057,7 @@ class DatasetAnalysisService:
             top_diff_dims = np.argsort(diffs)[::-1][:3]
             contributing_factors = [FEATURE_DESCRIPTIONS.get(ORDERED_FEATURE_NAMES[dim], ORDERED_FEATURE_NAMES[dim].replace("_", " ").title()) for dim in top_diff_dims]
 
-            label = "Unusual Combination" if dist > 0.4 else "Less Common Combination"
+            label = "Unusual Pattern in This Dataset" if dist > 0.4 else "Less Common Pattern in This Dataset"
             unusual_combinations.append({
                 "incident_id": rec["incident_id"],
                 "novelty_score": round(dist, 4),
@@ -1003,6 +1108,95 @@ class DatasetAnalysisService:
             "execution_time_ms": round((time.perf_counter() - t0) * 1000, 2)
         }
 
+        # 13. Compute the 7 Behavioral Domain Energies (Section 4.C)
+        domain_definitions = [
+            {
+                "id": "temporal_dynamics",
+                "name": "Temporal Dynamics",
+                "features": FEATURE_GROUPS.get("temporal_dynamics", []),
+                "mapped_fields": [k for k in ["incident_date", "incident_time"] if column_mapping.get(k) in filtered_df.columns],
+                "formula": "Normalized Root Mean Square feature magnitude: E = mean_i(||v_i[temporal]||_2) * 100",
+                "meaning": "Measures temporal rhythm, time-of-day concentration, and weekday vs. nocturnal distribution."
+            },
+            {
+                "id": "crime_characteristics",
+                "name": "Crime Characteristics",
+                "features": FEATURE_GROUPS.get("crime_characteristics", []),
+                "mapped_fields": [k for k in ["crime_category", "is_attempted"] if column_mapping.get(k) in filtered_df.columns],
+                "formula": "Normalized category vector norm: E = mean_i(||v_i[crime_char]||_2) * 100",
+                "meaning": "Captures the statutory classification, targeting dimension (person, property, society), and attempt status."
+            },
+            {
+                "id": "location_and_environment",
+                "name": "Location & Environment",
+                "features": FEATURE_GROUPS.get("location_and_environment", []),
+                "mapped_fields": [k for k in ["population_setting", "location_type", "city_town", "district", "locality"] if column_mapping.get(k) in filtered_df.columns],
+                "formula": "Environmental profile magnitude: E = mean_i(||v_i[location]||_2) * 100",
+                "meaning": "Measures environmental setting, urban/rural density context, and location count characteristics."
+            },
+            {
+                "id": "method_and_activity",
+                "name": "Method & Activity",
+                "features": FEATURE_GROUPS.get("method_and_activity", []),
+                "mapped_fields": [k for k in ["has_weapon", "weapon_count", "has_criminal_activity", "has_relationship"] if column_mapping.get(k) in filtered_df.columns],
+                "formula": "Modus operandi weapon & criminal activity intensity: E = mean_i(||v_i[method]||_2) * 100",
+                "meaning": "Reflects weapon involvement, organized criminal gang activity, and victim-offender relationship dynamics."
+            },
+            {
+                "id": "people_and_demographics",
+                "name": "People & Demographics",
+                "features": FEATURE_GROUPS.get("people_and_demographics", []),
+                "mapped_fields": [k for k in ["victim_count", "victim_avg_age", "offender_count", "offender_avg_age"] if column_mapping.get(k) in filtered_df.columns],
+                "formula": "Demographic composition intensity: E = mean_i(||v_i[demographics]||_2) * 100",
+                "meaning": "Captures multi-victim presence, co-offending group size, and age spread dynamics."
+            },
+            {
+                "id": "property_and_economics",
+                "name": "Property & Economics",
+                "features": FEATURE_GROUPS.get("property_and_economics", []),
+                "mapped_fields": [k for k in ["has_property", "has_stolen_property", "property_value"] if column_mapping.get(k) in filtered_df.columns],
+                "formula": "Economic loss & property involvement index: E = mean_i(||v_i[property]||_2) * 100",
+                "meaning": "Measures economic loss scale, stolen assets, and property targeting intensity."
+            },
+            {
+                "id": "context_and_harm",
+                "name": "Context & Harm",
+                "features": FEATURE_GROUPS.get("context_and_harm", []),
+                "mapped_fields": [k for k in ["has_injury", "has_drug", "has_arrest"] if column_mapping.get(k) in filtered_df.columns],
+                "formula": "Harm & outcome severity index: E = mean_i(||v_i[harm]||_2) * 100",
+                "meaning": "Reflects reported physical injury, suspected narcotics, and enforcement/arrest status."
+            }
+        ]
+
+        feature_name_to_idx = {name: idx for idx, name in enumerate(ORDERED_FEATURE_NAMES)}
+        domain_energies = []
+        for dom in domain_definitions:
+            dim_indices = [feature_name_to_idx[feat] for feat in dom["features"] if feat in feature_name_to_idx]
+            has_mapped = len(dom["mapped_fields"]) > 0
+            if has_mapped and len(dim_indices) > 0:
+                sub_matrix = V[:, dim_indices]
+                norms = np.linalg.norm(sub_matrix, axis=1)
+                mean_energy = float(np.mean(norms)) * 100.0
+                score = round(min(100.0, max(0.0, mean_energy)), 1)
+                status = "Calculated"
+                explanation = f"Empirical intensity of {score}% computed from {len(dom['mapped_fields'])} mapped field(s): {', '.join(dom['mapped_fields'])}."
+            else:
+                score = None
+                status = "Insufficient data"
+                explanation = "No fields mapped for this behavioral domain in the uploaded dataset."
+
+            domain_energies.append({
+                "id": dom["id"],
+                "name": dom["name"],
+                "status": status,
+                "score": score,
+                "mapped_fields": dom["mapped_fields"],
+                "formula": dom["formula"],
+                "normalization": "Normalized 70D Behavioral DNA unit vectors on S^69",
+                "meaning": dom["meaning"],
+                "explanation": explanation
+            })
+
         result_payload: Dict[str, Any] = {
             "analysis_id": analysis_id,
             "user_id": uid,
@@ -1025,6 +1219,7 @@ class DatasetAnalysisService:
             "temporal_evolution": temporal_evolution,
             "unusual_combinations": unusual_combinations,
             "reference_comparison": reference_comparison,
+            "domain_energies": domain_energies,
             "why_these_results": why_results,
             "technical_details": technical_details
         }
@@ -1041,8 +1236,25 @@ class DatasetAnalysisService:
             target_path = self.storage_dir / f"{analysis_id}.json"
             with open(target_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
+            self._prune_old_analyses()
         except Exception as e:
             logger.error(f"Error persisting analysis {analysis_id}: {e}")
+
+    def _prune_old_analyses(self, max_retained: int = 50) -> None:
+        """Prunes oldest stored analysis files to prevent unbounded disk usage in production."""
+        try:
+            files = list(self.storage_dir.glob("*.json"))
+            if len(files) > max_retained:
+                files.sort(key=lambda p: p.stat().st_mtime)
+                to_remove = files[: len(files) - max_retained]
+                for p in to_remove:
+                    try:
+                        p.unlink()
+                        self._analyses.pop(p.stem, None)
+                    except Exception:
+                        pass
+        except Exception as e:
+            logger.warning(f"Error during dataset storage pruning: {e}")
 
     def get_analysis(self, analysis_id: str) -> Optional[Dict[str, Any]]:
         """Retrieves a previously computed dataset analysis by ID."""
@@ -1079,7 +1291,7 @@ class DatasetAnalysisService:
 
     def export_analysis(self, analysis_id: str, format_type: str = "json") -> Tuple[str, str, bytes]:
         """
-        Exports an analysis report in JSON or CSV format.
+        Exports an analysis report in JSON or CSV format with strict CSV formula injection sanitization.
         Returns: (filename, media_type, file_bytes)
         """
         data = self.get_analysis(analysis_id)
@@ -1087,16 +1299,43 @@ class DatasetAnalysisService:
             raise ValueError(f"Analysis {analysis_id} not found.")
 
         if format_type.lower() == "csv":
-            # Export patterns and key summary as CSV
+            # Export patterns and key summary as CSV with formula injection defense
             patterns = data.get("behavioral_patterns", [])
             df_patterns = pd.DataFrame(patterns)
+            # Security: Sanitize cell contents to prevent formula injection (=, +, -, @, \t, \r)
+            def sanitize_val(v: Any) -> Any:
+                if isinstance(v, str) and v and v[0] in ("=", "+", "-", "@", "\t", "\r"):
+                    return f"'{v}"
+                return v
+
+            df_sanitized = df_patterns.apply(lambda col: col.map(sanitize_val))
             output = io.StringIO()
-            df_patterns.to_csv(output, index=False)
+            df_sanitized.to_csv(output, index=False)
             filename = f"crime_compass_patterns_{analysis_id}.csv"
             return filename, "text/csv", output.getvalue().encode("utf-8")
         else:
             filename = f"crime_compass_analysis_{analysis_id}.json"
             return filename, "application/json", json.dumps(data, indent=2).encode("utf-8")
+
+    def get_sample_dataset_bytes(self) -> Tuple[str, str, bytes]:
+        """Returns synthetic sample dataset bytes for Crime Compass Mode 2 demonstration."""
+        sample_path = Path("data/sample/crime_compass_sample_india.csv")
+        if not sample_path.exists():
+            sample_path = Path("frontend/public/crime_compass_sample_india.csv")
+        if not sample_path.exists():
+            raise ValueError("Sample dataset not found on server.")
+        with open(sample_path, "rb") as f:
+            return "crime_compass_sample_india.csv", "text/csv", f.read()
+
+    def get_mapping_template_bytes(self) -> Tuple[str, str, bytes]:
+        """Returns column mapping template CSV bytes for Crime Compass Mode 2."""
+        template_path = Path("data/sample/crime_compass_column_mapping_template.csv")
+        if not template_path.exists():
+            template_path = Path("frontend/public/crime_compass_column_mapping_template.csv")
+        if not template_path.exists():
+            raise ValueError("Column mapping template not found on server.")
+        with open(template_path, "rb") as f:
+            return "crime_compass_column_mapping_template.csv", "text/csv", f.read()
 
     # =========================================================================
     # Helpers for Titles, Descriptions, Differences, and Comparison

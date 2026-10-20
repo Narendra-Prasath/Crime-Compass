@@ -1,0 +1,36 @@
+# Version Control & IDE
+.git
+.gitignore
+.agents
+.gemini
+.vscode
+.idea
+
+# Python Virtual Environments & Cache
+.venv
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node & Frontend Build Artifacts
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Raw Datasets not needed at runtime (processed data in data/processed/ is retained)
+crime_dna_ml.csv
+data/raw/
+*.parquet
+
+# Temporary and local user files
+data/dataset_analyses/
+data/feedback/
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,778 @@
+{
+  "0": {
+    "cluster_id": 0,
+    "name": "Small-City Property & Structure Theft",
+    "macro_category": "Property",
+    "summary": "Opportunistic property and structure offenses occurring predominantly in small municipal jurisdictions (10k-25k population).",
+    "incident_count": 17725,
+    "percentage_of_total": 8.03,
+    "dominant_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 0.3,
+        "against_property_pct": 99.2,
+        "against_society_pct": 0.0,
+        "attempted_rate_pct": 0.9
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 14.8,
+        "weekend_pct": 21.0
+      },
+      "location_patterns": {
+        "population_density_index": 0.787,
+        "multi_location_rate_pct": 0.7,
+        "state_police_pct": 0.0
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 0.9,
+        "multi_weapon_pct": 0.0
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 99.7,
+        "theft_rate_pct": 5.7,
+        "log_property_value": 0.246,
+        "cargo_theft_rate_pct": 0.49
+      },
+      "people_patterns": {
+        "multi_victim_rate_pct": 3.0,
+        "co_offender_rate_pct": 6.2,
+        "known_relationship_pct": 0.8
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 0.8,
+        "drug_involvement_pct": 0.0,
+        "criminal_activity_pct": 4.6,
+        "on_scene_arrest_pct": 17.2,
+        "bias_motivated_pct": 0.08
+      }
+    },
+    "top_distinctive_features": [
+      {
+        "feature": "population_group_desc_cities_from_10,000_thru_24,999",
+        "cluster_mean": 1.0,
+        "global_mean": 0.158,
+        "difference": 0.842
+      },
+      {
+        "feature": "crime_against_property",
+        "cluster_mean": 0.992,
+        "global_mean": 0.508,
+        "difference": 0.484
+      },
+      {
+        "feature": "has_property",
+        "cluster_mean": 0.997,
+        "global_mean": 0.679,
+        "difference": 0.318
+      },
+      {
+        "feature": "property_record_count_scaled",
+        "cluster_mean": 0.386,
+        "global_mean": 0.257,
+        "difference": 0.13
+      },
+      {
+        "feature": "property_value_log_scaled",
+        "cluster_mean": 0.246,
+        "global_mean": 0.141,
+        "difference": 0.104
+      },
+      {
+        "feature": "time_weekday_sin",
+        "cluster_mean": 0.536,
+        "global_mean": 0.5,
+        "difference": 0.036
+      },
+      {
+        "feature": "victim_avg_age_scaled",
+        "cluster_mean": 0.431,
+        "global_mean": 0.399,
+        "difference": 0.032
+      },
+      {
+        "feature": "has_stolen_property",
+        "cluster_mean": 0.057,
+        "global_mean": 0.038,
+        "difference": 0.019
+      }
+    ]
+  },
+  "1": {
+    "cluster_id": 1,
+    "name": "Violent Armed Interpersonal & Domestic Assaults",
+    "macro_category": "Violent Person",
+    "summary": "High-lethality violent encounters against persons characterized by weapon brandishing, prior relationship ties, and physical bodily injury.",
+    "incident_count": 74429,
+    "percentage_of_total": 33.73,
+    "dominant_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 91.8,
+        "against_property_pct": 0.9,
+        "against_society_pct": 0.0,
+        "attempted_rate_pct": 0.2
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 26.0,
+        "weekend_pct": 30.3
+      },
+      "location_patterns": {
+        "population_density_index": 0.851,
+        "multi_location_rate_pct": 0.4,
+        "state_police_pct": 0.0
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 85.3,
+        "multi_weapon_pct": 0.9
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 8.3,
+        "theft_rate_pct": 0.2,
+        "log_property_value": 0.018,
+        "cargo_theft_rate_pct": 0.01
+      },
+      "people_patterns": {
+        "multi_victim_rate_pct": 8.8,
+        "co_offender_rate_pct": 7.5,
+        "known_relationship_pct": 94.1
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 84.8,
+        "drug_involvement_pct": 0.3,
+        "criminal_activity_pct": 30.4,
+        "on_scene_arrest_pct": 20.1,
+        "bias_motivated_pct": 0.05
+      }
+    },
+    "top_distinctive_features": [
+      {
+        "feature": "has_relationship",
+        "cluster_mean": 0.941,
+        "global_mean": 0.323,
+        "difference": 0.618
+      },
+      {
+        "feature": "crime_against_person",
+        "cluster_mean": 0.918,
+        "global_mean": 0.311,
+        "difference": 0.607
+      },
+      {
+        "feature": "has_injury",
+        "cluster_mean": 0.848,
+        "global_mean": 0.293,
+        "difference": 0.555
+      },
+      {
+        "feature": "has_weapon",
+        "cluster_mean": 0.853,
+        "global_mean": 0.304,
+        "difference": 0.549
+      },
+      {
+        "feature": "weapon_types_count_scaled",
+        "cluster_mean": 0.43,
+        "global_mean": 0.153,
+        "difference": 0.277
+      },
+      {
+        "feature": "relationship_count_scaled",
+        "cluster_mean": 0.333,
+        "global_mean": 0.114,
+        "difference": 0.218
+      },
+      {
+        "feature": "injury_record_count_scaled",
+        "cluster_mean": 0.289,
+        "global_mean": 0.1,
+        "difference": 0.189
+      },
+      {
+        "feature": "weapon_count_scaled",
+        "cluster_mean": 0.287,
+        "global_mean": 0.102,
+        "difference": 0.185
+      }
+    ]
+  },
+  "2": {
+    "cluster_id": 2,
+    "name": "Suburban & Mid-Sized Town Daytime Property Theft",
+    "macro_category": "Property",
+    "summary": "Daytime property offenses and larcenies occurring across suburban municipalities and mid-sized cities (25k-50k population).",
+    "incident_count": 35193,
+    "percentage_of_total": 15.95,
+    "dominant_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 0.0,
+        "against_property_pct": 99.7,
+        "against_society_pct": 0.0,
+        "attempted_rate_pct": 1.5
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 6.8,
+        "weekend_pct": 0.0
+      },
+      "location_patterns": {
+        "population_density_index": 0.798,
+        "multi_location_rate_pct": 0.7,
+        "state_police_pct": 0.0
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 0.5,
+        "multi_weapon_pct": 0.0
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 100.0,
+        "theft_rate_pct": 5.6,
+        "log_property_value": 0.249,
+        "cargo_theft_rate_pct": 0.34
+      },
+      "people_patterns": {
+        "multi_victim_rate_pct": 3.4,
+        "co_offender_rate_pct": 6.7,
+        "known_relationship_pct": 0.3
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 0.5,
+        "drug_involvement_pct": 0.0,
+        "criminal_activity_pct": 5.1,
+        "on_scene_arrest_pct": 13.0,
+        "bias_motivated_pct": 0.09
+      }
+    },
+    "top_distinctive_features": [
+      {
+        "feature": "crime_against_property",
+        "cluster_mean": 0.997,
+        "global_mean": 0.508,
+        "difference": 0.489
+      },
+      {
+        "feature": "has_property",
+        "cluster_mean": 1.0,
+        "global_mean": 0.679,
+        "difference": 0.321
+      },
+      {
+        "feature": "time_weekday_sin",
+        "cluster_mean": 0.68,
+        "global_mean": 0.5,
+        "difference": 0.18
+      },
+      {
+        "feature": "population_group_desc_cities_from_25,000_thru_49,999",
+        "cluster_mean": 0.246,
+        "global_mean": 0.114,
+        "difference": 0.132
+      },
+      {
+        "feature": "property_record_count_scaled",
+        "cluster_mean": 0.379,
+        "global_mean": 0.257,
+        "difference": 0.122
+      },
+      {
+        "feature": "property_value_log_scaled",
+        "cluster_mean": 0.249,
+        "global_mean": 0.141,
+        "difference": 0.108
+      },
+      {
+        "feature": "population_group_desc_cities_from_2,500_thru_9,999",
+        "cluster_mean": 0.206,
+        "global_mean": 0.109,
+        "difference": 0.097
+      },
+      {
+        "feature": "population_group_desc_cities_from_50,000_thru_99,999",
+        "cluster_mean": 0.165,
+        "global_mean": 0.082,
+        "difference": 0.083
+      }
+    ]
+  },
+  "3": {
+    "cluster_id": 3,
+    "name": "Nocturnal & Weekend Residential/Commercial Burglary",
+    "macro_category": "Property / Stealth",
+    "summary": "Property break-ins and burglaries committed during weekend and nocturnal hours with elevated economic property damage.",
+    "incident_count": 33335,
+    "percentage_of_total": 15.11,
+    "dominant_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 0.1,
+        "against_property_pct": 99.2,
+        "against_society_pct": 0.0,
+        "attempted_rate_pct": 1.2
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 48.1,
+        "weekend_pct": 77.0
+      },
+      "location_patterns": {
+        "population_density_index": 0.857,
+        "multi_location_rate_pct": 0.7,
+        "state_police_pct": 0.0
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 1.6,
+        "multi_weapon_pct": 0.0
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 99.9,
+        "theft_rate_pct": 9.1,
+        "log_property_value": 0.254,
+        "cargo_theft_rate_pct": 0.28
+      },
+      "people_patterns": {
+        "multi_victim_rate_pct": 4.3,
+        "co_offender_rate_pct": 6.9,
+        "known_relationship_pct": 0.9
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 1.6,
+        "drug_involvement_pct": 0.0,
+        "criminal_activity_pct": 2.6,
+        "on_scene_arrest_pct": 9.4,
+        "bias_motivated_pct": 0.09
+      }
+    },
+    "top_distinctive_features": [
+      {
+        "feature": "time_is_weekend",
+        "cluster_mean": 0.77,
+        "global_mean": 0.275,
+        "difference": 0.496
+      },
+      {
+        "feature": "crime_against_property",
+        "cluster_mean": 0.992,
+        "global_mean": 0.508,
+        "difference": 0.484
+      },
+      {
+        "feature": "has_property",
+        "cluster_mean": 0.999,
+        "global_mean": 0.679,
+        "difference": 0.32
+      },
+      {
+        "feature": "time_is_night",
+        "cluster_mean": 0.481,
+        "global_mean": 0.261,
+        "difference": 0.22
+      },
+      {
+        "feature": "time_hour_cos",
+        "cluster_mean": 0.61,
+        "global_mean": 0.467,
+        "difference": 0.144
+      },
+      {
+        "feature": "property_record_count_scaled",
+        "cluster_mean": 0.387,
+        "global_mean": 0.257,
+        "difference": 0.13
+      },
+      {
+        "feature": "property_value_log_scaled",
+        "cluster_mean": 0.254,
+        "global_mean": 0.141,
+        "difference": 0.113
+      },
+      {
+        "feature": "time_weekday_cos",
+        "cluster_mean": 0.564,
+        "global_mean": 0.496,
+        "difference": 0.068
+      }
+    ]
+  },
+  "4": {
+    "cluster_id": 4,
+    "name": "Weekend Nightlife Vice & Public Order Enforcement",
+    "macro_category": "Society / Vice",
+    "summary": "Weekend societal infractions, nightlife vice operations, and public disorder incidents with high on-scene arrest rates.",
+    "incident_count": 8656,
+    "percentage_of_total": 3.92,
+    "dominant_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 0.6,
+        "against_property_pct": 1.1,
+        "against_society_pct": 92.1,
+        "attempted_rate_pct": 0.2
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 37.6,
+        "weekend_pct": 100.0
+      },
+      "location_patterns": {
+        "population_density_index": 0.805,
+        "multi_location_rate_pct": 0.9,
+        "state_police_pct": 0.2
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 7.1,
+        "multi_weapon_pct": 0.2
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 93.6,
+        "theft_rate_pct": 0.2,
+        "log_property_value": 0.056,
+        "cargo_theft_rate_pct": 0.02
+      },
+      "people_patterns": {
+        "multi_victim_rate_pct": 5.8,
+        "co_offender_rate_pct": 11.8,
+        "known_relationship_pct": 2.1
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 1.3,
+        "drug_involvement_pct": 68.1,
+        "criminal_activity_pct": 99.7,
+        "on_scene_arrest_pct": 72.5,
+        "bias_motivated_pct": 0.12
+      }
+    },
+    "top_distinctive_features": [
+      {
+        "feature": "crime_against_society",
+        "cluster_mean": 0.921,
+        "global_mean": 0.147,
+        "difference": 0.774
+      },
+      {
+        "feature": "time_is_weekend",
+        "cluster_mean": 1.0,
+        "global_mean": 0.275,
+        "difference": 0.725
+      },
+      {
+        "feature": "has_criminal_activity",
+        "cluster_mean": 0.997,
+        "global_mean": 0.277,
+        "difference": 0.72
+      },
+      {
+        "feature": "has_drug",
+        "cluster_mean": 0.681,
+        "global_mean": 0.108,
+        "difference": 0.573
+      },
+      {
+        "feature": "has_arrest_on_scene",
+        "cluster_mean": 0.725,
+        "global_mean": 0.228,
+        "difference": 0.497
+      },
+      {
+        "feature": "has_property",
+        "cluster_mean": 0.936,
+        "global_mean": 0.679,
+        "difference": 0.257
+      },
+      {
+        "feature": "criminal_activity_count_scaled",
+        "cluster_mean": 0.346,
+        "global_mean": 0.095,
+        "difference": 0.251
+      },
+      {
+        "feature": "suspected_drug_count_scaled",
+        "cluster_mean": 0.273,
+        "global_mean": 0.044,
+        "difference": 0.23
+      }
+    ]
+  },
+  "5": {
+    "cluster_id": 5,
+    "name": "Regulatory & Non-Drug Societal Enterprise Offenses",
+    "macro_category": "Society / Regulatory",
+    "summary": "Public order, weapons violations, and non-narcotics enterprise activities resulting in formal citations and arrests.",
+    "incident_count": 8096,
+    "percentage_of_total": 3.67,
+    "dominant_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 1.9,
+        "against_property_pct": 0.7,
+        "against_society_pct": 91.2,
+        "attempted_rate_pct": 0.9
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 26.9,
+        "weekend_pct": 0.0
+      },
+      "location_patterns": {
+        "population_density_index": 0.855,
+        "multi_location_rate_pct": 0.7,
+        "state_police_pct": 0.1
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 11.1,
+        "multi_weapon_pct": 0.1
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 77.1,
+        "theft_rate_pct": 0.3,
+        "log_property_value": 0.036,
+        "cargo_theft_rate_pct": 0.01
+      },
+      "people_patterns": {
+        "multi_victim_rate_pct": 5.0,
+        "co_offender_rate_pct": 9.7,
+        "known_relationship_pct": 1.5
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 0.2,
+        "drug_involvement_pct": 0.0,
+        "criminal_activity_pct": 98.9,
+        "on_scene_arrest_pct": 57.6,
+        "bias_motivated_pct": 0.04
+      }
+    },
+    "top_distinctive_features": [
+      {
+        "feature": "crime_against_society",
+        "cluster_mean": 0.912,
+        "global_mean": 0.147,
+        "difference": 0.765
+      },
+      {
+        "feature": "has_criminal_activity",
+        "cluster_mean": 0.989,
+        "global_mean": 0.277,
+        "difference": 0.712
+      },
+      {
+        "feature": "has_arrest_on_scene",
+        "cluster_mean": 0.576,
+        "global_mean": 0.228,
+        "difference": 0.348
+      },
+      {
+        "feature": "criminal_activity_count_scaled",
+        "cluster_mean": 0.347,
+        "global_mean": 0.095,
+        "difference": 0.252
+      },
+      {
+        "feature": "time_weekday_sin",
+        "cluster_mean": 0.677,
+        "global_mean": 0.5,
+        "difference": 0.177
+      },
+      {
+        "feature": "arrest_count_scaled",
+        "cluster_mean": 0.206,
+        "global_mean": 0.083,
+        "difference": 0.122
+      },
+      {
+        "feature": "offender_age_known",
+        "cluster_mean": 0.988,
+        "global_mean": 0.891,
+        "difference": 0.096
+      },
+      {
+        "feature": "has_property",
+        "cluster_mean": 0.771,
+        "global_mean": 0.679,
+        "difference": 0.092
+      }
+    ]
+  },
+  "6": {
+    "cluster_id": 6,
+    "name": "Metropolitan Core High-Density Larceny & Shoplifting",
+    "macro_category": "Property / Urban",
+    "summary": "Daytime retail thefts, grand larcenies, and property offenses concentrated in dense metropolitan core cities (100k-250k population).",
+    "incident_count": 25542,
+    "percentage_of_total": 11.58,
+    "dominant_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 0.1,
+        "against_property_pct": 99.5,
+        "against_society_pct": 0.0,
+        "attempted_rate_pct": 0.9
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 24.6,
+        "weekend_pct": 0.0
+      },
+      "location_patterns": {
+        "population_density_index": 0.984,
+        "multi_location_rate_pct": 0.8,
+        "state_police_pct": 0.0
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 2.1,
+        "multi_weapon_pct": 0.0
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 99.9,
+        "theft_rate_pct": 8.7,
+        "log_property_value": 0.247,
+        "cargo_theft_rate_pct": 0.05
+      },
+      "people_patterns": {
+        "multi_victim_rate_pct": 3.1,
+        "co_offender_rate_pct": 5.7,
+        "known_relationship_pct": 1.1
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 2.0,
+        "drug_involvement_pct": 0.0,
+        "criminal_activity_pct": 2.6,
+        "on_scene_arrest_pct": 6.0,
+        "bias_motivated_pct": 0.08
+      }
+    },
+    "top_distinctive_features": [
+      {
+        "feature": "population_group_desc_cities_from_100,000_thru_249,999",
+        "cluster_mean": 1.0,
+        "global_mean": 0.281,
+        "difference": 0.719
+      },
+      {
+        "feature": "crime_against_property",
+        "cluster_mean": 0.995,
+        "global_mean": 0.508,
+        "difference": 0.488
+      },
+      {
+        "feature": "has_property",
+        "cluster_mean": 0.999,
+        "global_mean": 0.679,
+        "difference": 0.32
+      },
+      {
+        "feature": "time_weekday_sin",
+        "cluster_mean": 0.668,
+        "global_mean": 0.5,
+        "difference": 0.168
+      },
+      {
+        "feature": "population_log_scaled",
+        "cluster_mean": 0.984,
+        "global_mean": 0.845,
+        "difference": 0.139
+      },
+      {
+        "feature": "property_record_count_scaled",
+        "cluster_mean": 0.385,
+        "global_mean": 0.257,
+        "difference": 0.128
+      },
+      {
+        "feature": "property_value_log_scaled",
+        "cluster_mean": 0.247,
+        "global_mean": 0.141,
+        "difference": 0.106
+      },
+      {
+        "feature": "has_stolen_property",
+        "cluster_mean": 0.087,
+        "global_mean": 0.038,
+        "difference": 0.049
+      }
+    ]
+  },
+  "7": {
+    "cluster_id": 7,
+    "name": "Narcotics Trafficking & Contraband Vice Operations",
+    "macro_category": "Society / Narcotics",
+    "summary": "Proactive law enforcement operations seizing illicit narcotics, controlled substances, and contraband with high on-scene arrest rates.",
+    "incident_count": 17687,
+    "percentage_of_total": 8.02,
+    "dominant_patterns": {
+      "crime_characteristics": {
+        "against_person_pct": 0.0,
+        "against_property_pct": 0.0,
+        "against_society_pct": 96.4,
+        "attempted_rate_pct": 0.1
+      },
+      "temporal_patterns": {
+        "nighttime_pct": 30.8,
+        "weekend_pct": 0.0
+      },
+      "location_patterns": {
+        "population_density_index": 0.765,
+        "multi_location_rate_pct": 0.7,
+        "state_police_pct": 0.2
+      },
+      "weapon_characteristics": {
+        "weapon_presence_pct": 3.4,
+        "multi_weapon_pct": 0.1
+      },
+      "property_characteristics": {
+        "property_involvement_pct": 100.0,
+        "theft_rate_pct": 0.1,
+        "log_property_value": 0.065,
+        "cargo_theft_rate_pct": 0.01
+      },
+      "people_patterns": {
+        "multi_victim_rate_pct": 3.6,
+        "co_offender_rate_pct": 12.7,
+        "known_relationship_pct": 0.4
+      },
+      "context_and_harm": {
+        "physical_injury_pct": 0.3,
+        "drug_involvement_pct": 100.0,
+        "criminal_activity_pct": 100.0,
+        "on_scene_arrest_pct": 68.9,
+        "bias_motivated_pct": 0.18
+      }
+    },
+    "top_distinctive_features": [
+      {
+        "feature": "has_drug",
+        "cluster_mean": 1.0,
+        "global_mean": 0.108,
+        "difference": 0.892
+      },
+      {
+        "feature": "crime_against_society",
+        "cluster_mean": 0.964,
+        "global_mean": 0.147,
+        "difference": 0.817
+      },
+      {
+        "feature": "has_criminal_activity",
+        "cluster_mean": 1.0,
+        "global_mean": 0.277,
+        "difference": 0.723
+      },
+      {
+        "feature": "has_arrest_on_scene",
+        "cluster_mean": 0.689,
+        "global_mean": 0.228,
+        "difference": 0.46
+      },
+      {
+        "feature": "suspected_drug_count_scaled",
+        "cluster_mean": 0.405,
+        "global_mean": 0.044,
+        "difference": 0.361
+      },
+      {
+        "feature": "has_property",
+        "cluster_mean": 1.0,
+        "global_mean": 0.679,
+        "difference": 0.321
+      },
+      {
+        "feature": "criminal_activity_count_scaled",
+        "cluster_mean": 0.347,
+        "global_mean": 0.095,
+        "difference": 0.252
+      },
+      {
+        "feature": "time_weekday_sin",
+        "cluster_mean": 0.679,
+        "global_mean": 0.5,
+        "difference": 0.179
+      }
+    ]
+  }
+}

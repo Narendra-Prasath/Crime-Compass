@@ -21,7 +21,11 @@ if workspace_root not in sys.path:
 from src.features.config import (
     SCALING_PARAMS,
     FEATURE_GROUPS,
-    FEATURE_DESCRIPTIONS
+    FEATURE_DESCRIPTIONS,
+    FEATURE_FRIENDLY_NAMES,
+    FEATURE_BEHAVIORAL_DOMAINS,
+    DOMAIN_LABELS,
+    FEATURE_SALIENCE_WEIGHTS
 )
 from src.features.dna_encoder import BehavioralDNAEncoder
 
@@ -661,10 +665,14 @@ class InputFeatureBridge:
 
             domains_result[dom_key] = {
                 "domain_key": dom_key,
+                "domain_id": dom_key,
                 "label": dom_info["label"],
+                "name": dom_info["label"],
                 "description": dom_info["description"],
                 "coverage_pct": coverage_pct,
                 "available_fields_count": len(valid_fields),
+                "valid_fields_count": len(valid_fields),
+                "total_applicable_fields": applicable_count,
                 "unspecified_fields_count": len(unspecified_fields),
                 "not_applicable_fields_count": len(not_applicable_fields),
                 "total_supported_fields": len(dom_info["fields"]),
@@ -1099,17 +1107,28 @@ class InputFeatureBridge:
         raw_vec: np.ndarray,
         top_n: int = 5
     ) -> List[Dict[str, Any]]:
-        """Extracts top non-zero behavioral features sorted by magnitude."""
+        """Extracts top non-zero behavioral features sorted by magnitude and salience."""
         traits = []
         for i, val in enumerate(raw_vec):
             if val > 0.05:
                 feat_name = self.feature_names[i]
+                dom_key = FEATURE_BEHAVIORAL_DOMAINS.get(feat_name, "other")
+                dom_label = DOMAIN_LABELS.get(dom_key, dom_key.replace("_", " ").title())
+                salience = FEATURE_SALIENCE_WEIGHTS.get(feat_name, 1.0)
                 traits.append({
                     "feature": feat_name,
+                    "label": FEATURE_FRIENDLY_NAMES.get(feat_name, feat_name.replace("_", " ").title()),
+                    "domain": dom_key,
+                    "domain_label": dom_label,
                     "value": round(float(val), 4),
+                    "energy_share_pct": round(float((val ** 2) * 100.0), 2),
+                    "salience": salience,
                     "description": FEATURE_DESCRIPTIONS.get(feat_name, feat_name)
                 })
-        traits.sort(key=lambda x: x["value"], reverse=True)
+        # Sort by magnitude first, then salience tie-breaker
+        traits.sort(key=lambda x: (round(x["value"], 4), x["salience"]), reverse=True)
+        for t in traits:
+            t.pop("salience", None)
         return traits[:top_n]
 
 

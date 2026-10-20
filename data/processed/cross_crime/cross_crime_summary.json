@@ -1,0 +1,196 @@
+[
+  {
+    "pattern_id": "CCP_00",
+    "cluster_id": 0,
+    "pattern_name": "Cross-Crime: Small-City Property & Structure Theft",
+    "total_incidents": 17725,
+    "cross_crime_incidents": 142,
+    "cross_crime_percentage": 0.8,
+    "distinct_categories_count": 3,
+    "primary_category": "Property",
+    "secondary_categories": [
+      "Person + Property",
+      "Person"
+    ],
+    "avg_inter_category_similarity": 0.7469,
+    "diversity_index": 0.0159,
+    "key_shared_traits": [
+      "Nighttime: 14.79%",
+      "Weekend: 21.02%",
+      "Weapon: 0.91%",
+      "Injury: 0.82%",
+      "Arrest: 17.2%"
+    ]
+  },
+  {
+    "pattern_id": "CCP_01",
+    "cluster_id": 1,
+    "pattern_name": "Cross-Crime: Violent Armed Interpersonal & Domestic Assaults",
+    "total_incidents": 74429,
+    "cross_crime_incidents": 6097,
+    "cross_crime_percentage": 8.19,
+    "distinct_categories_count": 6,
+    "primary_category": "Person",
+    "secondary_categories": [
+      "Person + Property",
+      "Property",
+      "Person + Society",
+      "Person + Property + Society",
+      "Property + Society"
+    ],
+    "avg_inter_category_similarity": 0.8111,
+    "diversity_index": 0.1528,
+    "key_shared_traits": [
+      "Nighttime: 26.04%",
+      "Weekend: 30.29%",
+      "Weapon: 85.31%",
+      "Injury: 84.8%",
+      "Arrest: 20.14%"
+    ]
+  },
+  {
+    "pattern_id": "CCP_02",
+    "cluster_id": 2,
+    "pattern_name": "Cross-Crime: Suburban & Mid-Sized Town Daytime Property Theft",
+    "total_incidents": 35193,
+    "cross_crime_incidents": 121,
+    "cross_crime_percentage": 0.34,
+    "distinct_categories_count": 2,
+    "primary_category": "Property",
+    "secondary_categories": [
+      "Person + Property"
+    ],
+    "avg_inter_category_similarity": 0.7622,
+    "diversity_index": 0.0069,
+    "key_shared_traits": [
+      "Nighttime: 6.79%",
+      "Weekend: 0.0%",
+      "Weapon: 0.54%",
+      "Injury: 0.49%",
+      "Arrest: 12.99%"
+    ]
+  },
+  {
+    "pattern_id": "CCP_03",
+    "cluster_id": 3,
+    "pattern_name": "Cross-Crime: Nocturnal & Weekend Residential/Commercial Burglary",
+    "total_incidents": 33335,
+    "cross_crime_incidents": 270,
+    "cross_crime_percentage": 0.81,
+    "distinct_categories_count": 3,
+    "primary_category": "Property",
+    "secondary_categories": [
+      "Person + Property",
+      "Person"
+    ],
+    "avg_inter_category_similarity": 0.7619,
+    "diversity_index": 0.0161,
+    "key_shared_traits": [
+      "Nighttime: 48.1%",
+      "Weekend: 77.03%",
+      "Weapon: 1.65%",
+      "Injury: 1.57%",
+      "Arrest: 9.38%"
+    ]
+  },
+  {
+    "pattern_id": "CCP_04",
+    "cluster_id": 4,
+    "pattern_name": "Cross-Crime: Weekend Nightlife Vice & Public Order Enforcement",
+    "total_incidents": 8656,
+    "cross_crime_incidents": 687,
+    "cross_crime_percentage": 7.94,
+    "distinct_categories_count": 7,
+    "primary_category": "Society",
+    "secondary_categories": [
+      "Property + Society",
+      "Person + Society",
+      "Property",
+      "Person + Property",
+      "Person",
+      "Person + Property + Society"
+    ],
+    "avg_inter_category_similarity": 0.7353,
+    "diversity_index": 0.1504,
+    "key_shared_traits": [
+      "Nighttime: 37.56%",
+      "Weekend: 100.0%",
+      "Weapon: 7.12%",
+      "Injury: 1.32%",
+      "Arrest: 72.53%"
+    ]
+  },
+  {
+    "pattern_id": "CCP_05",
+    "cluster_id": 5,
+    "pattern_name": "Cross-Crime: Regulatory & Non-Drug Societal Enterprise Offenses",
+    "total_incidents": 8096,
+    "cross_crime_incidents": 714,
+    "cross_crime_percentage": 8.82,
+    "distinct_categories_count": 6,
+    "primary_category": "Society",
+    "secondary_categories": [
+      "Property + Society",
+      "Person",
+      "Person + Property",
+      "Property",
+      "Person + Society"
+    ],
+    "avg_inter_category_similarity": 0.7377,
+    "diversity_index": 0.166,
+    "key_shared_traits": [
+      "Nighttime: 26.89%",
+      "Weekend: 0.0%",
+      "Weapon: 11.14%",
+      "Injury: 0.22%",
+      "Arrest: 57.65%"
+    ]
+  },
+  {
+    "pattern_id": "CCP_06",
+    "cluster_id": 6,
+    "pattern_name": "Cross-Crime: Metropolitan Core High-Density Larceny & Shoplifting",
+    "total_incidents": 25542,
+    "cross_crime_incidents": 119,
+    "cross_crime_percentage": 0.47,
+    "distinct_categories_count": 3,
+    "primary_category": "Property",
+    "secondary_categories": [
+      "Person + Property",
+      "Person"
+    ],
+    "avg_inter_category_similarity": 0.767,
+    "diversity_index": 0.0093,
+    "key_shared_traits": [
+      "Nighttime: 24.6%",
+      "Weekend: 0.0%",
+      "Weapon: 2.09%",
+      "Injury: 2.04%",
+      "Arrest: 6.05%"
+    ]
+  },
+  {
+    "pattern_id": "CCP_07",
+    "cluster_id": 7,
+    "pattern_name": "Cross-Crime: Narcotics Trafficking & Contraband Vice Operations",
+    "total_incidents": 17687,
+    "cross_crime_incidents": 638,
+    "cross_crime_percentage": 3.61,
+    "distinct_categories_count": 4,
+    "primary_category": "Society",
+    "secondary_categories": [
+      "Property + Society",
+      "Person + Society",
+      "Person + Property + Society"
+    ],
+    "avg_inter_category_similarity": 0.7949,
+    "diversity_index": 0.0698,
+    "key_shared_traits": [
+      "Nighttime: 30.8%",
+      "Weekend: 0.0%",
+      "Weapon: 3.42%",
+      "Injury: 0.29%",
+      "Arrest: 68.87%"
+    ]
+  }
+]

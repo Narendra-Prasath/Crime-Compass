@@ -41,13 +41,19 @@ API_DESCRIPTION = (
     "explore patterns across crime categories, and understand how incidents compare with historical records."
 )
 
-HOST = os.getenv("CRIME_DNA_HOST", "0.0.0.0")
-PORT = int(os.getenv("CRIME_DNA_PORT", "8000"))
+HOST = os.getenv("HOST", os.getenv("CRIME_DNA_HOST", "0.0.0.0"))
+PORT = int(os.getenv("PORT", os.getenv("CRIME_DNA_PORT", "8000")))
 DEBUG = os.getenv("CRIME_DNA_DEBUG", "false").lower() in ("1", "true", "yes")
 
 # CORS Configuration
-CORS_ORIGINS_RAW = os.getenv("CRIME_DNA_CORS_ORIGINS", "*")
-CORS_ORIGINS: List[str] = [origin.strip() for origin in CORS_ORIGINS_RAW.split(",") if origin.strip()]
+CORS_ORIGINS_RAW = os.getenv("CRIME_DNA_CORS_ORIGINS", os.getenv("CORS_ORIGINS", "*"))
+if CORS_ORIGINS_RAW.strip() in ("", "*"):
+    CORS_ORIGINS: List[str] = ["*"]
+    # Per CORS standard, wildcard origins MUST NOT be combined with credentials
+    CORS_ALLOW_CREDENTIALS: bool = False
+else:
+    CORS_ORIGINS: List[str] = [origin.strip() for origin in CORS_ORIGINS_RAW.split(",") if origin.strip()]
+    CORS_ALLOW_CREDENTIALS: bool = True
 
 # Query Limits
 DEFAULT_TOP_K = 5
