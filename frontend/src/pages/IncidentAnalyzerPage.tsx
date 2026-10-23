@@ -381,7 +381,10 @@ export const IncidentAnalyzerPage: React.FC<IncidentAnalyzerPageProps> = ({
                   {(dna.top_active_traits || []).map((trait, idx) => {
                     const friendlyName = getDimensionFriendlyLabel(trait.feature, trait.label);
                     const domainName = getDimensionDomain(trait.feature, trait.domain, trait.domain_label);
-                    const energyPct = trait.energy_share_pct ?? Math.round(trait.value * trait.value * 1000) / 10;
+                    const rawVal = typeof trait.value === 'number' && Number.isFinite(trait.value) ? trait.value : 0;
+                    const energyPct = typeof trait.energy_share_pct === 'number' && Number.isFinite(trait.energy_share_pct)
+                      ? trait.energy_share_pct
+                      : (rawVal * rawVal * 100);
                     return (
                       <div key={idx} style={{ padding: '2px 0' }}>
                         <div
@@ -426,7 +429,7 @@ export const IncidentAnalyzerPage: React.FC<IncidentAnalyzerPageProps> = ({
                               {energyPct.toFixed(1)}% energy
                             </span>
                             <span className="mono" style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>
-                              {trait.value.toFixed(4)}
+                              {rawVal.toFixed(4)}
                             </span>
                           </div>
                         </div>
@@ -434,7 +437,7 @@ export const IncidentAnalyzerPage: React.FC<IncidentAnalyzerPageProps> = ({
                           <div
                             className="progress-bar-fill"
                             style={{
-                              width: `${Math.min(100, Math.max(8, trait.value * 250))}%`,
+                              width: `${Math.min(100, Math.max(8, rawVal * 250))}%`,
                               backgroundColor: 'var(--accent-cyan)'
                             }}
                           />

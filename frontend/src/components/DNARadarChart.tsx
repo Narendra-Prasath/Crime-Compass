@@ -26,6 +26,16 @@ const DEFAULT_LABELS: Record<string, string> = {
   harm_context: 'Harm/Injury',
 };
 
+const CANONICAL_AXES = [
+  'temporal_dynamics',
+  'crime_characteristics',
+  'location_and_environment',
+  'method_and_activity',
+  'people_and_demographics',
+  'property_and_economics',
+  'context_and_harm',
+];
+
 export const DNARadarChart: React.FC<DNARadarChartProps> = ({
   data,
   compareData,
@@ -37,17 +47,27 @@ export const DNARadarChart: React.FC<DNARadarChartProps> = ({
   const center = size / 2;
   const radius = size * 0.38;
 
-  // Align keys
-  const keys = Object.keys(data);
+  // Align axes canonically so radar geometry is consistent and stable
+  const rawKeys = Object.keys(data || {});
+  const hasCanonicalKey = CANONICAL_AXES.some((k) => (data && k in data) || (compareData && k in compareData));
+
+  const keys = hasCanonicalKey
+    ? [
+        ...CANONICAL_AXES.filter((k) => (data && k in data) || (compareData && k in compareData)),
+        ...rawKeys.filter((k) => !CANONICAL_AXES.includes(k)),
+      ]
+    : rawKeys;
+
   if (keys.length === 0) return null;
 
   const totalAxes = keys.length;
   const angleSlice = (Math.PI * 2) / totalAxes;
 
-  // Compute vertices for polygon
-  const getCoordinates = (value: number, index: number) => {
-    // Normalize value to 0-1 range
-    const normValue = value > 1.0 ? Math.min(1.0, value / 100.0) : Math.max(0.0, Math.min(1.0, value));
+  // Compute vertices for polygon with defensive value sanitization
+  const getCoordinates = (value: unknown, index: number) => {
+    const num = typeof value === 'number' && Number.isFinite(value) ? value : 0;
+    // Normalize value to 0-1 range (supports raw L2 norm [0, 1] or percentage [0, 100])
+    const normValue = num > 1.0 ? Math.min(1.0, Math.max(0.0, num / 100.0)) : Math.max(0.0, Math.min(1.0, num));
     const r = radius * normValue;
     const angle = angleSlice * index - Math.PI / 2;
     return {
@@ -58,7 +78,7 @@ export const DNARadarChart: React.FC<DNARadarChartProps> = ({
 
   const primaryPoints = keys
     .map((k, i) => {
-      const coord = getCoordinates(data[k] || 0, i);
+      const coord = getCoordinates(data ? data[k] : 0, i);
       return `${coord.x},${coord.y}`;
     })
     .join(' ');
@@ -66,7 +86,7 @@ export const DNARadarChart: React.FC<DNARadarChartProps> = ({
   const comparePoints = compareData
     ? keys
         .map((k, i) => {
-          const coord = getCoordinates(compareData[k] || 0, i);
+          const coord = getCoordinates(compareData[k], i);
           return `${coord.x},${coord.y}`;
         })
         .join(' ')

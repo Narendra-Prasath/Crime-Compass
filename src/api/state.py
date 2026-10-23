@@ -492,7 +492,7 @@ class ApplicationState:
 
         vec = self.normalized_matrix[idx]
         vector_dict = {
-            feat_name: float(vec[i])
+            feat_name: (float(vec[i]) if np.isfinite(vec[i]) else 0.0)
             for i, feat_name in enumerate(self.feature_names)
         }
 
@@ -501,64 +501,53 @@ class ApplicationState:
         for grp_name, indices in self.feature_group_indices.items():
             if indices:
                 sub_vec = vec[indices]
-                group_energies[grp_name] = round(float(np.linalg.norm(sub_vec)), 4)
+                finite_sub_vec = np.where(np.isfinite(sub_vec), sub_vec, 0.0)
+                norm_val = float(np.linalg.norm(finite_sub_vec))
+                group_energies[grp_name] = round(norm_val if np.isfinite(norm_val) else 0.0, 4)
+            else:
+                group_energies[grp_name] = 0.0
 
         # Reverse mapping from feature to group
         feat_to_group = {
             col: grp for grp, cols in self.feature_groups.items() for col in cols
         }
 
-        # Top active traits with domain awareness, salience, and balanced tie-breaking
+        # Build candidates from finite, non-zero fingerprint coordinates
         raw_candidates = []
-        for f, v in vector_dict.items():
-            if v > 0.001:
-                grp = feat_to_group.get(f, "other")
+        for i, feat_name in enumerate(self.feature_names):
+            raw_v = float(vec[i])
+            if np.isfinite(raw_v) and raw_v > 0.0001:
+                grp = feat_to_group.get(feat_name, "other")
                 grp_energy = group_energies.get(grp, 0.0)
-                salience = FEATURE_SALIENCE_WEIGHTS.get(f, 1.0)
+                salience = FEATURE_SALIENCE_WEIGHTS.get(feat_name, 1.0)
                 raw_candidates.append({
-                    "feature": f,
-                    "label": FEATURE_FRIENDLY_NAMES.get(f, f.replace("_", " ").title()),
+                    "feature": feat_name,
+                    "label": FEATURE_FRIENDLY_NAMES.get(feat_name, feat_name.replace("_", " ").title()),
                     "domain": grp,
                     "domain_label": DOMAIN_LABELS.get(grp, grp.replace("_", " ").title()),
-                    "value": round(float(v), 4),
-                    "energy_share_pct": round(float((v ** 2) * 100.0), 2),
-                    "grp_energy": grp_energy,
-                    "salience": salience,
-                    "description": FEATURE_DESCRIPTIONS.get(f, f)
+                    "value": round(raw_v, 4),
+                    "energy_share_pct": round(float((raw_v ** 2) * 100.0), 2),
+                    "description": FEATURE_DESCRIPTIONS.get(feat_name, feat_name),
+                    "_raw_val": raw_v,
+                    "_grp_energy": grp_energy,
+                    "_salience": salience
                 })
 
-        # Multi-criteria sort:
-        # 1. Coordinate magnitude v (highest normalized components first)
-        # 2. Domain energy of the trait's parent group (prioritizing high-activity behavioral domains)
-        # 3. Behavioral salience (core MO actions over administrative flags)
+        # Deterministic multi-criteria sort:
+        # 1. Coordinate magnitude raw_v descending (true highest normalized components)
+        # 2. Domain energy of the trait's parent group descending (prioritizing high-activity behavioral domains)
+        # 3. Behavioral salience descending (core MO actions over administrative flags)
+        # 4. Feature name ascending (lexicographical stable tie-breaker)
         raw_candidates.sort(
-            key=lambda x: (round(x["value"], 4), round(x["grp_energy"], 4), x["salience"]),
-            reverse=True
+            key=lambda x: (-x["_raw_val"], -x["_grp_energy"], -x["_salience"], x["feature"])
         )
 
-        # Balanced selection across domains (at most 3 traits per domain in top 10 if diverse options exist)
-        domain_counts: Dict[str, int] = {}
-        top_active = []
-        overflow = []
-        for cand in raw_candidates:
-            grp = cand["domain"]
-            if domain_counts.get(grp, 0) < 3:
-                domain_counts[grp] = domain_counts.get(grp, 0) + 1
-                top_active.append(cand)
-            else:
-                overflow.append(cand)
-            if len(top_active) == 10:
-                break
-
-        if len(top_active) < 10 and overflow:
-            for cand in overflow:
-                top_active.append(cand)
-                if len(top_active) == 10:
-                    break
+        top_active = raw_candidates[:10]
 
         for trait in top_active:
-            trait.pop("grp_energy", None)
-            trait.pop("salience", None)
+            trait.pop("_raw_val", None)
+            trait.pop("_grp_energy", None)
+            trait.pop("_salience", None)
 
         return {
             "incident_id": incident_id,
